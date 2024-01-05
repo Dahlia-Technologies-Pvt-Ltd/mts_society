@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('society_id',0)->constrained()->default(0)->nullable();
             $table->integer('usertype')->default(0);
             $table->integer('usersubtype')->default(0);
-            $table->string('name');
+            $table->string('full_name');
             $table->string('username')->unique();
             $table->string('password');
             $table->string('email')->nullable()->unique();
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('alternate_number', 15)->nullable()->default(null);
             $table->enum('gender', ['Male','Female'])->nullable()->default(null);
             $table->unsignedBigInteger('towerid')->default(0);
-            //$table->unsignedBigInteger('wingid')->default(0);
+            $table->unsignedBigInteger('wingid')->nullable()->default(null);
             $table->unsignedBigInteger('floorid')->default(0);
             $table->unsignedBigInteger('flatid')->default(0);
             $table->string('image')->nullable()->default(null);

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('master_wings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('master_tower_id')->constrained();
-            $table->string('wings_name');
+            $table->string('wings_name')->nullable();
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
