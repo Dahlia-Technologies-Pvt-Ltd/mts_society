@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_types', function (Blueprint $table) {
+        Schema::create('master_database', function (Blueprint $table) {
             $table->id();
-            $table->string('users_type');
-            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
+            $table->string('databasename');
+            $table->string('databaseuid');
+            $table->string('databasepwd');
+            //$table->string('useruid');
+            $table->foreignId('master_user_id')->constrained()->default(0);
+            $table->foreignId('master_socities_id')->constrained()->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
- 		    $table->unsignedBigInteger('deleted_by')->nullable();
             $table->softDeletes();
-            $table->timestamps();
+            $table->timestamps();        
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_types');
+        Schema::dropIfExists('master_database');
     }
 };
