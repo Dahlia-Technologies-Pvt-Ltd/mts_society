@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('master_towers', function (Blueprint $table) {
+        Schema::create('subscription_plans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('society_id')->constrained()->nullable()->default(0);
-            $table->string('tower_name')->nullable()->default(null);
-            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
+            $table->string('subscription_plan');
+            $table->float('price',10,2)->default(0.00);
+            $table->integer('frequency')->default(0)->comment('0-nodefine,1-Monthly,3-Qty,6-halfYer,12-yearly');
+            $table->string('features')->nullable();
+            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive        
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
- 		    $table->unsignedBigInteger('deleted_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('master_towers');
+        Schema::dropIfExists('subscription_plans');
     }
 };

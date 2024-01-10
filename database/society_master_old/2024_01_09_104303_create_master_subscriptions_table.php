@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('master_floors', function (Blueprint $table) {
+        Schema::create('master_subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->string('floor_name');
-            $table->foreignId('master_tower_id')->constrained();
-            $table->foreignId('master_wing_id')->constrained()->nullable();
-            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
+            $table->string('plan_name')->nullable()->default(null);
+            $table->decimal('plan_price',15,2)->default(0.00); 
+            $table->timestamp('plan_start_date')->nullable()->default(null);
+            $table->timestamp('plan_end_date')->nullable()->default(null);
+            $table->string('features')->nullable()->default(null);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
- 		    $table->unsignedBigInteger('deleted_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('master_floors');
+        Schema::dropIfExists('master_subscriptions');
     }
 };

@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
+        Schema::create('master_databases', function (Blueprint $table) {
             $table->id();
-            $table->string('subscription_plan');
-            $table->float('price',10,2)->default(0.00);
-            $table->integer('frequency')->default(0)->comment('0-nodefine,1-Monthly,3-Qty,6-halfYer,12-yearly');
-            $table->string('features')->nullable();
+            $table->string('database_name');
+            $table->string('database_uid');
+            $table->string('database_pwd')->unique();
+            $table->foreignId('master_user_id')->constrained();
+            $table->foreignId('master_societie_id')->constrained()->default(0);
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive        
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->unsignedBigInteger('deleted_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subscriptions');
+        Schema::dropIfExists('master_databases');
     }
 };
