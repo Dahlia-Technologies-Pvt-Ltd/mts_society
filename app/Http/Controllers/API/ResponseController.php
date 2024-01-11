@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller as Controller;
-use App\Models\User;
+use App\Models\MasterUser;
 
 class ResponseController extends Controller
 {
@@ -92,13 +92,13 @@ class ResponseController extends Controller
 
     public function sendFailedLoginResponse(Request $request)
     {
-        // Load user from database
-        $user = User::where('email_id',$request->email_id)->orWhere('user_code',$request->email_id)->first(); 
+        // Load MasterUser from database
+        $user = MasterUser::where('email',$request->email_id)->orWhere('username',$request->email_id)->orWhere('phone_number',$request->email_id)->first(); 
         // Check if user was successfully loaded or not
         // If so, override the default error message.
         if (empty($user)) {
             $response['status'] = 401;
-			$response['message'] = 'Invalid User Code or Email';
+			$response['message'] = 'Invalid User Name or Email';
 			return $this->sendError($response);
         }
         // Check if user was successfully loaded, that the password matches
