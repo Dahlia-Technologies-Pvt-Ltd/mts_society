@@ -26,39 +26,32 @@ class runAllMigration extends Command
      */
     public function handle()
     {
-        // 'driver' => 'sqlsrv',
-        //     'url' => env('DATABASE_URL'),
-        //     'host' => env('DB_HOST','LAPTOP-RLPE4VM9'),
-        //     'port' => env('DB_PORT'),
-        //     'database' => env('DB_DATABASE', 'society_master'),
-        //     'username' => env('DB_USERNAME', 'sa'),
-        //     'password' => env('DB_PASSWORD', 'sa@123'),
-        //     'charset' => 'utf8',
-        //     'collation' => 'utf8_unicode_ci',
-        //     'prefix' => '',
-        //     'prefix_indexes' => true,
-        
-        // foreach ($tenants as $tenant) {
-        //     // Set the config for each $tenant 
-            $config = config('database.connections.sqlsrv');
-        
-                $config['database'] ='society_master';
-                $config['username'] ='sa';
-                $config['password'] = 'sa@123';
-                $config['driver'] = 'sqlsrv';
-                $config['url'] = 'DATABASE_URL';
-                $config['port'] = 1433;
-                $config['host'] = 'LAPTOP-RLPE4VM9';
-                // $config['password'] = 'sa@123';
-        
-                config()->set('database.connections.' . 'society_master', $config);
-                config()->set('database.default', 'society_master');
-        
-        //     // Now that we have the correct database connection 
-        //     // we can simply call the artisan command for each tenant
-        Artisan::call('migrate:fresh', ['--force' => true,'--database' => 'society_master']);
-        // }
-
-        // Artisan::call('migrate:fresh', ['--force' => true,'--database' => 'society_master']);
+        $databases = [
+            [
+                'database' => 'society_clone',
+                'username' => 'sa',
+                'password' => 'sa@123',
+            ],
+            [
+                'database' => 'mts_sociey',
+                'username' => 'sa',
+                'password' => 'sa@123',
+            ]
+        ];
+        $connection_name = 'sqlsrvclone';
+        foreach ($databases as $key => $row) {
+                //Set the config for each child database
+                $config = config('database.connections.'.$connection_name);        
+                $config['database'] =   $row['database'];
+                $config['username'] =   $row['username'];
+                $config['password'] =   $row['password'];
+                $config['driver'] = 'sqlsrv';        
+                config()->set('database.connections.' . $connection_name, $config);
+                config()->set('database.default', $connection_name);
+                // call the artisan command for each tenant
+                echo "\n ".( $key+ 1 )." Running a migration for ".$row['database'];       
+                Artisan::call('migrate:fresh', ['--force' => true,'--database' => $connection_name,'--path' => 'database/migrations/society_clone']);
+        }
+        echo "\n\nAll migrations ran successfully!\n";
     }
 }
