@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('master_socities', function (Blueprint $table) {
+        Schema::create('socities', function (Blueprint $table) {
             $table->id();
-            $table->string('society_unique_code')->unique()->nullable()->default(null);
-            $table->string('society_name')->nullable()->default(null);
-            // $table->foreignId('user_subscription_id')->constrained();
-            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive        
+            $table->Integer('master_society_id')->unique();
+            $table->string('society_unique_code')->unique();
+            $table->string('society_name')->nullable(); 
+            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->softDeletes();
-            $table->timestamps();  
+            $table->timestamps();   
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('master_socities');
+        Schema::dropIfExists('socities');
     }
 };
