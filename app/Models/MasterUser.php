@@ -5,31 +5,46 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 use Carbon\Carbon;
 
-class MasterUser extends Model
+class MasterUser extends Authenticatable
 {
-    use HasFactory;
-    use SoftDeletes;
-    protected $table = 'master_users';
-    protected $fillable = ['name', 'username', 'email', 'password', 'phone_number',
-    'master_society_id', 'gender', 'towerid', 'wingid', 'floorid',
-    'flatid', 'street_address', 'country', 'state', 'city',
-    'zipcode', 'status', 'created_by', 'updated_by'];
+    use HasFactory, SoftDeletes, Notifiable, HasApiTokens;
 
-    public function getCreatedAtAttribute($data)
+    protected $fillable = [
+        'name', 'username', 'email', 'password', 'phone_number',
+        'master_society_id', 'gender', 'towerid', 'wingid', 'floorid',
+        'flatid', 'street_address', 'country', 'state', 'city',
+        'zipcode', 'status', 'created_by', 'updated_by',
+    ];
+
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    public function getCreatedAtAttribute($value)
     {
-        if (!isset($this->attributes['created_at'])) {
-            return '';
-        }
-        return Carbon::parse($this->attributes['created_at'])->format(config('util.default_date_time_format'));
+        return $this->formatDate($value);
     }
 
-    public function getUpdatedAtAttribute($data)
+    public function getUpdatedAtAttribute($value)
     {
-        if (!isset($this->attributes['updated_at'])) {
-            return '';
+        return $this->formatDate($value);
+    }
+
+    protected function formatDate($value)
+    {
+        if (!$value) {
+            return null;
         }
-        return Carbon::parse($this->attributes['updated_at'])->format(config('util.default_date_time_format'));
+
+        return Carbon::parse($value)->format(config('util.default_date_time_format'));
     }
 }
