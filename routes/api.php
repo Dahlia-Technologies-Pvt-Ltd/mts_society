@@ -24,6 +24,20 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
 });
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+//Only For Super Admin
+Route::middleware('auth:sanctum','superadmin')->group(function () {
+
+});
+//Only For Admin
+Route::middleware('auth:sanctum','admin')->group(function () {
+
+});
+
+//Only For User
+Route::middleware('auth:sanctum','user')->group(function () {
+
+});
+
+//For ALL
+Route::middleware('auth:sanctum')->group(function () {
+});

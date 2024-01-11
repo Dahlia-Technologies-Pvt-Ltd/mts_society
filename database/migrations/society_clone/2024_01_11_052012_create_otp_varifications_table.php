@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('otp_varifications', function (Blueprint $table) {
+        Schema::create('otp_verifications', function (Blueprint $table) {
             $table->id();
             $table->integer('society_id')->default(0);
             $table->string('name')->nullable();
