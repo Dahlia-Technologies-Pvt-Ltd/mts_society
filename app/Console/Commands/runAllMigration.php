@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use App\Models\MasterDatabase;
 
 class runAllMigration extends Command
 {
@@ -26,32 +27,29 @@ class runAllMigration extends Command
      */
     public function handle()
     {
-        $databases = [
-            [
-                'database' => 'society_clone',
-                'username' => 'sa',
-                'password' => 'sa@123',
-            ],
-            [
-                'database' => 'mts_sociey',
-                'username' => 'sa',
-                'password' => 'sa@123',
-            ]
-        ];
+        $data = MasterDatabase::get();
+        $data_query=$data->toArray();
+        // $databases = [];
         $connection_name = 'sqlsrvclone';
-        foreach ($databases as $key => $row) {
-                //Set the config for each child database
-                $config = config('database.connections.'.$connection_name);        
-                $config['database'] =   $row['database'];
-                $config['username'] =   $row['username'];
-                $config['password'] =   $row['password'];
-                $config['driver'] = 'sqlsrv';        
+       
+        foreach ($data_query as $key => $row) {
+    // $databases[] = [
+    //     'database' => $row['databasename'],
+    //     'username' => $row['databaseuid'],
+    //     'password' => $row['databasepwd'],
+    //     // Add other fields as needed
+    // ];
+    $config = config('database.connections.'.$connection_name);        
+                $config['database'] =   $row['databasename'];
+                $config['username'] =   $row['databaseuid'];
+                $config['password'] =   $row['databasepwd'];
+                $config['driver'] = 'sqlsrv'; 
                 config()->set('database.connections.' . $connection_name, $config);
                 config()->set('database.default', $connection_name);
                 // call the artisan command for each tenant
-                echo "\n ".( $key+ 1 )." Running a migration for ".$row['database'];       
+                echo "\n ".( $key+ 1 )." Running a migration for ".$row['databasename'];       
                 Artisan::call('migrate:fresh', ['--force' => true,'--database' => $connection_name,'--path' => 'database/migrations/society_clone']);
-        }
+}
         echo "\n\nAll migrations ran successfully!\n";
     }
 }
