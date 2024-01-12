@@ -40,8 +40,8 @@ class SocietyController extends ResponseController
      */
     public function store(Request $request)
     {
-        // $data=SubscriptionPlan::get();
-        // print_r($request->society_name);die();
+
+      
         if ($request->id > 0) {
             $existingRecord = MasterSociety::find($request->id);
             if (!$existingRecord) {
