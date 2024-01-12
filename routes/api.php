@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\Admin\SocietyController;
+use App\Http\Controllers\API\Master\SocietyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +15,9 @@ use App\Http\Controllers\API\Admin\SocietyController;
 |
 */
 Route::post('/add-society', [SocietyController::class, 'store']);
-Route::post('/list-society', [SocietyController::class, 'index']);
+Route::post('/list-society', [SocietyController::class, 'indexing']);
 Route::get('/show-society/{id}', [SocietyController::class, 'show']);
-Route::post('/delete-society', [SocietyController::class, 'destroy']); 
+Route::post('/delete-society', [SocietyController::class, 'delete']); 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
