@@ -47,7 +47,7 @@ class MasterSociety extends Model
     public function generateSocietyCode()
     {
 
-        $index_assigned = $this->getCurrentMonthTEMPcount();
+        $index_assigned = $this->getCurrentMonthCount();
 
         switch (strlen($index_assigned)) {
             case 1:
@@ -67,7 +67,7 @@ class MasterSociety extends Model
         $format = "SOC" . $date . $new_index_assigned;
         return $format;
     }
-    public function getCurrentMonthTEMPcount()
+    public function getCurrentMonthCount()
     {
         $count = self::whereRaw('datepart(yyyy,created_at) = year(getdate())')->count();
         return $count > 0 ? $count + 1 : 1;
