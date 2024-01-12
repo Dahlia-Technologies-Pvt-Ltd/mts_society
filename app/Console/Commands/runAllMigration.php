@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use App\Models\MasterDatabase;
+use App\Models\Master\MasterDatabase;
 
 class runAllMigration extends Command
 {

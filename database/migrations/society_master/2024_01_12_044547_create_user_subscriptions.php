@@ -11,18 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('master_subscriptions', function (Blueprint $table) {
+        Schema::create('user_subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('subscription_plan_id')->constrained()->default(0);
+            $table->foreignId('master_subscription_id')->constrained()->default(0);
             $table->foreignId('master_user_id')->constrained()->default(0);
             $table->foreignId('master_socities_id')->constrained()->default(0);
-            $table->float('Plan_price',10,2)->default(0.00);
-            $table->dateTime('plan_start_date')->nullable();
-            $table->dateTime('plan_end_date')->nullable();
+            
+            //columns from master table
+            $table->string('subscription_plan');
+            $table->float('price',10,2)->default(0.00);
             $table->integer('frequency')->default(0)->comment('0-nodefine,1-Monthly,3-Qty,6-halfYer,12-yearly');
+            $table->string('features')->nullable();
+            $table->tinyInteger('is_renewal_plan')->default(1)->comment('0-No_Renewal,1-Renewal');
+           
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive,2-Completed');
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable()->default(null);
+            $table->unsignedBigInteger('updated_by')->nullable()->default(null);
             $table->softDeletes();
             $table->timestamps();        
         });
@@ -33,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('master_subscriptions');
+        Schema::dropIfExists('user_subscriptions');
     }
 };

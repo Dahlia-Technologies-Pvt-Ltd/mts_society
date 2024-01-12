@@ -2,7 +2,7 @@
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
-use App\Models\Country;
+use App\Models\Master\Country;
 class CountriestableSeeder extends Seeder
 {
     /**
