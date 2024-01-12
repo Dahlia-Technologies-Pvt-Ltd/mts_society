@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
-use App\Models\City;
-use App\Models\State;
-use App\Models\Country;
+use App\Models\Master\City;
+use App\Models\Master\State;
+use App\Models\Master\Country;
 
 class CitiestableSeeder extends Seeder
 {

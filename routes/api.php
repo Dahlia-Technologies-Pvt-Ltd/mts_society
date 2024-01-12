@@ -2,9 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\Admin\SocietyController;
 use App\Http\Controllers\API\AuthController;
-
+use App\Http\Controllers\API\Master\SocietyController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -16,9 +15,9 @@ use App\Http\Controllers\API\AuthController;
 |
 */
 Route::post('/add-society', [SocietyController::class, 'store']);
-Route::post('/list-society', [SocietyController::class, 'index']);
+Route::post('/list-society', [SocietyController::class, 'indexing']);
 Route::get('/show-society/{id}', [SocietyController::class, 'show']);
-Route::post('/delete-society', [SocietyController::class, 'destroy']); 
+Route::post('/delete-society', [SocietyController::class, 'delete']); 
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
