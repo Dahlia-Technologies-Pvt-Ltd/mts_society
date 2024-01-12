@@ -27,29 +27,28 @@ class runAllMigration extends Command
      */
     public function handle()
     {
-        $data = MasterDatabase::get();
-        $data_query=$data->toArray();
+       // $data = MasterDatabase::get();
+      //  $databases=$data->toArray();
         // $databases = [];
         $connection_name = 'sqlsrvclone';
-       
-        foreach ($data_query as $key => $row) {
-    // $databases[] = [
-    //     'database' => $row['databasename'],
-    //     'username' => $row['databaseuid'],
-    //     'password' => $row['databasepwd'],
-    //     // Add other fields as needed
-    // ];
-    $config = config('database.connections.'.$connection_name);        
-                $config['database'] =   $row['databasename'];
-                $config['username'] =   $row['databaseuid'];
-                $config['password'] =   $row['databasepwd'];
-                $config['driver'] = 'sqlsrv'; 
-                config()->set('database.connections.' . $connection_name, $config);
-                config()->set('database.default', $connection_name);
-                // call the artisan command for each tenant
-                echo "\n ".( $key+ 1 )." Running a migration for ".$row['databasename'];       
-                Artisan::call('migrate:fresh', ['--force' => true,'--database' => $connection_name,'--path' => 'database/migrations/society_clone']);
+        //php artisan app:run-all-migration
+        $databases[] = [
+         'databasename' => 'society_clone',
+         'databaseuid' => 'sa',
+         'databasepwd' => 'sa@123',
+        ];
+        foreach ($databases as $key => $row) {   
+            $config = config('database.connections.'.$connection_name);        
+            $config['database'] =   $row['databasename'];
+            $config['username'] =   $row['databaseuid'];
+            $config['password'] =   $row['databasepwd'];
+            $config['driver'] = 'sqlsrv'; 
+            config()->set('database.connections.' . $connection_name, $config);
+            config()->set('database.default', $connection_name);
+            // call the artisan command for each tenant
+            echo "\n ".( $key+ 1 )." Running a migration for ".$row['databasename'];       
+            Artisan::call('migrate:fresh', ['--force' => true,'--database' => $connection_name,'--path' => 'database/migrations/society_clone']);
 }
-        echo "\n\nAll migrations ran successfully!\n";
-    }
+            echo "\n\nAll migrations ran successfully!\n";
+        }
 }
