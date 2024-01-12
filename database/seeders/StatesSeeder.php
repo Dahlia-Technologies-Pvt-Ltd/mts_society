@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
-use App\Models\State;
-use App\Models\Country;
+use App\Models\Master\State;
+use App\Models\Master\Country;
 use Illuminate\Support\Facades\DB;
 
 class StatesSeeder extends Seeder

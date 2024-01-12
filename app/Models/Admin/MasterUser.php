@@ -1,18 +1,21 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
-class MasterDatabase extends Model
+
+class MasterUser extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $table = 'master_database';
-    protected $fillable = ['databasename', 'databaseuid', 'databasepwd', 'master_user_id', 'master_socities_id',
-    'status', 'created_by', 'updated_by'];
+    protected $table = 'master_users';
+    protected $fillable = ['name', 'username', 'email', 'password', 'phone_number',
+    'master_society_id', 'gender', 'towerid', 'wingid', 'floorid',
+    'flatid', 'street_address', 'country', 'state', 'city',
+    'zipcode', 'status', 'created_by', 'updated_by'];
 
     public function getCreatedAtAttribute($data)
     {
