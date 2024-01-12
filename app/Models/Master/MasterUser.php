@@ -15,10 +15,10 @@ class MasterUser extends Authenticatable
     use HasFactory, SoftDeletes, Notifiable, HasApiTokens;
 
     protected $fillable = [
-        'name', 'username', 'email', 'password', 'phone_number',
+        'name', 'username', 'user_code', 'email', 'password', 'phone_number',
         'master_society_id', 'gender', 'towerid', 'wingid', 'floorid',
         'flatid', 'street_address', 'country', 'state', 'city',
-        'zipcode', 'status', 'created_by', 'updated_by',
+        'zipcode', 'profile_picture', 'status', 'created_by', 'updated_by',
     ];
 
     protected $hidden = [

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\ResponseController as ResponseController;
-use App\Models\MasterUser;
+use App\Models\Master\{MasterUser, MasterSociety};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -23,13 +23,27 @@ class RegisterController extends ResponseController
             return $this->validatorError($validator);
         }
 
-        // Create user
-        $user = MasterUser::create([
+        // Insert Master User
+        $master_user = MasterUser::create([
+            'user_code' => (new MasterUser())->generateUserCode(),
             'name' => $request->name,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
             'password' => Hash::make($request->email),
-        ]);
+        ]); 
+        // Insert Master Society
+        if($master_user){
+            $master_society = MasterSociety::create([
+                'society_unique_code' => (new MasterSociety())->generateSocietyCode(),
+                'society_name' => $request->society_name,
+                'address' => $request->address,
+                'country_id' => $request->country_id,
+                'city_id' => $request->city_id,
+                'zipcode' => $request->zipcode,
+                'created_by' => $master_user->id, // insert Master User Id
+            ]);
+        }      
+        
 
         $response['status'] = 200;
         $response['message'] = 'User registered successfully.';
