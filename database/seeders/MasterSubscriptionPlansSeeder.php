@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 
-class SubscriptionplansSeeder extends Seeder
+class MasterSubscriptionPlansSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -46,7 +46,7 @@ class SubscriptionplansSeeder extends Seeder
             $insertdata[$k] = $row;
         }*/
 
-        DB::table('subscription_plans')->insert($subscription);
+        DB::table('master_subscriptions')->insert($subscription);
     }
     
 }
