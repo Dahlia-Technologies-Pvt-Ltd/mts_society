@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscription_plans', function (Blueprint $table) {
+        Schema::create('master_subscriptions', function (Blueprint $table) {
             $table->id();
             $table->string('subscription_plan');
             $table->float('price',10,2)->default(0.00);
@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('features')->nullable();
             $table->tinyInteger('is_renewal_plan')->default(1)->comment('0-No_Renewal,1-Renewal');
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable()->default(null);
+            $table->unsignedBigInteger('updated_by')->nullable()->default(null); 
             $table->softDeletes();
-            $table->timestamps();
+            $table->timestamps();            
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subscription_plans');
+        Schema::dropIfExists('master_subscriptions');
     }
 };
