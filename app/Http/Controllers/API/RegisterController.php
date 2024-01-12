@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\ResponseController as ResponseController;
-use App\Models\Master\{MasterUser, MasterSociety};
+use App\Models\Master\{MasterUser, MasterSociety, UserSubscription};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -42,6 +42,18 @@ class RegisterController extends ResponseController
                 'zipcode' => $request->zipcode,
                 'created_by' => $master_user->id, // insert Master User Id
             ]);
+
+            $user_subscription = UserSubscription::create([
+                'master_subscription_id' => $request->society_name,
+                'master_user_id' => $request->address,
+                'master_socities_id' => $request->country_id,
+                'subscription_plan' => $request->city_id,
+                'price' => $request->zipcode,
+                'frequency' => $master_user->id, // insert Master User Id
+                'features' => $master_user->id, // insert Master User Id
+            ]);
+
+
         }      
         
 
