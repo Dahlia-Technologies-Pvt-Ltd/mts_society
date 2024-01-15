@@ -47,10 +47,10 @@ class RegisterController extends ResponseController
                 'master_subscription_id' => $request->society_name,
                 'master_user_id' => $request->address,
                 'master_socities_id' => $request->country_id,
-                'subscription_plan' => $request->city_id,
-                'price' => $request->zipcode,
-                'frequency' => $master_user->id, // insert Master User Id
-                'features' => $master_user->id, // insert Master User Id
+                'subscription_plan' => $request->subscription_plan,
+                'price' => $request->price,
+                'frequency' => $request->frequency,
+                'features' => $request->features,
             ]);
 
 
