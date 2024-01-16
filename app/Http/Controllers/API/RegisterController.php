@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\ResponseController as ResponseController;
-use App\Models\Master\{MasterUser, MasterSociety, UserSubscription, SubscriptionPlan, MasterDatabase};
+use App\Models\Master\{MasterUser, MasterSociety, UserSubscription, MasterSubscription, MasterDatabase};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +16,6 @@ class RegisterController extends ResponseController
     //Register method
     public function register(Request $request): JsonResponse
     {
-        echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";die;
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:master_users',
@@ -57,17 +56,17 @@ class RegisterController extends ResponseController
                 ]);
             }
             //Fetch data master Subscription through master_subscription_id and insert respective data in to user subscription table
-            $subscriptionData = SubscriptionPlan::select('id, subscription_plan, price, frequency, features')
+            $masterSubscriptionData = MasterSubscription::select('id, subscription_plan, price, frequency, features')
             ->where('id', $request->master_subscription_id)->first();
             //Insert Into User Subscription
             $user_subscription = UserSubscription::create([
                 'master_subscription_id' => $request->master_subscription_id,
                 'master_user_id' => $master_user->id,
                 'master_socities_id' => $master_society->id,
-                'subscription_plan' => $subscriptionData->subscription_plan,
-                'price' => $subscriptionData->price,
-                'frequency' => $subscriptionData->frequency,
-                'features' => $subscriptionData->features,
+                'subscription_plan' => $masterSubscriptionData->subscription_plan,
+                'price' => $masterSubscriptionData->price,
+                'frequency' => $masterSubscriptionData->frequency,
+                'features' => $masterSubscriptionData->features,
             ]);
             //Call DatabaseService to Create dynamic database
             $dbName = $this->cleanName($request->society_name);
