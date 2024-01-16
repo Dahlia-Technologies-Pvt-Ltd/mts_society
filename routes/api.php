@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
     Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'indexing']);
     Route::get('/show-master-subscription/{id}', [MasterSubscriptionController::class, 'show']);
     Route::post('/delete-master-subscription', [MasterSubscriptionController::class, 'delete']);
+    //User apis
 });
 //Only For Admin
 Route::middleware('auth:sanctum','admin')->group(function () {
