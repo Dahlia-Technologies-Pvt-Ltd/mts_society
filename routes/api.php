@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\Master\SocietyController;
+use App\Http\Controllers\API\Master\MasterSubscriptionController;
+use App\Http\Controllers\API\Master\MasterUserController;
 use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -15,12 +17,11 @@ use App\Http\Controllers\API\RegisterController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/add-society', [SocietyController::class, 'store']);
-Route::post('/list-society', [SocietyController::class, 'indexing']);
-Route::get('/show-society/{id}', [SocietyController::class, 'show']);
-Route::post('/delete-society', [SocietyController::class, 'delete']); 
 
-//Authentication
+
+ 
+
+
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
 });
@@ -28,7 +29,23 @@ Route::controller(AuthController::class)->group(function () {
 Route::post('/register', [RegisterController::class, 'register']); 
 //Only For Super Admin
 Route::middleware('auth:sanctum','superadmin')->group(function () {
-
+    //master society apis
+    Route::post('/add-society', [SocietyController::class, 'store']);
+    Route::post('/list-society', [SocietyController::class, 'indexing']);
+    Route::get('/show-society/{id}', [SocietyController::class, 'show']);
+    Route::post('/delete-society', [SocietyController::class, 'delete']);
+    //master subscription apis
+    Route::post('/add-master-subscription', [MasterSubscriptionController::class, 'store']);
+    Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'indexing']);
+    Route::get('/show-master-subscription/{id}', [MasterSubscriptionController::class, 'show']);
+    Route::post('/delete-master-subscription', [MasterSubscriptionController::class, 'delete']);
+    Route::post('/add-master-user', [MasterUserController::class, 'store']);
+    Route::post('/list-master-user', [MasterUserController::class, 'indexing']);
+    Route::get('/show-master-user/{id}', [MasterUserController::class, 'show']);
+    Route::post('/delete-master-user', [MasterUserController::class, 'delete']);
+    //User apis
+    // MasterUserController
+   
 });
 //Only For Admin
 Route::middleware('auth:sanctum','admin')->group(function () {
