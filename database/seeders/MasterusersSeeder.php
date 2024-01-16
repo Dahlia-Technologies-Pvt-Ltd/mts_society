@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Admin\MasterUser;
+use App\Models\Master\MasterUser;
 use App\Models\Master\MasterSociety;
 use Carbon\Carbon;
 
