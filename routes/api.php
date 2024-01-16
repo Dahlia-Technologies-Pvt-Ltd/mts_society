@@ -17,10 +17,7 @@ use App\Http\Controllers\API\RegisterController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/add-master-user', [MasterUserController::class, 'store']);
-Route::post('/list-master-user', [MasterUserController::class, 'indexing']);
-Route::get('/show-master-user/{id}', [MasterUserController::class, 'show']);
-Route::post('/delete-master-user', [MasterUserController::class, 'delete']);
+
 
  
 
@@ -42,6 +39,10 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
     Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'indexing']);
     Route::get('/show-master-subscription/{id}', [MasterSubscriptionController::class, 'show']);
     Route::post('/delete-master-subscription', [MasterSubscriptionController::class, 'delete']);
+    Route::post('/add-master-user', [MasterUserController::class, 'store']);
+    Route::post('/list-master-user', [MasterUserController::class, 'indexing']);
+    Route::get('/show-master-user/{id}', [MasterUserController::class, 'show']);
+    Route::post('/delete-master-user', [MasterUserController::class, 'delete']);
     //User apis
     // MasterUserController
    

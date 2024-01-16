@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller as Controller;
-use App\Models\MasterUser;
+use App\Models\Master\MasterUser;
 
 class ResponseController extends Controller
 {
@@ -93,7 +93,8 @@ class ResponseController extends Controller
     public function sendFailedLoginResponse(Request $request)
     {
         // Load MasterUser from database
-        $user = MasterUser::where('email',$request->email_id)->orWhere('username',$request->email_id)->orWhere('phone_number',$request->email_id)->first(); 
+        $user = MasterUser::where('email',$request->email)->orWhere('username',$request->email)->orWhere('phone_number',$request->email)->first(); 
+        // print_r(MasterUser::where('email',$request->email)->first());die();
         // Check if user was successfully loaded or not
         // If so, override the default error message.
         if (empty($user)) {

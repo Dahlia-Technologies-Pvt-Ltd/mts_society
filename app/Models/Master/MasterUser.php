@@ -59,24 +59,24 @@ class MasterUser extends Authenticatable
         return $images;
     }
 
-    public function getUserTypeAttribute($data)
-    {
-        if (!isset($this->attributes['usertype'])) {
-            return '';
-        }
-        $usertype = $this->attributes['usertype'];
+    // public function getUserTypeAttribute($data)
+    // {
+    //     if (!isset($this->attributes['usertype'])) {
+    //         return '';
+    //     }
+    //     $usertype = $this->attributes['usertype'];
 
-        switch ($usertype) {
-            case 1:
-                return 'Admin';
-            case 2:
-                return 'Super Admin';
-            case 3:
-                return 'Other User Type';
-            default:
-                return 'Unknown User Type';
-        }
-    }
+    //     switch ($usertype) {
+    //         case 1:
+    //             return 'Admin';
+    //         case 2:
+    //             return 'Super Admin';
+    //         case 3:
+    //             return 'Other User Type';
+    //         default:
+    //             return 'Unknown User Type';
+    //     }
+    // }
 
     protected $hidden = [
         'password', 'remember_token',
