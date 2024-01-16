@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\ResponseController as ResponseController;
-use App\Models\Master\{MasterUser, MasterSociety};
+use App\Models\Master\{MasterUser, MasterSociety, UserSubscription, SubscriptionPlan};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -41,6 +41,25 @@ class RegisterController extends ResponseController
                 'city_id' => $request->city_id,
                 'zipcode' => $request->zipcode,
                 'created_by' => $master_user->id, // insert Master User Id
+            ]);
+            //Update Master User Column master_society_ids newly generated master society ids as an array
+            if ($master_society) {
+                $master_user->update([
+                    'master_society_ids' => array_merge($master_user->master_society_ids, [$master_society->id]),
+                ]);
+            }
+            //Fetch data master Subscription through master_subscription_id and insert respective data in to user subscription table
+            $subscriptionData = SubscriptionPlan::select('id, subscription_plan, price, frequency, features')
+            ->where('id', $request->master_subscription_id)->first();
+            //Insert Into User Subscription
+            $user_subscription = UserSubscription::create([
+                'master_subscription_id' => $request->master_subscription_id,
+                'master_user_id' => $master_user->id,
+                'master_socities_id' => $master_society->id,
+                'subscription_plan' => $subscriptionData->subscription_plan,
+                'price' => $subscriptionData->price,
+                'frequency' => $subscriptionData->frequency,
+                'features' => $subscriptionData->features,
             ]);
         }      
         
