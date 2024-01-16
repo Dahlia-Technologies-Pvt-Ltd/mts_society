@@ -7,7 +7,7 @@ use App\Http\Controllers\API\ResponseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Master\{MasterSociety,SubscriptionPlan};
-use App\Models\Admin\{MasterUser};
+use App\Models\Master\{MasterUser};
 
 class SocietyController extends ResponseController
 {
@@ -18,8 +18,6 @@ class SocietyController extends ResponseController
     {
         // return !empty($arr) ? json_encode(array_map('intval',array_values($arr))) : NULL;
         $data_query = MasterSociety::Join('master_users', 'master_socities.id', '=', 'master_users.json_decode(master_society_ids)');
-        $user=MasterUser::get()->toArray();
-        print_r(json_decode($user[1]['master_society_ids']));die();
         // ->Join('users AS primary_user', 'primary_user.id', '=', 'customer_details.primary_crm_user_id');
         // $data_query = MasterSociety::where([['status', 0]]);
         $data_query->select([
