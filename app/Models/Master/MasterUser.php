@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Admin;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,10 +15,10 @@ class MasterUser extends Authenticatable
     use HasFactory, SoftDeletes, Notifiable, HasApiTokens;
 
     protected $fillable = [
-        'name','user_code','username', 'email', 'password', 'phone_number',
-        'master_society_ids', 'gender', 'address',
-         'country_id', 'state_id', 'city_id',
-        'zipcode','usertype','blocked_at','profile_picture', 'status', 'created_by', 'updated_by',
+        'name', 'username', 'user_code', 'email', 'password', 'phone_number',
+        'master_society_id', 'gender', 'towerid', 'wingid', 'floorid',
+        'flatid', 'street_address', 'country', 'state', 'city',
+        'zipcode', 'profile_picture', 'status', 'created_by', 'updated_by',
     ];
 
     protected $hidden = [

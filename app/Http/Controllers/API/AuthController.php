@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\MasterUser;
+use App\Models\Master\MasterUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\ResponseController as ResponseController;
 use Illuminate\Support\Facades\Auth;
@@ -38,9 +38,7 @@ class AuthController extends ResponseController
 
             $loginID = false; // Default false to send the response accordingly in the end
             // Attempt to authorize using username
-            if (Auth::attemptWhen($credentialsUserCode, function (MasterUser $user) {
-                return ($user->usertype == 2); // super-admin: 2 user type
-            })) {
+            if (Auth::attemptWhen($credentialsUserCode)) {
                 $loginID = true;
             } else {
 				if (is_numeric($request->email)) {
@@ -56,9 +54,7 @@ class AuthController extends ResponseController
 				}
                
                 // Attempt to authorize using email
-                if (Auth::attemptWhen($credentialsEmail, function (MasterUser $user) {
-                    return ($user->usertype == 2); // super-admin: 2 user type
-                })) {
+                if (Auth::attemptWhen($credentialsEmail)) {
                     $loginID = true;
                 }
             }
@@ -74,7 +70,7 @@ class AuthController extends ResponseController
                 $user['token'] = $user->createToken('MTSSOCIETY')->plainTextToken;
                 $response['status'] = 200;
                 $response['message'] = 'User authenticated successfully.';
-                $response['data'] = $user->only(['id', 'username', 'name', 'email', 'usertype', 'token']);
+                $response['data'] = $user->only(['id', 'username', 'name', 'email', 'usertype', 'phone_number', 'token']);
                 return $this->sendResponse($response);
             }
         }

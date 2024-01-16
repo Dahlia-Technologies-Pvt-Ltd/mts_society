@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\Master\SocietyController;
 use App\Http\Controllers\API\Master\MasterSubscriptionController;
+use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -29,7 +30,20 @@ Route::post('/delete-master-subscription', [MasterSubscriptionController::class,
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
 });
+//Register
+Route::post('/register', [RegisterController::class, 'register']); 
+//Only For Super Admin
+Route::middleware('auth:sanctum','superadmin')->group(function () {
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+});
+//Only For Admin
+Route::middleware('auth:sanctum','admin')->group(function () {
+
+});
+//Only For User
+Route::middleware('auth:sanctum','user')->group(function () {
+
+});
+//For ALL
+Route::middleware('auth:sanctum')->group(function () {
+});
