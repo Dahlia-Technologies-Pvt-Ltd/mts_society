@@ -16,9 +16,10 @@ class SocietyController extends ResponseController
      */
     function list_show_query()
     {
-        $data_query = MasterSociety::join('subscription_plans', 'master_socities.subscription_plan_id', '=', 'subscription_plans.id')
-        ->Join('master_users', 'master_socities.id', '=', 'master_users.master_society_id');
-        print_r($data_query->first()->toArray());die();
+        // return !empty($arr) ? json_encode(array_map('intval',array_values($arr))) : NULL;
+        $data_query = MasterSociety::Join('master_users', 'master_socities.id', '=', 'master_users.json_decode(master_society_ids)');
+        $user=MasterUser::get()->toArray();
+        print_r(json_decode($user[1]['master_society_ids']));die();
         // ->Join('users AS primary_user', 'primary_user.id', '=', 'customer_details.primary_crm_user_id');
         // $data_query = MasterSociety::where([['status', 0]]);
         $data_query->select([
@@ -50,16 +51,16 @@ class SocietyController extends ResponseController
                 return $this->sendError($response);
             }
         }
-        if ($request->subscription_plan_id > 0) {
-            $Record = SubscriptionPlan::find($request->subscription_plan_id);
-            if (!$Record) {
-                $response['status'] = 400;
-                $response['message'] = 'No such subscription plan found for the provided  subscription ID.';
-                return $this->sendError($response);
-            }
-        }
+        // if ($request->subscription_plan_id > 0) {
+        //     $Record = SubscriptionPlan::find($request->subscription_plan_id);
+        //     if (!$Record) {
+        //         $response['status'] = 400;
+        //         $response['message'] = 'No such subscription plan found for the provided  subscription ID.';
+        //         return $this->sendError($response);
+        //     }
+        // }
         $id = empty($request->id) ? 'NULL' : $request->id;
-        $documents = trim($request->documents) == '' || trim($request->documents) === null ? '' : 'required|file|mimes:pdf|max:5120|';
+        // $documents = trim($request->documents) == '' || trim($request->documents) === null ? '' : 'required|file|mimes:pdf|max:5120|';
         $validator = Validator::make($request->all(), [
             // 'attachments'                          => 'required_without:template_content|file|mimes:pdf|max:5120',
             // 'documents'                          => $documents,
@@ -67,13 +68,13 @@ class SocietyController extends ResponseController
             'owner_name'                       =>'required',
             'email' => 'required|email',
             'address'                       =>'required',
-            'documents'           =>$documents,
+            // 'documents'           =>$documents,
 
 
             // 'country_id'                       =>'required',
             // 'state_id'                       =>'required',
 
-            'subscription_plan_id'                       =>'required|integer',
+            // 'subscription_plan_id'                       =>'required|integer',
 
 
             // 'society_name'                       =>'required',
@@ -102,7 +103,7 @@ class SocietyController extends ResponseController
 
             $ins_arr = [
                 'society_name'                        => $request->society_name,
-                'owner_name'                          => $request->owner_name,
+                // 'owner_name'                          => $request->owner_name,
                 'email'                               =>$request->email,
                 'phone_number'                        =>$request->phone_number,
                 'address'                             => $request->address,
@@ -113,14 +114,14 @@ class SocietyController extends ResponseController
                 'zipcode'                             => $request->zipcode,
                 'gst_number'                          =>$request->gst_number,
                 'pan_number'                          => $request->pan_number,
-                'subscription_plan_id'                => $request->subscription_plan_id,
-                'payment_mode'                        => ($request->payment_mode === '1') ? 1 : 0,
-                'payment_status'                      => ($request->payment_status === '1') ? 1 : 0,
-                'documents'                           => 'abc',
-                'currency_code'                       => $request->currency_code,
-                'is_approved'                         => ($request->is_approved === '1') ? 1 : 0,
+                // 'subscription_plan_id'                => $request->subscription_plan_id,
+                // 'payment_mode'                        => ($request->payment_mode === '1') ? 1 : 0,
+                // 'payment_status'                      => ($request->payment_status === '1') ? 1 : 0,
+                // 'documents'                           => 'abc',
+                // 'currency_code'                       => $request->currency_code,
+                // 'is_approved'                         => ($request->is_approved === '1') ? 1 : 0,
                 // 'status'                              => $request->email,
-                'is_renewal_plan'                     => ($request->is_renewal_plan === '0') ? 0 : 1,
+                // 'is_renewal_plan'                     => ($request->is_renewal_plan === '0') ? 0 : 1,
                 
                 'updated_by'                          => auth()->id(),
             ];
@@ -140,9 +141,10 @@ class SocietyController extends ResponseController
                 ['id' => $request->id],
                 $ins_arr
             );
-            $ins_arr2=['name'=>$request->name,'username'=>$request->username,'password'=>'abc','country'=>1,'state'=>1,'city'=>2,'phone_number'=>$request->phone_number,'email'=>$request->email];
+            $obj2 = new MasterUser();
+            $ins_arr2=['name'=>$request->name,'user_code'=>$obj2->generateUserCode(),'username'=>$request->username,'password'=>'abc','country_id'=>1,'state_id'=>1,'city_id'=>2,'phone_number'=>$request->phone_number,'email'=>$request->email];
             $qry2 = MasterUser::updateOrCreate(
-                ['master_society_id' => $qry->id],
+                ['master_society_ids' => jsonEncodeIntArr([$qry->id])],
                 $ins_arr2
             );
         }

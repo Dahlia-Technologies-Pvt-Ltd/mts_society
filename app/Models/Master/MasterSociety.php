@@ -12,11 +12,10 @@ class MasterSociety extends Model
     use HasFactory;
     use SoftDeletes;
     protected $table = 'master_socities';
-    protected $fillable = ['society_unique_code', 'society_name', 'owner_name',
+    protected $fillable = ['society_unique_code', 'society_name',
      'email', 'phone_number',
-    'address','adress2','country_id','state_id','city_id','zipcode','gst_number','pan_number','subscription_plan_id','payment_mode','payment_status',
-    'documents','currency_code','is_approved',
-    'status','is_renewal_plan','created_by', 'updated_by'];
+    'address','adress2','country_id','state_id','city_id','zipcode','gst_number','pan_number',
+    'status','created_by', 'updated_by'];
     public function getDocumentsAttribute($data)
     {
         if (!isset($this->attributes['documents'])) {
