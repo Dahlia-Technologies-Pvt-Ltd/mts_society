@@ -16,6 +16,7 @@ class RegisterController extends ResponseController
     //Register method
     public function register(Request $request): JsonResponse
     {
+        echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";die;
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:master_users',
