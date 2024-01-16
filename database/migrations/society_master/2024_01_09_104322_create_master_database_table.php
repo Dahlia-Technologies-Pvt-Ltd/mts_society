@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('master_database', function (Blueprint $table) {
             $table->id();
-            $table->string('databasename');
-            $table->string('databaseuid');
-            $table->string('databasepwd');
+            $table->text('databasename');
+            $table->text('databaseuid');
+            $table->text('databasepwd');
             //$table->string('useruid');
             $table->foreignId('master_user_id')->constrained()->default(0);
             $table->foreignId('master_socities_id')->constrained()->default(0);
