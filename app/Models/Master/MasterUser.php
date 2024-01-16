@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use App\Models\Master\{Country,State,City};
 
 class MasterUser extends Authenticatable
 {
@@ -16,10 +18,65 @@ class MasterUser extends Authenticatable
 
     protected $fillable = [
         'name', 'username', 'user_code', 'email', 'password', 'phone_number',
-        'master_society_id', 'gender', 'towerid', 'wingid', 'floorid',
-        'flatid', 'street_address', 'country', 'state', 'city',
-        'zipcode', 'profile_picture', 'status', 'created_by', 'updated_by',
+        'master_society_ids', 'gender', 'address', 'country_id', 'state_id', 'city_id',
+        'zipcode', 'usertype', 'blocked_at', 
+        'profile_picture', 'status', 'created_by', 'updated_by'
     ];
+
+    function country(){
+        return $this->belongsTo(Country::class);
+    }
+    function state(){
+        return $this->belongsTo(State::class);
+    }
+    function city(){
+        return $this->belongsTo(City::class);
+    }
+    public function getProfilePictureAttribute($data)
+    {
+        if (!isset($this->attributes['profile_picture'])) {
+            return '';
+        }
+
+        $default = asset('storage') . '/uploads/user_profile_pic/noimage.png';
+        if ($this->attributes['profile_picture'] === null) {
+            //$images[] = $default; return $images;
+            //After Discussion with wen team, they want null here instead of no image so that on edit page it will not show "noimage" image by default if images does not exists
+            return null;            
+        }
+        
+        // $images = [];
+        // foreach (json_decode($this->attributes['profile_picture']) as $image) {
+            $filename = asset('storage') . '/' . $this->attributes['profile_picture'];
+            if(Storage::exists($this->attributes['profile_picture'])){
+                $images[] = $filename;
+            }
+        // }
+        //print_r($images); die;
+        if (empty($images)) {
+            $images = $default;
+        }
+        return $images;
+    }
+
+    public function getUserTypeAttribute($data)
+    {
+        if (!isset($this->attributes['usertype'])) {
+            return '';
+        }
+        $usertype = $this->attributes['usertype'];
+
+        switch ($usertype) {
+            case 1:
+                return 'Admin';
+            case 2:
+                return 'Super Admin';
+            case 3:
+                return 'Other User Type';
+            default:
+                return 'Unknown User Type';
+        }
+    }
 
     protected $hidden = [
         'password', 'remember_token',

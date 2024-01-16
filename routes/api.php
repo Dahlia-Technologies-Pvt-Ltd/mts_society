@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\Master\SocietyController;
 use App\Http\Controllers\API\Master\MasterSubscriptionController;
+use App\Http\Controllers\API\Master\MasterUserController;
 use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +17,10 @@ use App\Http\Controllers\API\RegisterController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
- 
+Route::post('/add-master-user', [MasterUserController::class, 'store']);
+Route::post('/list-master-user', [MasterUserController::class, 'indexing']);
+Route::get('/show-master-user/{id}', [MasterUserController::class, 'show']);
+Route::post('/delete-master-user', [MasterUserController::class, 'delete']);
 
  
 
@@ -39,6 +43,8 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
     Route::get('/show-master-subscription/{id}', [MasterSubscriptionController::class, 'show']);
     Route::post('/delete-master-subscription', [MasterSubscriptionController::class, 'delete']);
     //User apis
+    // MasterUserController
+   
 });
 //Only For Admin
 Route::middleware('auth:sanctum','admin')->group(function () {

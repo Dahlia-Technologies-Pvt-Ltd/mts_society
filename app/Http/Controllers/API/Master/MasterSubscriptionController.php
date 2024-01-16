@@ -148,14 +148,14 @@ class MasterSubscriptionController extends ResponseController
      */
     public function delete(Request $request)
     {
-        $terms = MasterSubscription::find($request->id);
-        if ($terms) {
+        $subs = MasterSubscription::find($request->id);
+        if ($subs) {
             $ins_arr['deleted_by'] = auth()->id();
             $qry = MasterSubscription::updateOrCreate(
                 ['id' => $request->id],
                 $ins_arr
             );
-            $terms->destroy($request->id);
+            $subs->destroy($request->id);
             $message = "Record Deleted Successfully !";
         } else {
             $message = "Record Not Found !";
