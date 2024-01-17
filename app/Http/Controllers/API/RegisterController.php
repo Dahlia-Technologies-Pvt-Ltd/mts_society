@@ -74,7 +74,7 @@ class RegisterController extends ResponseController
                 'features' => $masterSubscriptionData->features,
             ]);
             //Call DatabaseService to Create dynamic database
-            $dbName = $this->cleanName($request->society_name);
+            $dbName = 'soc_' . $this->cleanName($request->society_name);
             $dbPassword = $dbName.'@123';//Generate random number for database
             //Here we use Crypt facade for store the database credential as encrypted format
             // $encryptedDbName = Crypt::encryptString($dbName);
@@ -93,6 +93,7 @@ class RegisterController extends ResponseController
             ]);
             //If Master database inserted successfully then call DataServices
             ($master_database) ? $databaseValue = (new DatabaseService())->createDatabase($params = ['dbname' => $dbName, 'dbpassword' => $dbPassword]) : '';
+            $response['data'] = $databaseValue;
         }
         
         $response['status'] = 200;
