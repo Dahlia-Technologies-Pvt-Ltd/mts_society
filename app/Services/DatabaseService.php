@@ -18,13 +18,14 @@ class DatabaseService
     {
         $connectionName = 'sqlsrvclone';
         $databaseName = 'soc_' . $params['dbname'];
+        $databasePassword = $params['dbpassword'];
 
         DB::statement("CREATE DATABASE [$databaseName]");
         // Check if the login already exists
         $loginExists = DB::select("SELECT * FROM sys.sql_logins WHERE name = '$databaseName'");
         if (empty($loginExists)) {
             // If it doesn't exist, create the login
-            DB::statement("CREATE LOGIN [$databaseName] WITH PASSWORD = '$databaseName@123', CHECK_POLICY = OFF, CHECK_EXPIRATION = OFF");
+            DB::statement("CREATE LOGIN [$databaseName] WITH PASSWORD = '$databasePassword', CHECK_POLICY = OFF, CHECK_EXPIRATION = OFF");
         }
 
         // Create the user and grant privileges
@@ -36,7 +37,7 @@ class DatabaseService
         $config = Config::get("database.connections.$connectionName", []);
         $config['database'] = $databaseName;
         $config['username'] = $databaseName;
-        $config['password'] = $databaseName.'@123';
+        $config['password'] = $databasePassword;
         $config['driver'] = 'sqlsrv';
 
         Config::set("database.connections.$connectionName", $config);
@@ -52,7 +53,7 @@ class DatabaseService
         return [
             'dbname' => $databaseName,
             'dbuser' => $databaseName,
-            'dbpassword' => $databaseName.'@123',
+            'dbpassword' => $databasePassword,
         ];
     }
 

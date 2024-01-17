@@ -70,10 +70,11 @@ class RegisterController extends ResponseController
             ]);
             //Call DatabaseService to Create dynamic database
             $dbName = $this->cleanName($request->society_name);
+            $dbPassword = $this->generatePassword(8);//Generate random number for database
             //Here we use Crypt facade for store the database credential as encrypted format
             $encryptedDbName = Crypt::encryptString($dbName);
             $encryptedDbUid = Crypt::encryptString($dbName);
-            $encryptedDbPwd = Crypt::encryptString($dbName.'@123');
+            $encryptedDbPwd = Crypt::encryptString($dbPassword);
             //Insert Into Master Database
             $master_database = MasterDatabase::create([
                 'databasename' => $encryptedDbName,
@@ -83,7 +84,7 @@ class RegisterController extends ResponseController
                 'master_socities_id' => $master_society->id,
             ]);
             //If Master database inserted successfully then call DataServices
-            ($master_database) ? $databaseValue = (new DatabaseService())->createDatabase($params = ['dbname' => $dbName]) : '';
+            ($master_database) ? $databaseValue = (new DatabaseService())->createDatabase($params = ['dbname' => $dbName, 'dbpassword' => $dbPassword]) : '';
         }
         
         $response['status'] = 200;
@@ -101,6 +102,15 @@ class RegisterController extends ResponseController
         // Convert to lowercase
         $cleanedName = strtolower($cleanedName);
         return $cleanedName;
+    }
+
+    //Generate Random Password
+    function generatePassword($len){
+        $az = range("a","z");
+        $AZ = range("A","Z");
+        $num = range(0,9);
+        $password = array_merge($az,$AZ,$num);
+        return substr(str_shuffle(implode("",$password)),0, $len);
     }
     
 }
