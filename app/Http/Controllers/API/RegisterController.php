@@ -20,11 +20,7 @@ class RegisterController extends ResponseController
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:master_users',
             'phone_number' => 'required|string|unique:master_users',
-            'society_name' => 'required|string|max:255|unique:master_societies',
-            'address' => 'required|string|max:255',
-            'country_id' => 'required|integer',
-            'city_id' => 'required|integer',
-            'zipcode' => 'required|integer',
+            'society_name' => 'required|string|max:255|unique:master_socities',
         ]);
         //Through validation Error
         if ($validator->fails()) {
@@ -35,8 +31,13 @@ class RegisterController extends ResponseController
             'user_code' => (new MasterUser())->generateUserCode(),
             'name' => $request->name,
             'email' => $request->email,
+            'username' => $this->cleanName($request->name),
             'phone_number' => $request->phone_number,
             'password' => Hash::make($request->email),
+            'usertype' => 1,
+            'country_id' =>isset($request->country_id)?$request->country_id:'-',
+            'state_id' =>isset($request->state_id)?$request->state_id:'-',
+            'city_id' =>isset($request->city_id)?$request->city_id:'-',
         ]); 
         // Insert Master Society
         if($master_user){
@@ -46,17 +47,21 @@ class RegisterController extends ResponseController
                 'address' => $request->address,
                 'country_id' => $request->country_id,
                 'city_id' => $request->city_id,
+                'state_id' => isset($request->state_id)?$request->state_id:'-',
                 'zipcode' => $request->zipcode,
                 'created_by' => $master_user->id, // insert Master User Id
             ]);
             //Update Master User Column master_society_ids newly generated master society ids as an array
             if ($master_society) {
+                $master_society_ids = json_decode($master_user->master_society_ids, true) ?? [];
+                $master_society_ids[] = $master_society->id;
                 $master_user->update([
-                    'master_society_ids' => array_merge($master_user->master_society_ids, [$master_society->id]),
+                    'master_society_ids' => json_encode($master_society_ids),
                 ]);
-            }
+            }            
+
             //Fetch data master Subscription through master_subscription_id and insert respective data in to user subscription table
-            $masterSubscriptionData = MasterSubscription::select('id, subscription_plan, price, frequency, features')
+            $masterSubscriptionData = MasterSubscription::select('id', 'subscription_plan', 'price', 'frequency', 'features')
             ->where('id', $request->master_subscription_id)->first();
             //Insert Into User Subscription
             $user_subscription = UserSubscription::create([
