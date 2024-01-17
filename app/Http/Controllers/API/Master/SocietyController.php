@@ -73,7 +73,7 @@ class SocietyController extends ResponseController
             'society_name'                       =>'required|unique:master_socities,society_name,' . $id . ',id,deleted_at,NULL|max:255',
             // 'owner_name'                       =>'required',
             'email' => 'required|email',
-            'user_id'=>'required|integer',
+            'user_id'=>'integer',
             'address'                       =>'required',
             // 'documents'           =>$documents,
 
@@ -149,17 +149,16 @@ class SocietyController extends ResponseController
             );
             $master_user=MasterUser::find($request->user_id);
             if ($master_user) {
-                $mergedArray = array_merge(json_decode($master_user->master_society_ids), [$qry->id]);
+             
+                $decodedIds = is_array(json_decode($master_user->master_society_ids))
+                ? json_decode($master_user->master_society_ids)
+                : [];
+                $mergedArray = array_unique(array_merge($decodedIds, [$qry->id]));
                 $updatedIds = json_encode($mergedArray);
                 $master_user->update([
                     'master_society_ids' => $updatedIds
                 ]);
             } 
-            else {
-                $response['status'] = 400;
-                $response['message'] = 'User not updated';
-                return $this->sendError($response);
-            }
         }
         if (request()->is('api/*')) {
             if ($qry) {
