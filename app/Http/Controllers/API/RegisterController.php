@@ -75,11 +75,14 @@ class RegisterController extends ResponseController
             ]);
             //Call DatabaseService to Create dynamic database
             $dbName = $this->cleanName($request->society_name);
-            $dbPassword = $this->generatePassword(8);//Generate random number for database
+            $dbPassword = $dbName.'@123';//Generate random number for database
             //Here we use Crypt facade for store the database credential as encrypted format
-            $encryptedDbName = Crypt::encryptString($dbName);
-            $encryptedDbUid = Crypt::encryptString($dbName);
-            $encryptedDbPwd = Crypt::encryptString($dbPassword);
+            // $encryptedDbName = Crypt::encryptString($dbName);
+            // $encryptedDbUid = Crypt::encryptString($dbName);
+            // $encryptedDbPwd = Crypt::encryptString($dbPassword);
+            $encryptedDbName = $dbName;
+            $encryptedDbUid = $dbName;
+            $encryptedDbPwd = $dbPassword;
             //Insert Into Master Database
             $master_database = MasterDatabase::create([
                 'databasename' => $encryptedDbName,
