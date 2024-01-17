@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\ResponseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use App\Models\Master\{MasterSociety,SubscriptionPlan};
-use App\Models\Master\{MasterUser};
+use App\Models\Master\{MasterSociety,SubscriptionPlan,MasterUser};
+
 
 class SocietyController extends ResponseController
 {
@@ -57,14 +57,23 @@ class SocietyController extends ResponseController
         //         return $this->sendError($response);
         //     }
         // }
+
+        if ($request->user_id > 0) {
+            $Record = MasterUser::find($request->user_id);
+            if (!$Record) {
+                $response['status'] = 400;
+                $response['message'] = 'No such user found for the provided user ID.';
+                return $this->sendError($response);
+            }
+        }
         $id = empty($request->id) ? 'NULL' : $request->id;
-        // $documents = trim($request->documents) == '' || trim($request->documents) === null ? '' : 'required|file|mimes:pdf|max:5120|';
         $validator = Validator::make($request->all(), [
             // 'attachments'                          => 'required_without:template_content|file|mimes:pdf|max:5120',
             // 'documents'                          => $documents,
             'society_name'                       =>'required|unique:master_socities,society_name,' . $id . ',id,deleted_at,NULL|max:255',
-            'owner_name'                       =>'required',
+            // 'owner_name'                       =>'required',
             'email' => 'required|email',
+            'user_id'=>'required|integer',
             'address'                       =>'required',
             // 'documents'           =>$documents,
 
@@ -134,25 +143,30 @@ class SocietyController extends ResponseController
             } else {
                 $ins_arr['updated_by'] = auth()->id();
             }
-            
             $qry = MasterSociety::updateOrCreate(
                 ['id' => $request->id],
                 $ins_arr
             );
-            $obj2 = new MasterUser();
-            $ins_arr2=['name'=>$request->name,'user_code'=>$obj2->generateUserCode(),'username'=>$request->username,'password'=>'abc','country_id'=>1,'state_id'=>1,'city_id'=>2,'phone_number'=>$request->phone_number,'email'=>$request->email];
-            $qry2 = MasterUser::updateOrCreate(
-                ['master_society_ids' => jsonEncodeIntArr([$qry->id])],
-                $ins_arr2
-            );
+            $master_user=MasterUser::find($request->user_id);
+            if ($master_user) {
+                $mergedArray = array_merge(json_decode($master_user->master_society_ids), [$qry->id]);
+                $updatedIds = json_encode($mergedArray);
+                $master_user->update([
+                    'master_society_ids' => $updatedIds
+                ]);
+            } 
+            else {
+                $response['status'] = 400;
+                $response['message'] = 'User not updated';
+                return $this->sendError($response);
+            }
         }
         if (request()->is('api/*')) {
             if ($qry) {
                 $response['status'] = 200;
                 $response['message'] = $message;
-                $response['data'] = ['id' => $qry->id, 'society_name' => $qry->society_name,
-                 'owner_name' => $qry2->name, 'email' => $qry2->email,'phone_number' => $qry2->phone_number,
-                  'documents' => $qry->documents, 'address' => $qry->address];
+                $response['data'] = ['id' => $qry->id, 'society_name' => $qry->society_name,'phone_number'=>$qry->phone_number,
+                 'address' => $qry->address];
                 return $this->sendResponse($response);
             } else {
                 $response['status'] = 400;
