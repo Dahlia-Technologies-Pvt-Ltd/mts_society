@@ -10,6 +10,9 @@ const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')))
 const AdminDashboard = Loadable(lazy(() => import('../admin/dashboard/AdminDashboard')));
 const ChangePassword = Loadable(lazy(() => import('../admin/change-password/ChangePassword')));
 
+/* ****Super Admin Pages***** */
+const SuperAdminDashboard = Loadable(lazy(() => import('../superadmin/dashboard/SuperAdminDashboard')));
+
 // authentication
 const Login = Loadable(lazy(() => import('../auth/Login')));
 const ForgotPassword = Loadable(lazy(() => import('../auth/ForgotPassword')));
@@ -35,6 +38,7 @@ const Router = [
     children: [
       { path: '/admin/dashboard', exact: true, element: <AdminDashboard /> },
       { path: '/admin/change-password', exact: true, element: <ChangePassword /> },
+      { path: '/super-admin/dashboard', exact: true, element: <SuperAdminDashboard /> },
     ],
   },
 ];

@@ -61,7 +61,7 @@ class AuthController extends ResponseController
 
             if ($loginID == false) {
                 $response['status'] = 401;
-                $response['message'] = 'Invalid User Id or Email.';
+                $response['message'] = 'Invalid Email or Phone Number.';
                 // Call sendFailedLoginResponse() to check what is the issue in authenticating user
                 // and respond with the proper error message
                 return $this->sendFailedLoginResponse($request);
@@ -70,7 +70,7 @@ class AuthController extends ResponseController
                 $user['token'] = $user->createToken('MTSSOCIETY')->plainTextToken;
                 $response['status'] = 200;
                 $response['message'] = 'User authenticated successfully.';
-                $response['data'] = $user->only(['id', 'username', 'name', 'email', 'usertype', 'phone_number', 'token']);
+                $response['data'] = $user->only(['id', 'username', 'name', 'user_code', 'email', 'usertype', 'phone_number', 'token', 'profile_picture']);
                 return $this->sendResponse($response);
             }
         }

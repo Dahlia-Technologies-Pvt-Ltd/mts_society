@@ -18,10 +18,6 @@ use App\Http\Controllers\API\RegisterController;
 |
 */
 
-
- 
-
-
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
 });
