@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('socities', function (Blueprint $table) {
+        Schema::create('societies', function (Blueprint $table) {
             $table->id();
             $table->Integer('master_society_id')->unique();
             $table->string('society_unique_code')->unique();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('socities');
+        Schema::dropIfExists('societies');
     }
 };

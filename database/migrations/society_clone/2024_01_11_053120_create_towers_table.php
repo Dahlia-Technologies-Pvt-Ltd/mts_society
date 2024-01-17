@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('towers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('society_id')->constrained()->nullable()->default(0);
+            $table->foreignId('societies_id')->constrained()->nullable()->default(0);
             $table->string('tower_name')->nullable()->default(null);
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
             $table->unsignedBigInteger('created_by')->nullable();

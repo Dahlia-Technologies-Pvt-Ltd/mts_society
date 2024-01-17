@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('parking_type')->nullable();
             $table->string('vehicle_type')->nullable();
-            $table->foreignId('society_id')->constrained();
+            $table->foreignId('societies_id')->constrained();
             $table->foreignId('tower_id')->constrained();
             $table->foreignId('wing_id')->constrained()->nullable();
             $table->foreignId('floor_id')->constrained();
