@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Crypt;
+use App\Models\Master\MasterDatabase;
 
 class MasterSociety extends Model
 {
@@ -16,6 +18,17 @@ class MasterSociety extends Model
      'email', 'phone_number',
     'address','adress2','country_id','state_id','city_id','zipcode','gst_number','pan_number',
     'status','created_by', 'updated_by'];
+    protected $appends =['society_token'];
+    
+    function Databases(){
+        return $this->hasOne(MasterDatabase::class, 'master_socities_id', 'id');
+    }
+
+    public function getSocietyTokenAttribute()
+    {
+        return Crypt::encryptString($this->id);
+       
+    }
     public function getDocumentsAttribute($data)
     {
         if (!isset($this->attributes['documents'])) {

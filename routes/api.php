@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\Master\SocietyController;
 use App\Http\Controllers\API\Master\MasterSubscriptionController;
 use App\Http\Controllers\API\Master\MasterUserController;
+use App\Http\Controllers\API\Admin\TowerController;
 use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,7 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
     Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'indexing']);
     Route::get('/show-master-subscription/{id}', [MasterSubscriptionController::class, 'show']);
     Route::post('/delete-master-subscription', [MasterSubscriptionController::class, 'delete']);
+    //master user apis
     Route::post('/add-master-user', [MasterUserController::class, 'store']);
     Route::post('/list-master-user', [MasterUserController::class, 'indexing']);
     Route::get('/show-master-user/{id}', [MasterUserController::class, 'show']);
@@ -46,6 +48,10 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
 });
 //Only For Admin
 Route::middleware('auth:sanctum','admin')->group(function () {
+    Route::post('/add-tower', [TowerController::class, 'store']);
+    Route::post('/list-tower', [TowerController::class, 'indexing']);
+    Route::get('/show-tower/{id}', [TowerController::class, 'show']);
+    Route::post('/delete-tower', [TowerController::class, 'delete']);
 
 });
 //Only For User
