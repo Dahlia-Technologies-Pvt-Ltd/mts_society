@@ -5,6 +5,7 @@ namespace App\Models\Master;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Master\MasterSociety;
 use Carbon\Carbon;
 class MasterDatabase extends Model
 {
@@ -20,6 +21,10 @@ class MasterDatabase extends Model
             return '';
         }
         return Carbon::parse($this->attributes['created_at'])->format(config('util.default_date_time_format'));
+    }
+
+    public function MasterSociety(){
+        return $this->belongsTo(MasterSociety::class, 'master_socities_id', 'id');
     }
 
     public function getUpdatedAtAttribute($data)

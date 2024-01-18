@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\ResponseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use App\Models\Tower;
+use App\Models\Admin\Tower;
+use Illuminate\Support\Facades\Crypt;
+use App\Models\Master\MasterSociety;
 
 class TowerController extends ResponseController
 {
@@ -25,7 +27,7 @@ class TowerController extends ResponseController
          ]);
          return $data_query;
      }
-    public function index()
+    public function indexing(Request $request)
     {
         //
     }
@@ -35,7 +37,77 @@ class TowerController extends ResponseController
      */
     public function store(Request $request)
     {
-        //
+        $societies_id = getsocietyid($request->header('society_id'));
+        // print_r($societies_id);die();
+        if ($request->id > 0) {
+            $existingRecord = Tower::find($request->id);
+            if (!$existingRecord) {
+                $response['status'] = 400;
+                $response['message'] = 'Record not found for the provided ID.';
+                return $this->sendError($response);
+            }
+        }
+        // 'societies_id', 'tower_name',
+        // 'status', 'created_by', 'updated_by'
+        // if ($request->societies_id > 0) {
+        //     $Record = MasterSociety::find($request->societies_id);
+        //     if (!$Record) {
+        //         $response['status'] = 400;
+        //         $response['message'] = 'Record not found for the society ID.';
+        //         return $this->sendError($response);
+        //     }
+        // }
+        $id = empty($request->id) ? 'NULL' : $request->id;
+        $validator = Validator::make($request->all(), [
+            // 'societies_id'                          => 'required|integer|min:1',
+            'tower_name'                                    => 'required|unique:towers,tower_name,' . $id . ',id,deleted_at,NULL|max:255',
+            
+            
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validatorError($validator);
+        } else {
+            $message = empty($request->id) ? "Tower created successfully." : "Tower updated successfully.";
+
+            $ins_arr = [
+                'societies_id'                        => $societies_id,
+                'tower_name'                     => $request->tower_name,
+                'updated_by'                           => auth()->id(),
+            ];
+            // $table->tinyInteger('is_renewal_plan')->default(1)->comment('0-No_Renewal,1-Renewal');
+            if (!$request->id) {
+                $ins_arr['created_by'] = auth()->id();
+            } else {
+                $ins_arr['updated_by'] = auth()->id();
+            }
+            $qry = Tower::updateOrCreate(
+                ['id' => $request->id],
+                $ins_arr
+            );
+        }
+        if (request()->is('api/*')) {
+            if ($qry) {
+                $response['status'] = 200;
+                $response['message'] = $message;
+                $response['data'] = ['id' => $qry->id, 'societies_id' => 25, 
+                'tower_name' => $qry->tower_name];
+                return $this->sendResponse($response);
+            } else {
+                $response['status'] = 400;
+                $response['message'] = $message;
+                return $this->sendError($response);
+            }
+        } else {
+            if ($qry) {
+                $response['message'] = $message;
+                $response['status'] = 200;
+                return $this->sendResponse($response);
+            }
+            $response['message'] = 'Unable to save tower.';
+            $response['status'] = 400;
+            return $this->sendError($response);
+        }
     }
 
     /**
@@ -70,15 +142,11 @@ class TowerController extends ResponseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function delete(Request $request)
     {
         $terms = Tower::find($request->id);
         if ($terms) {
             $ins_arr['deleted_by'] = auth()->id();
-            // $filePath = storage_path('app/' . $terms->attachments);
-            // if (file_exists($filePath) && $terms->attachments != '') {
-            //     unlink($filePath);
-            // }
             $qry = Tower::updateOrCreate(
                 ['id' => $request->id],
                 $ins_arr
