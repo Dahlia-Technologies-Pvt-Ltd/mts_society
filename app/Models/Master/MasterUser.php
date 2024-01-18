@@ -18,7 +18,7 @@ class MasterUser extends Authenticatable
 
     protected $fillable = [
         'name', 'username', 'user_code', 'email', 'password', 'phone_number',
-        'master_society_ids', 'gender', 'address', 'country_id', 'state_id', 'city_id',
+        'master_society_ids', 'gender', 'address', 'country_id', 'state_id', 'city',
         'zipcode', 'usertype', 'blocked_at', 
         'profile_picture', 'status', 'created_by', 'updated_by'
     ];

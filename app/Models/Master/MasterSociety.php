@@ -16,7 +16,7 @@ class MasterSociety extends Model
     protected $table = 'master_socities';
     protected $fillable = ['society_unique_code', 'society_name',
      'email', 'phone_number',
-    'address','adress2','country_id','state_id','city_id','zipcode','gst_number','pan_number',
+    'address','adress2','country_id','state_id','city','zipcode','gst_number','pan_number',
     'status','created_by', 'updated_by'];
     protected $appends =['society_token'];
     

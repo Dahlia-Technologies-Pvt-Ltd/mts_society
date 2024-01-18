@@ -49,7 +49,7 @@ class MasterUserController extends ResponseController
             'name',
             'username',
             'user_code', 'email', 'phone_number',
-            'country_id', 'state_id', 'city_id', 'zipcode', 'usertype', 'blocked_at',
+            'country_id', 'state_id', 'city', 'zipcode', 'usertype', 'blocked_at',
             'profile_picture', 'created_at'
         ]);
         return $data_query;
@@ -98,7 +98,7 @@ class MasterUserController extends ResponseController
             'usertype'                     => 'min:0|max:2',
             'country_id'                   => 'required|integer',
             'state_id'                     => 'required|integer',
-            'city_id'                      => 'required|integer',
+            'city'                          => 'required|string',
             'zipcode'                      => 'integer',
             'profile_picture'              => $profile_pic,
 
@@ -136,7 +136,7 @@ class MasterUserController extends ResponseController
                 'address'                     => $request->address,
                 'country_id'                  => $request->country_id,
                 'state_id'                    => $request->state_id,
-                'city_id'                     => $request->city_id,
+                'city'                          => $request->city,
                 'zipcode'                     => $request->zipcode,
                 'usertype'                    => isset($request->usertype) ? $request->usertype : 0,
                 'blocked_at'                  => $request->blocked_at,
@@ -168,7 +168,7 @@ class MasterUserController extends ResponseController
                     'master_society_ids' => $qry->master_society_ids,
                     'gender' => $qry->gender, 'street_address' => $qry->street_address,
                     'country_id' => $qry->country_id, 'state_id' => $qry->state_id,
-                    'city_id' => $qry->city_id, 'zipcode' => $qry->zipcode,
+                    'city' => $qry->city, 'zipcode' => $qry->zipcode,
                     'usertype' => $qry->usertype, 'blocked_at' => $qry->blocked_at,
                     'profile_picture' => $qry->profile_picture
                 ];

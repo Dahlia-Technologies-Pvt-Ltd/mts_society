@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('adress2',100)->nullable()->default(null);
             $table->foreignId('country_id')->constrained()->default(0)->nullable();
             $table->foreignId('state_id')->constrained()->default(0)->nullable();  
-            $table->foreignId('city_id')->constrained()->default(0)->nullable();
+            $table->string('city', 50)->nullable()->default(null);
             $table->string('zipcode')->nullable();            
             $table->string('gst_number',20)->nullable()->default(null);
             $table->string('pan_number',20)->nullable()->default(null);            
