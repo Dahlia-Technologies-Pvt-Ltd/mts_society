@@ -17,7 +17,7 @@ class DatabaseService
     public function createDatabase($params = [])
     {
         $connectionName = 'sqlsrvclone';
-        $databaseName = 'soc_' . $params['dbname'];
+        $databaseName = $params['dbname'];
         $databasePassword = $params['dbpassword'];
 
         DB::statement("CREATE DATABASE [$databaseName]");

@@ -30,33 +30,33 @@ const Profile = () => {
   const dispatch = useDispatch();
   const profilePicture = useSelector((state: AppState) => state.ecommerceReducer.profilePicture);
   if(profilePicture == null){
-    const profile = sessionStorage.getItem('profilePicture');
+    const profile = localStorage.getItem('profilePicture');
     dispatch(addProfilePicture(profile));
   }
   const handleLogout = async () => {
      try {
         const appUrl = import.meta.env.VITE_API_URL;
         const API_URL = appUrl + '/api/logout';
-        //const response = await axios.post(`${API_URL}`);
+        const response = await axios.post(`${API_URL}`);
          // Clear session storage
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('userCode');
-        sessionStorage.removeItem('userId');
-        sessionStorage.removeItem('userName');
-        sessionStorage.removeItem('userEmail');
-        sessionStorage.removeItem('userRole');
-        sessionStorage.removeItem('userType');
-        sessionStorage.removeItem('prevPage');
-        window.location.reload();
-        //navigate('/login');
+         localStorage.removeItem('authToken');
+         localStorage.removeItem('userCode');
+         localStorage.removeItem('userId');
+         localStorage.removeItem('userName');
+         localStorage.removeItem('userEmail');
+         localStorage.removeItem('userRole');
+         localStorage.removeItem('userType');
+         localStorage.removeItem('prevPage');
+          //window.location.reload();
+        navigate('/login');
      } catch (error) {
        console.error('Logout failed:', error);
      }
   };
 
-  const userName=sessionStorage.getItem('userName');
-  const userEmail=sessionStorage.getItem('userEmail');
-  const userCode=sessionStorage.getItem('userCode');
+  const userName=localStorage.getItem('userName');
+  const userEmail=localStorage.getItem('userEmail');
+  const userCode=localStorage.getItem('userCode');
   return (
     <Box>
       <IconButton
@@ -106,10 +106,10 @@ const Profile = () => {
           <Avatar src={profilePicture ? profilePicture : ''} alt={userName} sx={{ width: 75, height: 75, border: 1, borderColor: 'black' }} />
           <Box>
             <Typography variant="subtitle2" color="textPrimary" fontWeight={600}>
-              {userName} Admin
+              {userName}
             </Typography>
             <Typography variant="subtitle2" color="textSecondary">
-            {userCode} Admin001
+            {userCode}
             </Typography>
             <Typography
               variant="subtitle2"
@@ -119,7 +119,7 @@ const Profile = () => {
               gap={1}
             >
               <IconMail width={15} height={15} />
-              {userEmail} admin@gmail.com
+              {userEmail}
             </Typography>
           </Box>
         </Stack>

@@ -99,7 +99,7 @@ class ResponseController extends Controller
         // If so, override the default error message.
         if (empty($user)) {
             $response['status'] = 401;
-			$response['message'] = 'Invalid User Name or Email';
+			$response['message'] = 'Invalid Email or Phone Number';
 			return $this->sendError($response);
         }
         // Check if user was successfully loaded, that the password matches

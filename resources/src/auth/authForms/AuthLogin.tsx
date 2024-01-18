@@ -31,7 +31,7 @@ import Playstore from '@src/assets/images/logos/play.png';
 
 const validationSchema = yup.object({
   //email: yup.string().email('Enter a valid email').required('Employee ID or Customer ID is required'),
-  email: yup.string().required('User ID / Email ID is required'),
+  email: yup.string().required('Email ID / Phone Number is required'),
   password: yup.string().required('Password is required'),
 });
 
@@ -53,40 +53,36 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     onSubmit: async (values) => {
       const appUrl = import.meta.env.VITE_API_URL;
       const API_URL = appUrl + '/api/login'; // API service URL
-      return false;
       try {
         setIsLoading(true);
         //Pass all the value in form data
         const formData = new FormData();
-        formData.append('email_id', values.email);
+        formData.append('email', values.email);
         formData.append('password', values.password);
-
         const response = await axios.post(`${API_URL}`, formData);// API call
-        console.log('Login successful:', response.data);
         if (response.status === 200) {
           // Storing data in Session Storage
-          sessionStorage.setItem('authToken', response.data.data.token);
-          sessionStorage.setItem('userCode', response.data.data.user_code);
-          sessionStorage.setItem('userId', response.data.data.id);
-          sessionStorage.setItem('userName', response.data.data.name);
-          sessionStorage.setItem('userEmail', response.data.data.email_id);
-          sessionStorage.setItem('userType', response.data.data.user_type);
-          sessionStorage.setItem('profilePicture', response.data.data.profile_picture);
-          dispatch(addProfilePicture(response.data.data.profile_picture));
-          const user_role = (response.data.data.user_type == '0') ? 'Admin' : (response.data.data.user_type == '1') ? 'Resolver' : 'Customer'
-          sessionStorage.setItem('userRole', user_role);
+          localStorage.setItem('authToken', response.data.data.token);
+          localStorage.setItem('userCode', response.data.data.user_code);
+          localStorage.setItem('userId', response.data.data.id);
+          localStorage.setItem('userName', response.data.data.name);
+          localStorage.setItem('userEmail', response.data.data.email);
+          localStorage.setItem('userType', response.data.data.usertype);
+          localStorage.setItem('profilePicture', response.data.data.profile_picture);
+          //dispatch(addProfilePicture(response.data.data.profile_picture));
+          const user_role = (response.data.data.usertype == '2') ? 'Super Admin' : (response.data.data.usertype == '1') ? 'Admin' : 'User'
+          localStorage.setItem('userRole', user_role);
           // Navigate to another page
-          if (response.data.data.user_type == '0') {
+          if (response.data.data.usertype == '2') {
+            navigate('/super-admin/dashboard');
+          } else if (response.data.data.usertype == '1') {
             navigate('/admin/dashboard');
-          } else if (response.data.data.user_type == '1') {
-            navigate('/resolver/dashboard');
-          } else if (response.data.data.user_type == '2') {
-            navigate('/customer/dashboard');
+          } else if (response.data.data.usertype == '0') {
+            navigate('/user/dashboard');
           }
         }
       } catch (error) {
         //display an error message to the user
-        console.error('Login failed:', error);
         setIsErrorVisible(true);// set error visible true for show the Alert component
         // show error message
         if (error.response && error.response.data && error.response.data.message) {
@@ -98,17 +94,9 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       }
     },
   });
-  if (sessionStorage.getItem('inviteMsg')) {
-    const inviteMsg = sessionStorage.getItem('inviteMsg');
-    setSuccessMessage(inviteMsg);
-    setIsSuccessVisible(true);
-    sessionStorage.removeItem('inviteMsg');
-  }
 
   const [showPassword, setShowPassword] = React.useState(false);
-
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
@@ -126,7 +114,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       <Typography variant="h6"
         mt={3}
         mb={0.5}
-        fontWeight={600}>MTS - Society Admin Module</Typography>
+        fontWeight={600}>MTS - Society Login</Typography>
 
       {subtext}
       {isSuccessVisible && (
@@ -141,7 +129,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       )}
       <Stack>
         <Box >
-          <CustomFormLabel htmlFor="email">User ID / Email ID</CustomFormLabel>
+          <CustomFormLabel htmlFor="email">Email ID / Phone Number</CustomFormLabel>
           <CustomTextField
             id="email"
             variant="outlined"
@@ -152,7 +140,8 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             value={formik.values.email}
             error={formik.touched.email && Boolean(formik.errors.email)}
             helperText={formik.touched.email && formik.errors.email}
-            placeholder="User ID / Email ID"
+            placeholder="Email ID / Phone Number"
+            autoComplete="new-password"
           />
         </Box>
         <Box>
@@ -169,6 +158,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
             placeholder="Password"
+            autoComplete="new-password"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">

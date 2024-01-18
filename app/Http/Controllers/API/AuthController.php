@@ -6,6 +6,7 @@ use App\Models\Master\MasterUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\ResponseController as ResponseController;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\Sanctum;
 use Illuminate\Http\JsonResponse;
 
 class AuthController extends ResponseController
@@ -61,7 +62,7 @@ class AuthController extends ResponseController
 
             if ($loginID == false) {
                 $response['status'] = 401;
-                $response['message'] = 'Invalid User Id or Email.';
+                $response['message'] = 'Invalid Email or Phone Number.';
                 // Call sendFailedLoginResponse() to check what is the issue in authenticating user
                 // and respond with the proper error message
                 return $this->sendFailedLoginResponse($request);
@@ -70,17 +71,21 @@ class AuthController extends ResponseController
                 $user['token'] = $user->createToken('MTSSOCIETY')->plainTextToken;
                 $response['status'] = 200;
                 $response['message'] = 'User authenticated successfully.';
-                $response['data'] = $user->only(['id', 'username', 'name', 'email', 'usertype', 'phone_number', 'token']);
+                $response['data'] = $user->only(['id', 'username', 'name', 'user_code', 'email', 'usertype', 'phone_number', 'token', 'profile_picture']);
                 return $this->sendResponse($response);
             }
         }
     }
-
+    
     public function logout()
     {
         if (Auth::check()) {
-            $token = Auth::user()->currentAccessToken(); // Get the current token
-            $token->delete(); // Delete the current token
+            $user = auth()->user();
+            if ($user) {
+                $user->tokens->each(function ($token) {
+                    $token->delete();
+                });
+            }
             $response['status'] = 200;
             $response['message'] = 'Successfully logged out';
             return $this->sendResponse($response);
@@ -89,5 +94,5 @@ class AuthController extends ResponseController
             $response['message'] = 'You are not logged in.';
             return $this->sendResponse($response);
         }
-    }
+    }  
 }
