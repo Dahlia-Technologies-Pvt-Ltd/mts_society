@@ -6,6 +6,7 @@ use App\Models\Master\MasterUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\ResponseController as ResponseController;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\Sanctum;
 use Illuminate\Http\JsonResponse;
 
 class AuthController extends ResponseController
@@ -75,12 +76,16 @@ class AuthController extends ResponseController
             }
         }
     }
-
+    
     public function logout()
     {
         if (Auth::check()) {
-            $token = Auth::user()->currentAccessToken(); // Get the current token
-            $token->delete(); // Delete the current token
+            $user = auth()->user();
+            if ($user) {
+                $user->tokens->each(function ($token) {
+                    $token->delete();
+                });
+            }
             $response['status'] = 200;
             $response['message'] = 'Successfully logged out';
             return $this->sendResponse($response);
@@ -89,5 +94,5 @@ class AuthController extends ResponseController
             $response['message'] = 'You are not logged in.';
             return $this->sendResponse($response);
         }
-    }
+    }  
 }

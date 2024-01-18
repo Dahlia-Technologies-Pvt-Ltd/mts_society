@@ -21,6 +21,7 @@ use App\Http\Controllers\API\RegisterController;
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
 });
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 //Register
 Route::post('/register', [RegisterController::class, 'register']); 
 //Only For Super Admin

@@ -36,8 +36,8 @@ const Profile = () => {
   const handleLogout = async () => {
      try {
         const appUrl = import.meta.env.VITE_API_URL;
-        //const API_URL = appUrl + '/api/logout';
-        //const response = await axios.post(`${API_URL}`);
+        const API_URL = appUrl + '/api/logout';
+        const response = await axios.post(`${API_URL}`);
          // Clear session storage
          localStorage.removeItem('authToken');
          localStorage.removeItem('userCode');
