@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\Master\SocietyController;
 use App\Http\Controllers\API\Master\MasterSubscriptionController;
 use App\Http\Controllers\API\Master\MasterUserController;
+use App\Http\Controllers\API\Master\ProfileUpdateController;
 use App\Http\Controllers\API\Admin\TowerController;
 use App\Http\Controllers\API\RegisterController;
 /*
@@ -63,4 +64,6 @@ Route::middleware('auth:sanctum','user')->group(function () {
 });
 //For ALL
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/update-user', [ProfileUpdateController::class, 'updateuser']);
+    Route::post('/update-profile-picture', [ProfileUpdateController::class, 'updateprofilepicture']);
 });
