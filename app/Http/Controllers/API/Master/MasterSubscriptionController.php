@@ -56,7 +56,6 @@ class MasterSubscriptionController extends ResponseController
         }
         $id = empty($request->id) ? 'NULL' : $request->id;
         $validator = Validator::make($request->all(), [
-            // 'attachments'                          => 'required_without:template_content|file|mimes:pdf|max:5120',
             'subscription_plan'                          => 'required|unique:master_subscriptions,subscription_plan,' . $id . ',id,deleted_at,NULL|max:255',
             'price'                                    => 'required|integer|min:1',
             'features'                        => 'required',
@@ -70,7 +69,6 @@ class MasterSubscriptionController extends ResponseController
             $message = empty($request->id) ? "Subscription created successfully." : "Subscription updated successfully.";
 
             $ins_arr = [
-                // 'template_code'                        => $obj->generateTempCode(),
                 'subscription_plan'                        => $request->subscription_plan,
                 'price'                     => $request->price,
                 'frequency'                          =>  $request->frequency,
@@ -78,7 +76,6 @@ class MasterSubscriptionController extends ResponseController
                 'is_renewal_plan'            => ($request->is_renewal_plan === '0') ? 0 : 1,
                 'updated_by'                           => auth()->id(),
             ];
-            // $table->tinyInteger('is_renewal_plan')->default(1)->comment('0-No_Renewal,1-Renewal');
             if (!$request->id) {
                 $ins_arr['created_by'] = auth()->id();
             } else {

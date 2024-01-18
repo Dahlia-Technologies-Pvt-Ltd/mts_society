@@ -111,13 +111,13 @@ class MasterUserController extends ResponseController
             $filepath = null;
             if ($request->hasFile('profile_picture')) {
                 $file = $request->file('profile_picture');
-                $fileName = time() . '_' . $file->getClientOriginalName();
+                $fileName = $id.'/'.time() . '_' . $file->getClientOriginalName();
                 $filepath = $file->storeAs('uploads/user_profile_pic', $fileName);
-                if (isset($request->old_image) && !empty($request->old_image)) {
-                    unlink($request->old_image);
+                if (isset($request->old_image) && !empty($request->old_image && Storage::exists($request->old_image))) {
+                    Storage::delete($request->old_image);
                 }
             } else if (isset($request->old_image) && !empty($request->old_image)  && empty($request->profile_picture)) {
-                $filepath = $request->old_image;
+                $filepath =$request->old_image;
             } else {
                 if ($existing_prof_pic != null || $existing_prof_pic != '') {
                     if (Storage::exists($existing_prof_pic[0])) {

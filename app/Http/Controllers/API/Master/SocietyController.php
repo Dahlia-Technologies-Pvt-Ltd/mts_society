@@ -16,7 +16,6 @@ class SocietyController extends ResponseController
      */
     function list_show_query()
     {
-        // return !empty($arr) ? json_encode(array_map('intval',array_values($arr))) : NULL;
         $data_query = MasterSociety::where([['status', 0]]);
         $data_query->select([
             'id',
@@ -55,15 +54,6 @@ class SocietyController extends ResponseController
                 return $this->sendError($response);
             }
         }
-        // if ($request->subscription_plan_id > 0) {
-        //     $Record = SubscriptionPlan::find($request->subscription_plan_id);
-        //     if (!$Record) {
-        //         $response['status'] = 400;
-        //         $response['message'] = 'No such subscription plan found for the provided  subscription ID.';
-        //         return $this->sendError($response);
-        //     }
-        // }
-
         if ($request->user_id > 0) {
             $Record = MasterUser::find($request->user_id);
             if (!$Record) {
@@ -74,49 +64,18 @@ class SocietyController extends ResponseController
         }
         $id = empty($request->id) ? 'NULL' : $request->id;
         $validator = Validator::make($request->all(), [
-            // 'attachments'                          => 'required_without:template_content|file|mimes:pdf|max:5120',
-            // 'documents'                          => $documents,
             'society_name'                       =>'required|unique:master_socities,society_name,' . $id . ',id,deleted_at,NULL|max:255',
-            // 'owner_name'                       =>'required',
             'email' => 'required|email',
             'user_id'=>'integer',
             'address'                       =>'required',
-            // 'documents'           =>$documents,
-
-
-            // 'country_id'                       =>'required',
-            // 'state_id'                       =>'required',
-
-            // 'subscription_plan_id'                       =>'required|integer',
-
-
-            // 'society_name'                       =>'required',
-            // 'society_name'                       =>'required',
-            // 'society_name'                       =>'required',
-            // 'society_name'                       =>'required',
-            // 'template_content'                     => 'required_without:attachments',
-            // 'template_name'                        => 'required|unique:terms_conditions,template_name,' . $id . ',id,deleted_at,NULL|max:255',
-            // 'is_mandatory'                         => 'required|integer|min:0|max:1',
-            // 'default_spare_or_customer'            => 'required|integer|min:0|max:2',
         ]);
 
         if ($validator->fails()) {
             return $this->validatorError($validator);
         } else {
-            // $filepath = NULL;
-            // if ($request->hasFile('documents')) {
-            //     $file = $request->file('documents');
-            //     $fileName = time() . '_' . $file->getClientOriginalName();
-            //     $filepath = $file->storeAs('uploads/master_society', $fileName);
-            // } else if(isset($request['old_documents']) && !empty($request['old_documents'])){
-            //     $filepath = str_replace(asset('storage') . '/', '',$request['old_documents']);
-            // }
-
             $message = empty($request->id) ? "Society created successfully." : "Society updated successfully.";
-
             $ins_arr = [
                 'society_name'                        => $request->society_name,
-                // 'owner_name'                          => $request->owner_name,
                 'email'                               =>$request->email,
                 'phone_number'                        =>$request->phone_number,
                 'address'                             => $request->address,
@@ -127,15 +86,6 @@ class SocietyController extends ResponseController
                 'zipcode'                             => $request->zipcode,
                 'gst_number'                          =>$request->gst_number,
                 'pan_number'                          => $request->pan_number,
-                // 'subscription_plan_id'                => $request->subscription_plan_id,
-                // 'payment_mode'                        => ($request->payment_mode === '1') ? 1 : 0,
-                // 'payment_status'                      => ($request->payment_status === '1') ? 1 : 0,
-                // 'documents'                           => 'abc',
-                // 'currency_code'                       => $request->currency_code,
-                // 'is_approved'                         => ($request->is_approved === '1') ? 1 : 0,
-                // 'status'                              => $request->email,
-                // 'is_renewal_plan'                     => ($request->is_renewal_plan === '0') ? 0 : 1,
-                
                 'updated_by'                          => auth()->id(),
             ];
            
