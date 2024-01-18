@@ -24,7 +24,7 @@ class Kernel extends HttpKernel
     ];
     protected $routeMiddleware = [
         // ...
-        'switch.database' => \App\Http\Middleware\SwitchDatabase::class,
+        'connectsocietydb' => \App\Http\Middleware\ConnectSocietyDb::class,
     ];
     /**
      * The application's route middleware groups.
