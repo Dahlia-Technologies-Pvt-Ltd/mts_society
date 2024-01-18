@@ -202,6 +202,22 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           {isLoading && <CircularProgress size={24} color="inherit" />}
         </Button>
       </Box>
+      <Stack direction="row" spacing={1} mt={3}>
+        <Typography color="textSecondary" variant="h6" fontWeight="500">
+          New User?
+        </Typography>
+        <Typography
+          component={Link}
+          to="/register"
+          fontWeight="500"
+          sx={{
+            textDecoration: 'none',
+            color: 'primary.main',
+          }}
+        >
+          Create an Account
+        </Typography>
+      </Stack>
 
       <Stack>
         <Grid

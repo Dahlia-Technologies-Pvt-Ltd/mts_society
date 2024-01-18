@@ -17,6 +17,7 @@ const SuperAdminDashboard = Loadable(lazy(() => import('../superadmin/dashboard/
 const Login = Loadable(lazy(() => import('../auth/Login')));
 const ForgotPassword = Loadable(lazy(() => import('../auth/ForgotPassword')));
 const ResetPassword = Loadable(lazy(() => import('../auth/ResetPassword')));
+const Register = Loadable(lazy(() => import('../auth/Register')));
 const Error = Loadable(lazy(() => import('../auth/Error')));
 
 const Router = [
@@ -28,6 +29,7 @@ const Router = [
       { path: '/login', element: <Login /> },
       { path: '/forgot-password', element: <ForgotPassword /> },
       { path: '/reset-password/:token', element: <ResetPassword /> },
+      { path: '/register', element: <Register /> },
       { path: '/auth/404', element: <Error /> },
       { path: '*', element: <Navigate to="/auth/404" /> },
     ],
