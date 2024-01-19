@@ -44,8 +44,9 @@ class CountryStateController extends ResponseController
             'states.country_id',
             'countries.country_code',
             'countries.phone_code',
-           
-        ]);
+        ])->when(!empty($request->country_id), function ($query) use ($request) {
+            return $query->where('states.country_id', $request->country_id);
+        });        
         if (!empty($request->keyword)) {
             $keyword = $request->keyword;
             $data_query->where(function ($query) use ($keyword) {

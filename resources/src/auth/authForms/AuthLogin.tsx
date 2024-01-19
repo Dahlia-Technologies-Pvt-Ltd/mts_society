@@ -104,14 +104,14 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   return (
     <Grid item paddingX='120px' overflow='hidden'>
     <form onSubmit={formik.handleSubmit}>
-      <Logo />
+      {/* <Logo /> */}
       {title ? (
         <Typography fontWeight="700" variant="h3" mb={1}>
           {title}
         </Typography>
       ) : null}
 
-      <Typography variant="h6"
+      <Typography variant="h3"
         mt={3}
         mb={0.5}
         fontWeight={600}>MTS - Society Login</Typography>
