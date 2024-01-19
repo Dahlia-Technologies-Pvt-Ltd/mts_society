@@ -20,7 +20,7 @@ class SocietyController extends ResponseController
         $data_query->select([
             'id',
             'society_name',
-            'society_unique_code','phone_number','address','email','country_id','state_id','city_id','zipcode',
+            'society_unique_code','phone_number','address','email','country_id','state_id','city','zipcode',
             'gst_number','pan_number', 'created_at'
         ]);
         return $data_query;
@@ -82,7 +82,7 @@ class SocietyController extends ResponseController
                 'adress2'                             => $request->adress2,
                 'country_id'                          => $request->country_id,
                 'state_id'                            =>$request->state_id,
-                'city_id'                             => $request->city_id,
+                'city'                                  => $request->city,
                 'zipcode'                             => $request->zipcode,
                 'gst_number'                          =>$request->gst_number,
                 'pan_number'                          => $request->pan_number,

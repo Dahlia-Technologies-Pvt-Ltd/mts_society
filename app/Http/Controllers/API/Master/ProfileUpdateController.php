@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\ResponseController;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Master\{MasterUser,State,City};
+use App\Models\Master\{MasterUser, State, City};
 
 class ProfileUpdateController extends ResponseController
 {
@@ -42,8 +42,8 @@ class ProfileUpdateController extends ResponseController
             'username'                                    => 'required|unique:master_users,username,' . $id . ',id,deleted_at,NULL|max:255',
             'phone_number'                  => 'required|digits:10|unique:master_users,phone_number,' . $id . ',id,deleted_at,NULL|max:255',
             'country_id' => 'required|integer',
-             'state_id' => 'required|integer',
-              'city_id' => 'required|integer',
+            'state_id' => 'required|integer',
+            'city' => 'required|integer',
             'profile_picture'              => $profile_pic
         ]);
 
@@ -54,13 +54,13 @@ class ProfileUpdateController extends ResponseController
             $filepath = null;
             if ($request->hasFile('profile_picture')) {
                 $file = $request->file('profile_picture');
-                $fileName = $id.'/'.time() . '_' . $file->getClientOriginalName();
+                $fileName = $id . '/' . time() . '_' . $file->getClientOriginalName();
                 $filepath = $file->storeAs('uploads/user_profile_pic', $fileName);
                 if (isset($request->old_image) && !empty($request->old_image && Storage::exists($request->old_image))) {
                     Storage::delete($request->old_image);
                 }
             } else if (isset($request->old_image) && !empty($request->old_image)  && empty($request->profile_picture)) {
-                $filepath =$request->old_image;
+                $filepath = $request->old_image;
             } else {
                 if ($existing_prof_pic != null || $existing_prof_pic != '') {
                     if (Storage::exists($existing_prof_pic[0])) {
@@ -78,7 +78,7 @@ class ProfileUpdateController extends ResponseController
                 'address'                     => $request->address,
                 'country_id'                  => $request->country_id,
                 'state_id'                    => $request->state_id,
-                'city_id'                     => $request->city_id,
+                'city'                     => $request->city,
                 'zipcode'                     => $request->zipcode,
                 'usertype'                    => isset($request->usertype) ? $request->usertype : 0,
                 'profile_picture'             => $filepath,
@@ -97,15 +97,17 @@ class ProfileUpdateController extends ResponseController
             if ($qry) {
                 $response['status'] = 200;
                 $response['message'] = $message;
-                $response['data'] = [ 'id' => $qry->id, 'name' => $qry->name,
-                'username' => $qry->username, 'user_code' => $qry->user_code,
-                'email' => $qry->email, 'phone_number' => $qry->phone_number,
-                'master_society_ids' => $qry->master_society_ids,
-                'gender' => $qry->gender, 'street_address' => $qry->street_address,
-                'country_id' => $qry->country_id, 'state_id' => $qry->state_id,
-                'city_id' => $qry->city_id, 'zipcode' => $qry->zipcode,
-                'usertype' => $qry->usertype, 'blocked_at' => $qry->blocked_at,
-                'profile_picture' => $qry->profile_picture];
+                $response['data'] = [
+                    'id' => $qry->id, 'name' => $qry->name,
+                    'username' => $qry->username, 'user_code' => $qry->user_code,
+                    'email' => $qry->email, 'phone_number' => $qry->phone_number,
+                    'master_society_ids' => $qry->master_society_ids,
+                    'gender' => $qry->gender, 'street_address' => $qry->street_address,
+                    'country_id' => $qry->country_id, 'state_id' => $qry->state_id,
+                    'city' => $qry->city, 'zipcode' => $qry->zipcode,
+                    'usertype' => $qry->usertype, 'blocked_at' => $qry->blocked_at,
+                    'profile_picture' => $qry->profile_picture
+                ];
                 return $this->sendResponse($response);
             } else {
                 $response['status'] = 400;
@@ -150,13 +152,13 @@ class ProfileUpdateController extends ResponseController
             $filepath = null;
             if ($request->hasFile('profile_picture')) {
                 $file = $request->file('profile_picture');
-                $fileName = $id.'/'.time() . '_' . $file->getClientOriginalName();
+                $fileName = $id . '/' . time() . '_' . $file->getClientOriginalName();
                 $filepath = $file->storeAs('uploads/user_profile_pic', $fileName);
                 if (isset($request->old_image) && !empty($request->old_image && Storage::exists($request->old_image))) {
                     Storage::delete($request->old_image);
                 }
             } else if (isset($request->old_image) && !empty($request->old_image)  && empty($request->profile_picture)) {
-                $filepath =$request->old_image;
+                $filepath = $request->old_image;
             } else {
                 if ($existing_prof_pic != null || $existing_prof_pic != '') {
                     if (Storage::exists($existing_prof_pic[0])) {
@@ -182,16 +184,10 @@ class ProfileUpdateController extends ResponseController
             if ($qry) {
                 $response['status'] = 200;
                 $response['message'] = $message;
-                $response['data'] = [ 'id' => $qry->id, 
-                // 'name' => $qry->name,
-                // 'username' => $qry->username, 'user_code' => $qry->user_code,
-                // 'email' => $qry->email, 'phone_number' => $qry->phone_number,
-                // 'master_society_ids' => $qry->master_society_ids,
-                // 'gender' => $qry->gender, 'street_address' => $qry->street_address,
-                // 'country_id' => $qry->country_id, 'state_id' => $qry->state_id,
-                // 'city_id' => $qry->city_id, 'zipcode' => $qry->zipcode,
-                // 'usertype' => $qry->usertype, 'blocked_at' => $qry->blocked_at,
-                'profile_picture' => $qry->profile_picture];
+                $response['data'] = [
+                    'id' => $qry->id,
+                    'profile_picture' => $qry->profile_picture
+                ];
                 return $this->sendResponse($response);
             } else {
                 $response['status'] = 400;

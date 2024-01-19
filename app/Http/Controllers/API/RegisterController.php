@@ -37,7 +37,7 @@ class RegisterController extends ResponseController
             'usertype' => 1,
             'country_id' =>isset($request->country_id)?$request->country_id:'-',
             'state_id' =>isset($request->state_id)?$request->state_id:'-',
-            'city_id' =>isset($request->city_id)?$request->city_id:'-',
+            'city' =>isset($request->city)?$request->city:'-',
         ]); 
         // Insert Master Society
         if($master_user){
@@ -46,7 +46,7 @@ class RegisterController extends ResponseController
                 'society_name' => $request->society_name,
                 'address' => $request->address,
                 'country_id' => $request->country_id,
-                'city_id' => $request->city_id,
+                'city' => $request->city,
                 'state_id' => isset($request->state_id)?$request->state_id:'-',
                 'zipcode' => $request->zipcode,
                 'created_by' => $master_user->id, // insert Master User Id

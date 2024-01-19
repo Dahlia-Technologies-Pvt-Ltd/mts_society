@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('address')->nullable()->default(null);
             $table->foreignId('country_id')->constrained()->default(0)->nullable();
             $table->foreignId('state_id')->constrained()->default(0)->nullable();  
-            $table->foreignId('city_id')->constrained()->default(0)->nullable();
+            $table->string('city', 50)->nullable()->default(null);
             $table->string('zipcode')->nullable()->default(null);
             $table->tinyInteger('usertype')->default(0)->comment('0-every other user,1-admin,2-superadmin');;
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive,2-Blocked');

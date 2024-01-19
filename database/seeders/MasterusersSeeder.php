@@ -31,7 +31,7 @@ class MasterusersSeeder extends Seeder
             'usertype'          => 2,
             'country_id'           => 101,
             'state_id'             => 12,
-            'city_id'              => 5,
+            'city'              => 5,
             'updated_at'       => Carbon::now()->format('Y-m-d H:i:s'),
             'created_at'      => Carbon::now()->format('Y-m-d H:i:s')
 
@@ -51,7 +51,7 @@ class MasterusersSeeder extends Seeder
             'usertype'          => 2,
             'country_id'           => 101,
             'state_id'             => 12,
-            'city_id'              => 5,
+            'city'              => 5,
             'updated_at'       => Carbon::now()->format('Y-m-d H:i:s'),
             'created_at'      => Carbon::now()->format('Y-m-d H:i:s')
 
