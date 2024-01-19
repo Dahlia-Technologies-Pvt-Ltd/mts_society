@@ -7,7 +7,8 @@ use App\Http\Controllers\API\Master\SocietyController;
 use App\Http\Controllers\API\Master\MasterSubscriptionController;
 use App\Http\Controllers\API\Master\MasterUserController;
 use App\Http\Controllers\API\Master\CountryStateController;
-
+use App\Http\Controllers\API\Master\ChangePasswordController;
+use App\Http\Controllers\API\Master\ForgotPasswordController;
 use App\Http\Controllers\API\Master\ProfileUpdateController;
 use App\Http\Controllers\API\Admin\TowerController;
 use App\Http\Controllers\API\RegisterController;
@@ -63,9 +64,19 @@ Route::middleware('auth:sanctum','user')->group(function () {
 });
 //For ALL
 Route::middleware('auth:sanctum')->group(function () {
+    //update profile(whole)
     Route::post('/update-user', [ProfileUpdateController::class, 'updateuser']);
+    //update only profile picture
     Route::post('/update-profile-picture', [ProfileUpdateController::class, 'updateprofilepicture']);
-
+    //list of country and state
     Route::post('/list-country', [CountryStateController::class, 'country']);
     Route::post('/list-state', [CountryStateController::class, 'state']);
+    //change password api
+    Route::post('/change-password', [ChangePasswordController::class, 'changepassword']);
+    //forgot passeword api
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
+    //reset password api
+    // Route::post('/reset-password', [ForgotPasswordController::class, 'ResetPassword']);
+    
+
 });
