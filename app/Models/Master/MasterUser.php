@@ -23,6 +23,11 @@ class MasterUser extends Authenticatable
         'profile_picture', 'status', 'created_by', 'updated_by'
     ];
 
+    static public function getEmailSingle($Email)
+    {
+        return MasterUser::where('email', '=', $Email)->where('status',0)->first();
+    }
+
     function country(){
         return $this->belongsTo(Country::class);
     }
