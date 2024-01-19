@@ -21,7 +21,6 @@ class CountryStateController extends ResponseController
             'country_code',
             'phone_code','created_at'
         ]);
-        // $data_query->
         if (!empty($request->keyword)) {
             $keyword = $request->keyword;
             $data_query->where(function ($query) use ($keyword) {
@@ -36,36 +35,29 @@ class CountryStateController extends ResponseController
     }
     public function state(Request $request)
     {
-        // $data_query = CustomerDetail::select(['contact_person_name', 'contact_person_country_code', 'contact_person_number', 'contact_person_work_location', 'contact_person_work_email', 'users.profile_picture'])->join('users', 'users.id', '=', 'customer_details.user_id')
-        // ->where(['users.user_type' => 2, 'users.id' => $id]);
-        // $data_query = State::Leftjoin('countries', 'countries.id', '=', 'states.country_id');
-
-        $data_query = State::Join('countries AS country', 'country.id', '=', 'states.country_id');
+        $data_query = State::Leftjoin('countries', 'countries.id', '=', 'states.country_id');
         $data_query->select([
-            'id',
-            'name',
-            'country.name',
+            'states.id AS id',
+            'states.name AS state_name',
+            'countries.name AS country_name',
+            'states.state_code',
+            'states.country_id',
+            'countries.country_code',
+            'countries.phone_code',
            
         ]);
-        print_r($data_query->get()->toArray());die();
-        $data_query->select([
-            'id',
-            'id',
-            'price',
-            'features', 'frequency', 'is_renewal_plan', 'created_at'
-        ]);
-       
-        // $data_query->
         if (!empty($request->keyword)) {
             $keyword = $request->keyword;
             $data_query->where(function ($query) use ($keyword) {
-                $query->where('name', 'LIKE', '%' . $keyword . '%')
+                $query->where('states.name', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('state_code', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('countries.name', 'LIKE', '%' . $keyword . '%')
                     ->orWhere('country_code', 'LIKE', '%' . $keyword . '%')
                     ->orWhere('phone_code', 'LIKE', '%' . $keyword . '%');
                     
             });
         }
-        $fields = ["id", "name", "country_code", "phone_code"];
+        $fields = ["id", "states.name", "state_code","countries.name","country_code", "phone_code"];
         return $this->commonpagination($request, $data_query, $fields);
     }
 
