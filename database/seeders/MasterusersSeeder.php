@@ -48,7 +48,7 @@ class MasterusersSeeder extends Seeder
             'gender'            => 'Male',
             'master_society_ids' => jsonEncodeIntArr([$data_query]),
             'password'          => Hash::make('admin@123'),
-            'usertype'          => 2,
+            'usertype'          => 1,
             'country_id'           => 101,
             'state_id'             => 12,
             'city'              => 5,
