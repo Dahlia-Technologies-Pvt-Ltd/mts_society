@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('street_address')->nullable()->default(null);
             $table->foreignId('country')->constrained()->default(0)->nullable();
             $table->foreignId('state')->constrained()->default(0)->nullable();  
-            $table->foreignId('city')->constrained()->default(0)->nullable();
+            $table->string('city', 50)->nullable()->default(null);
             $table->string('zipcode')->nullable()->default(null);
             $table->string('country_code')->nullable()->default(null);
             $table->tinyInteger('is_approv')->default(0)->comment('0-Not_Approve,1-Approve');//)0-Not_Approve, 1-Means Approve 
