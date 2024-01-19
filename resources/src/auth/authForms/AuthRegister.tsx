@@ -17,6 +17,7 @@ import CustomTextField from '@src/components/forms/theme-elements/CustomTextFiel
 import CustomFormLabel from '@src/components/forms/theme-elements/CustomFormLabel';
 import CustomCheckbox from '@src/components/forms/theme-elements/CustomCheckbox';
 import ParentCard from '@src/components/shared/ParentCard';
+import Logo from '@src/layouts/full/shared/logo/Logo1';
 const steps = ['Account', 'Society', 'Subscription'];
 
 const AuthRegister = () => {
@@ -94,12 +95,14 @@ const AuthRegister = () => {
       case 0:
         return (
           <Box>
-            <CustomFormLabel htmlFor="Name">Full Name</CustomFormLabel>
-            <CustomTextField id="Name" placeholder="Full Name" variant="outlined" fullWidth />
-            <CustomFormLabel htmlFor="phone_number">Mobile Number</CustomFormLabel>
-            <CustomTextField id="phone_number" placeholder="Mobile Number" type="phone_number" variant="outlined" fullWidth />
-            <CustomFormLabel htmlFor="Email">Email Address</CustomFormLabel>
-            <CustomTextField id="Email" placeholder="Email Address" type="email" variant="outlined" fullWidth />
+            <Grid container spacing={1}>
+              <CustomFormLabel htmlFor="Name">Full Name</CustomFormLabel>
+              <CustomTextField id="Name" placeholder="Full Name" variant="outlined" fullWidth />
+              <CustomFormLabel htmlFor="phone_number">Mobile Number</CustomFormLabel>
+              <CustomTextField id="phone_number" placeholder="Mobile Number" type="phone_number" variant="outlined" fullWidth />
+              <CustomFormLabel htmlFor="Email">Email Address</CustomFormLabel>
+              <CustomTextField id="Email" placeholder="Email Address" type="email" variant="outlined" fullWidth />
+            </Grid>
           </Box>
         );
       case 1:
@@ -186,7 +189,10 @@ const AuthRegister = () => {
             <Grid container spacing={2}>
               {topCards.map((topcard, i) => (
                 <Grid item xs={12} sm={4} lg={6} key={i}>
-                  <Box bgcolor="#899202" textAlign="center">
+                  <Box textAlign="center" 
+                    borderRadius={1} // Set the border radius
+                    border="1px solid black" // Set the border color and width
+                  >
                     <CardContent>
                       <RadioGroup
                         aria-label={`select-plan-${i}`}
@@ -199,10 +205,10 @@ const AuthRegister = () => {
                           control={<Radio/>}
                           label={
                             <>
-                              <Typography color="white" mt={1} variant="subtitle1" fontWeight={600}>
+                              <Typography mt={1} variant="subtitle1" fontWeight={600}>
                                 {topcard.title}
                               </Typography>
-                              <Typography color="white" fontSize={12} variant="h6" fontWeight={400}>
+                              <Typography fontSize={11} variant="subtitle1">
                                 {`(\u20B9${topcard.digits} per month)`}
                               </Typography>
                             </>
@@ -226,7 +232,13 @@ const AuthRegister = () => {
   };
 
   return (
-    <PageContainer>
+    <Grid item paddingX='120px' overflow='hidden'>
+      {/* <Logo /> */}
+      <Typography variant="h3"
+        mb={4}
+        fontWeight={600}>MTS - Society Register
+      </Typography>
+      <Stack>
         <Box width="100%">
           <Stepper activeStep={activeStep}>
             {steps.map((label, index) => {
@@ -299,7 +311,24 @@ const AuthRegister = () => {
             </>
           )}
         </Box>
-    </PageContainer>
+      </Stack>
+      <Stack direction="row" spacing={1} mt={3}>
+        <Typography color="textSecondary" variant="h6" fontWeight="400">
+          Already have an Account?
+        </Typography>
+        <Typography
+          component={Link}
+          to="/login"
+          fontWeight="500"
+          sx={{
+            textDecoration: 'none',
+            color: 'primary.main',
+          }}
+        >
+          Sign In
+        </Typography>
+      </Stack>
+    </Grid>
   );
 };
 
