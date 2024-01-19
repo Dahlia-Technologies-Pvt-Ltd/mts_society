@@ -34,10 +34,12 @@ const AuthRegister = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [countryOptions, setCountryData] = useState([]);
   const [stateOptions, setStateData] = useState([]);
+  const [topCards, setMasterSubscriptionData] = useState([]);
   const appUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchCountry();
+    fetchMasterSubscription();
   }, []);
 
   // Function to fetch data from the API
@@ -72,6 +74,25 @@ const AuthRegister = () => {
         }else{
           setStateData([]);
           formik.setFieldValue('state', '');
+        }
+    } catch (error) {
+        console.error("Error fetching data:", error); // Log any errors
+    }
+  };
+
+  // Function to fetch data from the API
+  const fetchMasterSubscription = async () => {
+    try {
+        const formData = new FormData();
+        formData.append("sortBy", 'id');
+        formData.append('sortOrder', 'asc');
+        const API_URL = appUrl + '/api/list-master-subscription';
+        const response = await axios.post(API_URL, formData);
+        //console.log(JSON.stringify(response.data.data.data));
+        if (response && response.data && response.data.data) {
+          setMasterSubscriptionData(response.data.data.data);
+        }else{
+          setMasterSubscriptionData([]);
         }
     } catch (error) {
         console.error("Error fetching data:", error); // Log any errors
@@ -155,12 +176,6 @@ const AuthRegister = () => {
   const handlePlanChange = (event) => {
     setSelectedPlan(event.target.value);
   };
-  const topCards = [
-    { title: 'Starter', digits: '1000' },
-    { title: 'Economy', digits: '2000' },
-    { title: 'Premium', digits: '3000'},
-    { title: 'Premium Plus', digits: '4000'},
-  ];
 
   // Formik form management
   const formik = useFormik({
@@ -189,13 +204,40 @@ const AuthRegister = () => {
       if(activeStep === steps.length - 1){
         try {
           // Make API request here
-          const response = await axios.post('YOUR_API_ENDPOINT', values);
-          setSnackbarMessage('Registration successful!');
+          const formData = new FormData();
+          formData.append("name", values.fullName);
+          formData.append('email', values.email);
+          formData.append('phone_number', values.phone_number);
+          formData.append('password', values.password);
+          formData.append('society_name', values.society_name);
+          formData.append('address', values.address);
+          formData.append('country_id', values.country);
+          formData.append('city', values.city);
+          formData.append('state_id', values.state);
+          formData.append('zipcode', values.pincode);
+          formData.append('master_subscription_id', selectedPlan);
+
+          const API_URL = appUrl + '/api/register';
+          const response = await axios.post(API_URL, formData);
+
+          setSnackbarMessage('Congratulations!! Your account is created successfully. please click on login button to proceed further.');
           setSnackbarSeverity('success');
           setSnackbarOpen(true);
         } catch (error) {
+          const validationErrors = error.response.data.validation_error;
+          const errorMessages = [];
+          // Iterate through each field in the validation_errors object
+          for (const field in validationErrors) {
+            if (validationErrors.hasOwnProperty(field)) {
+                // Get the error message for the field
+                const errorMessage = validationErrors[field][0];
+                // Add the error message to the array
+                errorMessages.push(errorMessage);
+            }
+          }
+          const concatenatedErrorMessage = errorMessages.join("\n");
           console.error('Error submitting form:', error);
-          setSnackbarMessage('Error submitting form. Please try again.');
+          setSnackbarMessage(concatenatedErrorMessage);
           setSnackbarSeverity('error');
           setSnackbarOpen(true);
         }
@@ -397,7 +439,7 @@ const AuthRegister = () => {
         );
       case 2:
         return (
-          <Box pt={4} mb={4}>
+          <Box pt={2} mb={4}>
             <Grid container spacing={2}>
               {topCards.map((topcard, i) => (
                 <Grid item xs={12} sm={4} lg={6} key={i}>
@@ -413,15 +455,15 @@ const AuthRegister = () => {
                         onChange={handlePlanChange}
                       >
                         <FormControlLabel
-                          value={`${i + 1}`}
+                          value={topcard.id}
                           control={<Radio/>}
                           label={
                             <>
                               <Typography mt={1} variant="subtitle1" fontWeight={600}>
-                                {topcard.title}
+                                {topcard.subscription_plan}
                               </Typography>
-                              <Typography fontSize={11} variant="subtitle1">
-                                {`(\u20B9${topcard.digits} per month)`}
+                              <Typography fontSize={12} variant="subtitle1">
+                                {`\u20B9${topcard.price}`} <br/>per month
                               </Typography>
                             </>
                           }
