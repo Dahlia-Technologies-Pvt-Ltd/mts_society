@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\Master;
 
 use App\Http\Controllers\Controller;
-use App\Models\Master\MasterUser;
+use App\Models\Master\{MasterUser,UserOtp};
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\ResponseController as ResponseController;
 use Illuminate\Support\Facades\Auth;
@@ -18,10 +18,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Mail; 
 use App\Helpers\MailHelper;
+use App\Helpers\Setting;
 
 
 class ForgotPasswordController extends ResponseController
 {
+    use Setting;
     /**
      * Display a listing of the resource.
      */
@@ -51,22 +53,28 @@ class ForgotPasswordController extends ResponseController
 		{
 			// Load user from database 
 			$user = MasterUser::getEmailSingle($request->email);
+            $id=$user->id;
+            $phone_number=$user->phone_number;
+            $random_otp=rand(100000,999999);
+            $ins_arr=['otp'=>$random_otp];
 			if (empty($user)) {
 				$response['status'] = 401;
 				$response['message'] = 'Email does not exists.';
 				return $this->sendError($response);
 			}
 			else{
+                $qry = UserOtp::updateOrCreate(
+                    ['master_user_id' => $id],
+                    $ins_arr
+                );
 				$random = Str::random(30);
-				// $user->forgot_password_token_time = Carbon::now()->addMinutes(30);
-				// $user->save();
 				try{
 					$AppURL = env('APP_URL');
-                    // print_r($AppURL);die();
 					$TemplateData = array(						
 						'EMAIL' => $user->email,
 						'USER_NAME' => $user->name,
-						'RESET_LINK' => "<a href='{$AppURL}/reset-password/{$random}'><button type='button' class='btn btn-primary'>Reset Password</button></a>"
+						'RESET_LINK' => "<a href='{$AppURL}/reset-password/{$random}'><button type='button' class='btn btn-primary'>Reset Password</button></a>",
+                        // 'OTP' =>$random_otp 
 					);
 					MailHelper::sendMail('FORGOT_PASSWORD',$TemplateData);
 					$response['status'] = 200;
@@ -81,8 +89,6 @@ class ForgotPasswordController extends ResponseController
 		}
 	}
 
-
-    
     /**
      * Display the specified resource.
      */
