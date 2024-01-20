@@ -28,7 +28,12 @@ Route::controller(AuthController::class)->group(function () {
 });
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 //Register
-Route::post('/register', [RegisterController::class, 'register']); 
+Route::post('/register', [RegisterController::class, 'register']);
+//Masters
+Route::post('/list-country', [CountryStateController::class, 'country']);
+Route::post('/list-state', [CountryStateController::class, 'state']);
+Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'indexing']);
+
 //Only For Super Admin
 Route::middleware('auth:sanctum','superadmin')->group(function () {
     //master society apis
@@ -38,7 +43,6 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
     Route::post('/delete-society', [SocietyController::class, 'delete']);
     //master subscription apis
     Route::post('/add-master-subscription', [MasterSubscriptionController::class, 'store']);
-    Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'indexing']);
     Route::get('/show-master-subscription/{id}', [MasterSubscriptionController::class, 'show']);
     Route::post('/delete-master-subscription', [MasterSubscriptionController::class, 'delete']);
     //master user apis
@@ -68,9 +72,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-user', [ProfileUpdateController::class, 'updateuser']);
     //update only profile picture
     Route::post('/update-profile-picture', [ProfileUpdateController::class, 'updateprofilepicture']);
-    //list of country and state
-    Route::post('/list-country', [CountryStateController::class, 'country']);
-    Route::post('/list-state', [CountryStateController::class, 'state']);
     //change password api
     Route::post('/change-password', [ChangePasswordController::class, 'changepassword']);
     //forgot passeword api
