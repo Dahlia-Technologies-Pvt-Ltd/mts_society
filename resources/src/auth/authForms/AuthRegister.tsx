@@ -10,9 +10,9 @@ import { Box, Typography, Button, Divider, Stack,
   Select,
   Autocomplete,
   Radio, RadioGroup,FormControl, FormLabel,CardContent,
-  Snackbar,
+  Snackbar, Dialog, DialogContent,DialogActions,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PageContainer from '@src/components/container/PageContainer';
 import CustomTextField from '@src/components/forms/theme-elements/CustomTextField';
 import CustomFormLabel from '@src/components/forms/theme-elements/CustomFormLabel';
@@ -22,6 +22,7 @@ import Logo from '@src/layouts/full/shared/logo/Logo1';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios'; // Import Axios for API calls
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const steps = ['Account', 'Society', 'Subscription'];
 
@@ -35,7 +36,10 @@ const AuthRegister = () => {
   const [countryOptions, setCountryData] = useState([]);
   const [stateOptions, setStateData] = useState([]);
   const [topCards, setMasterSubscriptionData] = useState([]);
+  const [successMessage, setSuccessMessage] = useState(false);
+
   const appUrl = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCountry();
@@ -194,13 +198,17 @@ const AuthRegister = () => {
     validationSchema: validationSchema[validActiveStep],
     onSubmit: async (values) => {
       // Handle submission logic
+      
       if (formik.isValid) {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        setValidActiveStep((prevActiveStep) => prevActiveStep + 1);
+        if(activeStep != 2){
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+          setValidActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
       } else {
         // Handle validation errors or take appropriate action
         console.log('Form is not valid');
       }
+      console.log('in which step now we are', activeStep);
       if(activeStep === steps.length - 1){
         try {
           // Make API request here
@@ -220,9 +228,11 @@ const AuthRegister = () => {
           const API_URL = appUrl + '/api/register';
           const response = await axios.post(API_URL, formData);
 
-          setSnackbarMessage('Congratulations!! Your account is created successfully. please click on login button to proceed further.');
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
+          // setSnackbarMessage('Congratulations!! Your account is created successfully. please click on login button to proceed further.');
+          // setSnackbarSeverity('success');
+          // setSnackbarOpen(true);
+          setSuccessMessage(true);
+          handleOpenSuccessModal();
         } catch (error) {
           const validationErrors = error.response.data.validation_error;
           const errorMessages = [];
@@ -236,10 +246,12 @@ const AuthRegister = () => {
             }
           }
           const concatenatedErrorMessage = errorMessages.join("\n");
-          console.error('Error submitting form:', error);
           setSnackbarMessage(concatenatedErrorMessage);
           setSnackbarSeverity('error');
           setSnackbarOpen(true);
+          setTimeout(() => {
+            setSnackbarOpen(false);
+          }, 5000);
         }
       }
     },
@@ -485,6 +497,15 @@ const AuthRegister = () => {
     setActiveStep(0);
   };
 
+  const [isSuccessModalOpen, setSuccessModalOpen] = useState(false);
+  const handleOpenSuccessModal = () => {
+    setSuccessModalOpen(true);
+  };
+  const handleCloseSuccessModal = () => {
+    setSuccessModalOpen(false);
+    navigate('/login');
+  };
+
   return (
     <Grid item paddingX='120px' overflow='hidden'>
       {/* <Logo /> */}
@@ -514,26 +535,7 @@ const AuthRegister = () => {
               );
             })}
           </Stepper>
-          {activeStep === steps.length ? (
-            <>
-              <Stack spacing={2} mt={3}>
-                <Alert severity="success">
-                  <Typography variant="h6" p={2} fontWeight={400}>
-                    Congratulations!!<br/>
-                    Your account is created successfully. please click on login button to proceed further.
-                  </Typography>
-                </Alert>
-
-                <Box textAlign="right">
-                  <Link to='/login'>
-                    <Button variant="contained" color="secondary">
-                      Login
-                    </Button>
-                  </Link>
-                </Box>
-              </Stack>
-            </>
-          ) : (
+          {activeStep !== steps.length && (
             <>
               <Box>{handleSteps(activeStep)}</Box>
 
@@ -593,6 +595,34 @@ const AuthRegister = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+      {/* Success Modal */}
+      <Dialog open={isSuccessModalOpen}>
+        <DialogContent
+          sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+          }}
+        >
+          <CheckCircleIcon
+              style={{ color: "#13deb9", fontSize: "3rem" }}
+          />
+          <Typography variant="h6" align="center">
+              Congratulations !
+          </Typography>
+          <Typography variant="body1" align="center" mt={1}>
+            Your account is created successfully.<br/> Please click on the login button to proceed further.
+          </Typography>
+        </DialogContent>
+        <DialogActions
+            sx={{ display: "flex", justifyContent: "center" }}
+        >
+            <Button onClick={handleCloseSuccessModal} color="primary">
+                Login
+            </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 };

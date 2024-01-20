@@ -10,6 +10,7 @@ class State extends Model
 {
     use HasFactory;
     protected $table = 'states';
+    protected $connection = 'sqlsrv';
     public function masteruser(){
         return $this->hasMany(MasterUser::class);
     }
