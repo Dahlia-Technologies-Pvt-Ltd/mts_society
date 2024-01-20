@@ -12,6 +12,7 @@ class MasterSubscription extends Model
     use HasFactory;
     use SoftDeletes;
     protected $table = 'master_subscriptions';
+    protected $connection = 'sqlsrv';
     protected $fillable = ['subscription_plan', 'price', 'frequency',
      'features', 'is_renewal_plan',
     'status', 'created_by', 'updated_by'];
