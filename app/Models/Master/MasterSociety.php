@@ -13,6 +13,7 @@ class MasterSociety extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    protected $connection = 'sqlsrv';
     protected $table = 'master_socities';
     protected $fillable = ['society_unique_code', 'society_name',
      'email', 'phone_number',

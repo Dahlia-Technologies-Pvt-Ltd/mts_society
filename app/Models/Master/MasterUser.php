@@ -15,6 +15,7 @@ use App\Models\Master\{Country,State,City};
 class MasterUser extends Authenticatable
 {
     use HasFactory, SoftDeletes, Notifiable, HasApiTokens;
+    protected $connection = 'sqlsrv';
 
     protected $fillable = [
         'name', 'username', 'user_code', 'email', 'password', 'phone_number',
@@ -22,6 +23,11 @@ class MasterUser extends Authenticatable
         'zipcode', 'usertype', 'blocked_at', 
         'profile_picture', 'status', 'created_by', 'updated_by'
     ];
+
+    static public function getEmailSingle($Email)
+    {
+        return MasterUser::where('email', '=', $Email)->where('status',0)->first();
+    }
 
     function country(){
         return $this->belongsTo(Country::class);

@@ -7,7 +7,8 @@ use App\Http\Controllers\API\Master\SocietyController;
 use App\Http\Controllers\API\Master\MasterSubscriptionController;
 use App\Http\Controllers\API\Master\MasterUserController;
 use App\Http\Controllers\API\Master\CountryStateController;
-
+use App\Http\Controllers\API\Master\ChangePasswordController;
+use App\Http\Controllers\API\Master\ForgotPasswordController;
 use App\Http\Controllers\API\Master\ProfileUpdateController;
 use App\Http\Controllers\API\Admin\TowerController;
 use App\Http\Controllers\API\RegisterController;
@@ -27,7 +28,14 @@ Route::controller(AuthController::class)->group(function () {
 });
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 //Register
-Route::post('/register', [RegisterController::class, 'register']); 
+Route::post('/register', [RegisterController::class, 'register']);
+//forgot passeword api
+Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
+//Masters
+Route::post('/list-country', [CountryStateController::class, 'country']);
+Route::post('/list-state', [CountryStateController::class, 'state']);
+Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'indexing']);
+
 //Only For Super Admin
 Route::middleware('auth:sanctum','superadmin')->group(function () {
     //master society apis
@@ -37,7 +45,6 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
     Route::post('/delete-society', [SocietyController::class, 'delete']);
     //master subscription apis
     Route::post('/add-master-subscription', [MasterSubscriptionController::class, 'store']);
-    Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'indexing']);
     Route::get('/show-master-subscription/{id}', [MasterSubscriptionController::class, 'show']);
     Route::post('/delete-master-subscription', [MasterSubscriptionController::class, 'delete']);
     //master user apis
@@ -63,9 +70,10 @@ Route::middleware('auth:sanctum','user')->group(function () {
 });
 //For ALL
 Route::middleware('auth:sanctum')->group(function () {
+    //update profile(whole)
     Route::post('/update-user', [ProfileUpdateController::class, 'updateuser']);
+    //update only profile picture
     Route::post('/update-profile-picture', [ProfileUpdateController::class, 'updateprofilepicture']);
-
-    Route::post('/list-country', [CountryStateController::class, 'country']);
-    Route::post('/list-state', [CountryStateController::class, 'state']);
+    //change password api
+    Route::post('/change-password', [ChangePasswordController::class, 'changepassword']);
 });

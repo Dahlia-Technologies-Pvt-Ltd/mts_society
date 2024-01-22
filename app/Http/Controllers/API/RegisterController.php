@@ -20,6 +20,7 @@ class RegisterController extends ResponseController
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:master_users',
             'phone_number' => 'required|string|unique:master_users',
+            'password' => 'required',
             'society_name' => 'required|string|max:255|unique:master_socities',
         ]);
         //Through validation Error
@@ -33,7 +34,7 @@ class RegisterController extends ResponseController
             'email' => $request->email,
             'username' => $this->cleanName($request->name),
             'phone_number' => $request->phone_number,
-            'password' => Hash::make($request->email),
+            'password' => Hash::make($request->password),
             'usertype' => 1,
             'country_id' =>isset($request->country_id)?$request->country_id:'-',
             'state_id' =>isset($request->state_id)?$request->state_id:'-',
