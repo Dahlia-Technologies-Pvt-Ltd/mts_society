@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password')->nullable()->default(null);
             $table->string('phone_number', 15)->unique();
-            $table->string('master_society_ids')->nullalbe()->default(0);
+            $table->string('master_society_ids')->nullable();
             $table->enum('gender', ['Male','Female'])->nullable()->default(null);
             $table->string('address')->nullable()->default(null);
             $table->foreignId('country_id')->constrained()->default(0)->nullable();
