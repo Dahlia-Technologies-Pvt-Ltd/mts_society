@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\Master;
 
 use App\Http\Controllers\Controller;
-use App\Models\Master\MasterUser;
+use App\Models\Master\{MasterUser,UserOtp};
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\ResponseController as ResponseController;
 use Illuminate\Support\Facades\Auth;
@@ -58,15 +58,13 @@ class ForgotPasswordController extends ResponseController
 			}
 			else{
 				$random = Str::random(30);
-				// $user->forgot_password_token_time = Carbon::now()->addMinutes(30);
-				// $user->save();
 				try{
 					$AppURL = env('APP_URL');
-                    // print_r($AppURL);die();
 					$TemplateData = array(						
 						'EMAIL' => $user->email,
 						'USER_NAME' => $user->name,
-						'RESET_LINK' => "<a href='{$AppURL}/reset-password/{$random}'><button type='button' class='btn btn-primary'>Reset Password</button></a>"
+						'RESET_LINK' => "<a href='{$AppURL}/reset-password/{$random}'><button type='button' class='btn btn-primary'>Reset Password</button></a>",
+                        // 'OTP' =>$random_otp 
 					);
 					MailHelper::sendMail('FORGOT_PASSWORD',$TemplateData);
 					$response['status'] = 200;
@@ -81,8 +79,6 @@ class ForgotPasswordController extends ResponseController
 		}
 	}
 
-
-    
     /**
      * Display the specified resource.
      */

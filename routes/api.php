@@ -76,4 +76,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-profile-picture', [ProfileUpdateController::class, 'updateprofilepicture']);
     //change password api
     Route::post('/change-password', [ChangePasswordController::class, 'changepassword']);
+    //forgot passeword api
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
+    Route::post('/login-send-otp', [AuthController::class, 'loginsendotp']);
+    //reset password api
+    // Route::post('/reset-password', [ForgotPasswordController::class, 'ResetPassword']);
+    
+
 });
