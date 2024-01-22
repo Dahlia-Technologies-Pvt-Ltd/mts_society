@@ -18,12 +18,10 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Mail; 
 use App\Helpers\MailHelper;
-use App\Helpers\Setting;
 
 
 class ForgotPasswordController extends ResponseController
 {
-    use Setting;
     /**
      * Display a listing of the resource.
      */
@@ -53,20 +51,12 @@ class ForgotPasswordController extends ResponseController
 		{
 			// Load user from database 
 			$user = MasterUser::getEmailSingle($request->email);
-            $id=$user->id;
-            $phone_number=$user->phone_number;
-            $random_otp=rand(100000,999999);
-            $ins_arr=['otp'=>$random_otp];
 			if (empty($user)) {
 				$response['status'] = 401;
 				$response['message'] = 'Email does not exists.';
 				return $this->sendError($response);
 			}
 			else{
-                $qry = UserOtp::updateOrCreate(
-                    ['master_user_id' => $id],
-                    $ins_arr
-                );
 				$random = Str::random(30);
 				try{
 					$AppURL = env('APP_URL');
