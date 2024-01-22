@@ -9,7 +9,7 @@ import CustomTextField from '../../components/forms/theme-elements/CustomTextFie
 import CustomFormLabel from '../../components/forms/theme-elements/CustomFormLabel';
 
 const validationSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid email format').required('Email is required'),
+  email: Yup.string().email('Please enter a valid email').required('Email is required'),
 });
 
 const AuthForgotPassword = () => {
@@ -29,10 +29,10 @@ const AuthForgotPassword = () => {
       try {
         setIsLoading(true);
         const formData = new FormData();
-        formData.append('email_id', values.email);
+        formData.append('email', values.email);
 
         const appUrl = import.meta.env.VITE_API_URL;
-        const API_URL = appUrl + '/api/forget-password';
+        const API_URL = appUrl + '/api/forgot-password';
 
         const response = await axios.post(`${API_URL}`, formData);
         console.log('ForgotPassword success:', response.data);
@@ -43,10 +43,24 @@ const AuthForgotPassword = () => {
       } catch (error) {
         console.error('ForgotPassword failed:', error);
         setIsErrorVisible(true);
-        if (error.response && error.response.data && error.response.data.message) {
+        if(error.response.data.validation_error){
+          const validationErrors = error.response.data.validation_error;
+          const errorMessages = [];
+          // Iterate through each field in the validation_errors object
+          for (const field in validationErrors) {
+            if (validationErrors.hasOwnProperty(field)) {
+              // Get the error message for the field
+              const errorMessage = validationErrors[field][0];
+              // Add the error message to the array
+              errorMessages.push(errorMessage);
+            }
+          }
+          const concatenatedErrorMessage = errorMessages.join("\n");
+          setErrorMessage(concatenatedErrorMessage);
+        }else{
+          if (error.response && error.response.data && error.response.data.message) {
           setErrorMessage(error.response.data.message);
-        } else {
-          setErrorMessage('An error occurred while reset the password.');
+          }
         }
       }finally{
         setIsLoading(false);

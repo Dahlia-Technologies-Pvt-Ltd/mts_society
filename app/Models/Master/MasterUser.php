@@ -15,6 +15,7 @@ use App\Models\Master\{Country,State,City};
 class MasterUser extends Authenticatable
 {
     use HasFactory, SoftDeletes, Notifiable, HasApiTokens;
+    protected $connection = 'sqlsrv';
 
     protected $fillable = [
         'name', 'username', 'user_code', 'email', 'password', 'phone_number',

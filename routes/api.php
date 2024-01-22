@@ -29,6 +29,8 @@ Route::controller(AuthController::class)->group(function () {
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 //Register
 Route::post('/register', [RegisterController::class, 'register']);
+//forgot passeword api
+Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
 //Masters
 Route::post('/list-country', [CountryStateController::class, 'country']);
 Route::post('/list-state', [CountryStateController::class, 'state']);
