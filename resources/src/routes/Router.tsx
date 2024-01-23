@@ -12,6 +12,8 @@ const ChangePassword = Loadable(lazy(() => import('../admin/change-password/Chan
 
 /* ****Super Admin Pages***** */
 const SuperAdminDashboard = Loadable(lazy(() => import('../superadmin/dashboard/SuperAdminDashboard')));
+const SubscriptionList = Loadable(lazy(() => import('../superadmin/mastersubscription/SubscriptionList')));
+const AddSubscription = Loadable(lazy(() => import('../superadmin/mastersubscription/AddSubscription')));
 
 // authentication
 const Login = Loadable(lazy(() => import('../auth/Login')));
@@ -41,6 +43,8 @@ const Router = [
       { path: '/admin/dashboard', exact: true, element: <AdminDashboard /> },
       { path: '/admin/change-password', exact: true, element: <ChangePassword /> },
       { path: '/super-admin/dashboard', exact: true, element: <SuperAdminDashboard /> },
+      { path: '/super-admin/subscription-plan-list', exact: true, element: <SubscriptionList /> },
+      { path: '/super-admin/add-subscription', exact: true, element: <AddSubscription /> },
     ],
   },
 ];

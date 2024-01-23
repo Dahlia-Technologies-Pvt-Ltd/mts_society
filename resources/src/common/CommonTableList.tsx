@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { alpha, useTheme } from '@mui/material/styles';
 import { format } from 'date-fns';
-import * as XLSX from 'xlsx';
 import Spinner from '@src/views/spinner/Spinner';
 import {
   Box,
@@ -31,21 +30,15 @@ import {
   Chip,
   ButtonGroup,
   AvatarGroup,
+  CircularProgress,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { useSelector, useDispatch } from '@src/store/Store';
-import { fetchProducts } from '@src/store/apps/eCommerce/ECommerceSlice';
-import CustomCheckbox from '@src/components/forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '@src/components/forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconSearch, IconTrash, IconChecks, IconEdit, IconZoomCode, IconMail, IconPlus, IconTicket, IconSettings } from '@tabler/icons';
-import { ProductType } from '@src/types/apps/eCommerce';
 import { Link } from 'react-router-dom';
 import KeyboardArrowDownIcon from '@mui/icons-material/AddCircle';
 import KeyboardArrowUpIcon from '@mui/icons-material/RemoveCircle';
 import axios from "axios";
-import CircularProgress from '@material-ui/core/CircularProgress';
-import User1 from '@src/assets/images/profile/user-1.jpg';
-import User3 from '@src/assets/images/profile/user-3.jpg';
 
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
