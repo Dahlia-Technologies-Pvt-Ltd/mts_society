@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\ResponseController as ResponseController;
 use App\Models\Master\{MasterUser, MasterSociety, UserSubscription, MasterSubscription, MasterDatabase};
+use App\Models\CopyMasterSociety;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -93,8 +94,9 @@ class RegisterController extends ResponseController
                 'master_socities_id' => $master_society->id,
             ]);
             //If Master database inserted successfully then call DataServices
-            ($master_database) ? $databaseValue = (new DatabaseService())->createDatabase($params = ['dbname' => $dbName, 'dbpassword' => $dbPassword]) : '';
+            ($master_database) ? $databaseValue = (new DatabaseService())->createDatabase(['dbname' => $dbName, 'dbpassword' => $dbPassword]) : '';
             $response['data'] = $databaseValue;
+            //(new CopyMasterSociety())->masterToSociety(['databaseName' => $databaseValue['dbname'], 'databasePassword' => $databaseValue['dbpassword']]);
         }
         
         $response['status'] = 200;
