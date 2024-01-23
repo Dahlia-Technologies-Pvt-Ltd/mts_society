@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('hd_master_category_id')->constrained();//no need to society id - we can get this from category table
             $table->foreignId('hd_master_sub_category_id')->constrained()->default(0)->nullable();//we are not using this right now
             $table->foreignId('non_residential_user_detail_id')->constrained()->default(0)->nullable();  //Resolver*
-            $table->string('service_provider_master_ids')->nullable()->default(null); //array - Service Provided by resolver
+            $table->string('master_service_provider_ids')->nullable()->default(null); //array - Service Provided by resolver
 
             $table->timestamps();
         });
