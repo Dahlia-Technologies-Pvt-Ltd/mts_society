@@ -10,7 +10,7 @@ import { Box, Typography, Button, Divider, Stack,
   Select,
   Autocomplete,
   Radio, RadioGroup,FormControl, FormLabel,CardContent,
-  Snackbar, Dialog, DialogContent,DialogActions,
+  Snackbar, Dialog, DialogContent,DialogActions,CircularProgress,
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import PageContainer from '@src/components/container/PageContainer';
@@ -37,6 +37,7 @@ const AuthRegister = () => {
   const [stateOptions, setStateData] = useState([]);
   const [topCards, setMasterSubscriptionData] = useState([]);
   const [successMessage, setSuccessMessage] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const appUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
@@ -211,6 +212,7 @@ const AuthRegister = () => {
       console.log('in which step now we are', activeStep);
       if(activeStep === steps.length - 1){
         try {
+          setIsLoading(true);
           // Make API request here
           const formData = new FormData();
           formData.append("name", values.fullName);
@@ -252,6 +254,8 @@ const AuthRegister = () => {
           setTimeout(() => {
             setSnackbarOpen(false);
           }, 5000);
+        }finally{
+          setIsLoading(false);
         }
       }
     },
@@ -294,11 +298,11 @@ const AuthRegister = () => {
                 helperText={formik.touched.phone_number && formik.errors.phone_number}
                 onBlur={formik.handleBlur}
                 onKeyDown={(e) => {
-                  // Allow only numeric key presses
-                  if (e.key === 'e' || e.key === '-' || e.key === '+' || isNaN(Number(e.key))) {
+                  // Allow only numeric key presses and specific keys (e, -, +)
+                  if (!(e.key === 'e' || e.key === '-' || e.key === '+' || !isNaN(Number(e.key)) || e.key === 'Backspace')) {
                     e.preventDefault();
                   }
-                }}
+                }}              
               />
 
               <CustomFormLabel htmlFor="email">Email Address<span style={{ color: 'red' }}>*</span></CustomFormLabel>
@@ -560,8 +564,10 @@ const AuthRegister = () => {
                   onClick={handleNext}
                   variant="contained"
                   color={activeStep === steps.length - 1 ? 'primary' : 'secondary'}
+                  disabled={isLoading}
                 >
                   {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
+                  {isLoading && <CircularProgress size={24} color="inherit" />}
                 </Button>
               </Box>
             </>

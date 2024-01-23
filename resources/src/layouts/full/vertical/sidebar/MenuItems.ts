@@ -85,6 +85,13 @@ Menuitems = [
     href: '/super-admin/dashboard',
     chipColor: 'secondary',
   },
+  {
+    id: uniqueId(),
+    title: 'Subscription Plan',
+    icon: IconCurrencyDollar,
+    href: '/super-admin/subscription-plan-list',
+    activeUrls: ['/super-admin/subscription-plan-list',`/super-admin/add-subscription`,`/super-admin/add-subscription/*`],
+  },
 ];
 }else if(userType === '1'){
   Menuitems = [
