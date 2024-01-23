@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hd_master_categories', function (Blueprint $table) {
+        Schema::create('hd_master_further_classifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('societies_id')->constrained();
-            $table->string('category_name')->nullable()->default(null);
+            $table->foreignId('hd_master_sub_category_id')->constrained();//no need to society id - we can get this from category table
+            $table->string('further_classification_name')->nullable()->default(null);
             $table->string('image')->nullable()->default(null); 
-            $table->Integer('turn_around_days')->default(0);
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hd_master_categories');
+        Schema::dropIfExists('hd_master_further_classifications');
     }
 };

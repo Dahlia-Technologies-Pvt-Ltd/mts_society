@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('service_provider_master', function (Blueprint $table) {
+        Schema::create('master_service_providers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('societies_id')->constrained();
             $table->string('name')->nullable(); 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('service_provider_master');
+        Schema::dropIfExists('master_service_providers');
     }
 };

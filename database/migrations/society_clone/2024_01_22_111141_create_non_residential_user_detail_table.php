@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('non_residential_user_detail', function (Blueprint $table) {
+        Schema::create('non_residential_user_details', function (Blueprint $table) {
             $table->id();
             $table->string('society_ids')->nullable();// array -  Service Providers / External Facility Manager can provide service to multiple socities
             $table->foreignId('user_id')->constrained()->default(0)->nullable(); // This can be NULL in case of Service Providers / External Facility Manager
@@ -31,8 +31,8 @@ return new class extends Migration
             $table->string('aadhaar_no')->nullable();
             $table->string('pan_no')->unique();//PAN
 
-            //Service Provider specifi fields
-            $table->string('service_provider_master_ids')->nullable();// array - can be multiple ex [2,3,4]
+            //Service Provider specifi fields //
+            $table->string('master_service_provider_ids')->nullable();// array - can be multiple ex [2,3,4]
 
             //Facility Manager Specific Fields
             $table->string('management_company_name')->nullable()->default(null);
@@ -55,6 +55,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('non_residential_user_detail');
+        Schema::dropIfExists('non_residential_user_details');
     }
 };
