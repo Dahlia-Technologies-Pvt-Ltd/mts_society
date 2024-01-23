@@ -39,6 +39,8 @@ return new class extends Migration
             $table->string('management_company_country_code')->nullable()->default(null);
             $table->string('management_company_phone_number', 15)->nullable()->default(null);
 
+            $table->tinyInteger('team_type')->default(0)->comment('0-Facility Manager,1-Service Provider,2-Security Guard');
+            
             //-------------
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//0-Active, 1-Means Inactive
             $table->unsignedBigInteger('created_by')->nullable();
