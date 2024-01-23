@@ -12,8 +12,7 @@ class Floor extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $fillable = ['subscription_plan', 'price', 'frequency',
-     'features', 'is_renewal_plan',
+    protected $fillable = ['floor_name', 'tower_id', 'wing_id',
     'status', 'created_by', 'updated_by'];
 
     public function getCreatedAtAttribute($data)

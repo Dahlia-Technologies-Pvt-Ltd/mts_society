@@ -7,6 +7,8 @@ use App\Http\Controllers\API\ResponseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Admin\Tower;
+use Illuminate\Support\Facades\DB;
+// use App\Models\Master\Tower;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\Master\MasterSociety;
 
@@ -21,15 +23,22 @@ class TowerController extends ResponseController
          $data_query = Tower::where([['status', 0]]);
          $data_query->select([
              'id',
-             'template_name',
-             'template_content',
-             'template_code', 'is_mandatory', 'default_spare_or_customer', 'attachments', 'created_at'
+             'tower_name', 'societies_id', 'created_at'
          ]);
          return $data_query;
      }
     public function indexing(Request $request)
     {
-        //
+        // print_r('tttt');die();
+        $data_query = $this->list_show_query();
+        if (!empty($request->keyword)) {
+            $keyword = $request->keyword;
+            $data_query->where(function ($query) use ($keyword) {
+                $query->where('tower_name', 'LIKE', '%' . $keyword . '%');
+            });
+        }
+        $fields = ["id", "tower_name"];
+        return $this->commonpagination($request, $data_query, $fields);
     }
 
     /**
@@ -38,7 +47,9 @@ class TowerController extends ResponseController
     public function store(Request $request)
     {
         $societies_id = getsocietyid($request->header('society_id'));
-        // print_r($societies_id);die();
+        $sql = "SELECT id FROM societies WHERE master_society_id =  $societies_id";
+        $results = DB::select($sql);
+        $net_id=$results[0]->id;
         if ($request->id > 0) {
             $existingRecord = Tower::find($request->id);
             if (!$existingRecord) {
@@ -47,19 +58,8 @@ class TowerController extends ResponseController
                 return $this->sendError($response);
             }
         }
-        // 'societies_id', 'tower_name',
-        // 'status', 'created_by', 'updated_by'
-        // if ($request->societies_id > 0) {
-        //     $Record = MasterSociety::find($request->societies_id);
-        //     if (!$Record) {
-        //         $response['status'] = 400;
-        //         $response['message'] = 'Record not found for the society ID.';
-        //         return $this->sendError($response);
-        //     }
-        // }
         $id = empty($request->id) ? 'NULL' : $request->id;
         $validator = Validator::make($request->all(), [
-            // 'societies_id'                          => 'required|integer|min:1',
             'tower_name'                                    => 'required|unique:towers,tower_name,' . $id . ',id,deleted_at,NULL|max:255',
             
             
@@ -71,11 +71,10 @@ class TowerController extends ResponseController
             $message = empty($request->id) ? "Tower created successfully." : "Tower updated successfully.";
 
             $ins_arr = [
-                'societies_id'                        => $societies_id,
+                'societies_id'                        => $net_id,
                 'tower_name'                     => $request->tower_name,
                 'updated_by'                           => auth()->id(),
             ];
-            // $table->tinyInteger('is_renewal_plan')->default(1)->comment('0-No_Renewal,1-Renewal');
             if (!$request->id) {
                 $ins_arr['created_by'] = auth()->id();
             } else {
@@ -90,7 +89,7 @@ class TowerController extends ResponseController
             if ($qry) {
                 $response['status'] = 200;
                 $response['message'] = $message;
-                $response['data'] = ['id' => $qry->id, 'societies_id' => 25, 
+                $response['data'] = ['id' => $qry->id,'child_society_id'=>$net_id,'master_societies_id' =>$societies_id , 
                 'tower_name' => $qry->tower_name];
                 return $this->sendResponse($response);
             } else {
