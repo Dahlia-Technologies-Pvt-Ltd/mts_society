@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('flats', function (Blueprint $table) {
+        Schema::create('hd_master_sub_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('flat_name');//Flat Number
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('floor_id')->constrained();
+            $table->foreignId('hd_master_category_id')->constrained();//no need to society id - we can get this from category table
+            $table->string('sub_category_name')->nullable()->default(null);
+            $table->string('image')->nullable()->default(null); 
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('flats');
+        Schema::dropIfExists('hd_master_sub_categories');
     }
 };

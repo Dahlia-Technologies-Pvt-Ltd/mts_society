@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('parkings', function (Blueprint $table) {
             $table->id();
-            $table->string('parking_type')->nullable();
-            $table->string('vehicle_type')->nullable();
             $table->foreignId('societies_id')->constrained();
+            $table->tinyInteger('parking_type')->nullable()->default(0)->comment('0-Resident Parking,1-Visitors Parking'); // Keep this in Config
+            $table->tinyInteger('vehicle_type')->nullable()->default(2)->comment('2-Wheeler,4-Wheeler');            
             $table->foreignId('tower_id')->constrained();
-            $table->foreignId('wing_id')->constrained()->nullable();
-            $table->foreignId('floor_id')->constrained();
-            $table->foreignId('flat_id')->constrained();
+            $table->foreignId('wing_id')->constrained()->nullable()->default(0);
+            $table->foreignId('floor_id')->constrained()->nullable()->default(0);
+            $table->foreignId('flat_id')->constrained()->nullable()->default(0);
             $table->string('parking_area_number')->nullable();
-            $table->string('parking_name');
+            //$table->string('parking_name');
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

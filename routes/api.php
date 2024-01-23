@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\Master\SocietyController;
 use App\Http\Controllers\API\Master\MasterSubscriptionController;
 use App\Http\Controllers\API\Master\MasterUserController;
+use App\Http\Controllers\API\Master\SettingsController;
 use App\Http\Controllers\API\Master\CountryStateController;
 use App\Http\Controllers\API\Master\ChangePasswordController;
 use App\Http\Controllers\API\Master\ForgotPasswordController;
@@ -52,6 +53,9 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
     Route::post('/list-master-user', [MasterUserController::class, 'indexing']);
     Route::get('/show-master-user/{id}', [MasterUserController::class, 'show']);
     Route::post('/delete-master-user', [MasterUserController::class, 'delete']);
+    //system settings apis
+    Route::post('/show-system-settings', [SettingsController::class, 'indexing']);
+    Route::post('/edit-system-settings', [SettingsController::class, 'updating']);
     //User apis
     // MasterUserController
    
@@ -76,4 +80,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-profile-picture', [ProfileUpdateController::class, 'updateprofilepicture']);
     //change password api
     Route::post('/change-password', [ChangePasswordController::class, 'changepassword']);
+    //forgot passeword api
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
+    Route::post('/login-send-otp', [AuthController::class, 'loginsendotp']);
+    //reset password api
+    // Route::post('/reset-password', [ForgotPasswordController::class, 'ResetPassword']);
+    
+
 });

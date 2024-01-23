@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('flats', function (Blueprint $table) {
+        Schema::create('master_service_providers', function (Blueprint $table) {
             $table->id();
-            $table->string('flat_name');//Flat Number
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('floor_id')->constrained();
-            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
+            $table->foreignId('societies_id')->constrained();
+            $table->string('name')->nullable(); 
+            $table->tinyInteger('is_daily_helper')->default(0)->comment('0-No,1-Yes');
+            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//0-Active, 1-Means Inactive
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
- 		    $table->softDeletes();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('flats');
+        Schema::dropIfExists('master_service_providers');
     }
 };

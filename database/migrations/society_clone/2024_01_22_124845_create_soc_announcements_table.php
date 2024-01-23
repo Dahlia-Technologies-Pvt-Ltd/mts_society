@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('flats', function (Blueprint $table) {
+        Schema::create('soc_announcements', function (Blueprint $table) {
             $table->id();
-            $table->string('flat_name');//Flat Number
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('floor_id')->constrained();
+            $table->foreignId('societies_id')->constrained();
+            $table->string('title')->nullable();
+            $table->longText('description')->nullable();
+
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
- 		    $table->softDeletes();
+ 		    $table->softDeletes();            
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('flats');
+        Schema::dropIfExists('soc_announcements');
     }
 };

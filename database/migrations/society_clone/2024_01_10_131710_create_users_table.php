@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('master_socities_id',0)->default(0)->nullable();
+            $table->unsignedBigInteger('master_user_id')->constrained()->default(0);
+            $table->string('master_society_ids')->nullable();
             $table->foreignId('user_type_id')->constrained()->default(0)->nullable();
             $table->foreignId('user_sub_type_id')->constrained()->default(0)->nullable();
             //$table->integer('usertype')->default(0);
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->string('email')->nullable()->unique();
+            $table->string('country_code')->nullable()->default(null);
             $table->string('phone_number', 15)->nullable()->default(null);
             $table->enum('gender', ['Male','Female'])->nullable()->default(null);
             $table->unsignedBigInteger('towerid')->default(0);
@@ -33,12 +35,8 @@ return new class extends Migration
             $table->foreignId('country')->constrained()->default(0)->nullable();
             $table->foreignId('state')->constrained()->default(0)->nullable();  
             $table->string('city', 50)->nullable()->default(null);
-            $table->string('zipcode')->nullable()->default(null);
-            $table->string('country_code')->nullable()->default(null);
-            $table->tinyInteger('is_approv')->default(0)->comment('0-Not_Approve,1-Approve');//)0-Not_Approve, 1-Means Approve 
-            //$table->tinyInteger('is_paid')->default(0)->comment('0-Not_Paid,1-Paid');//)0-Not_Paid, 1-Means paid 
-            //$table->tinyInteger('plan_id')->default(0)->comment('0-Not_Paid,1-Paid');//)0-Not_Paid, 1-Means paid 
-            $table->tinyInteger('multilogin')->default(0)->comment('0-all,1-desktop,2-mobile');//)0-all,1-desktop,2-mobile 
+            $table->string('zipcode')->nullable()->default(null);            
+            $table->tinyInteger('is_approved')->default(0)->comment('0-Not_Approve,1-Approve');//)0-Not_Approve, 1-Means Approve-mobile 
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive        
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

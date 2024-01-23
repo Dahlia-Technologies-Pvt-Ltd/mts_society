@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('towers', function (Blueprint $table) {
+        Schema::create('residential_user_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('societies_id')->constrained();
-            $table->string('tower_name')->nullable()->default(null);
-            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
- 		    $table->softDeletes();
+            $table->foreignId('user_id')->constrained()->default(0)->nullable();
+            $table->foreignId('flat_id')->constrained()->nullable()->default(0);
+            $table->string('vehicle_types')->nullable(); // array [2,4] -  2 - wheeler / 4 - wheeler
+            $table->string('parking_ids')->nullable(); // array ex [2,3,4]
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('towers');
+        Schema::dropIfExists('residential_user_details');
     }
 };

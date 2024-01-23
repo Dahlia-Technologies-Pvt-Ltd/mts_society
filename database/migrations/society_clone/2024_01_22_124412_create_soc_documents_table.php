@@ -11,11 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('flats', function (Blueprint $table) {
+        Schema::create('soc_documents', function (Blueprint $table) {
             $table->id();
-            $table->string('flat_name');//Flat Number
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('floor_id')->constrained();
+            $table->foreignId('societies_id')->constrained();
+            $table->tinyInteger('document_type')->default(0)->comment('0-Resident,1-Society,2-Admin');
+            $table->string('name')->nullable()->default(null);
+            $table->string('attachments','1000')->nullable()->default(null);
+
+            $table->foreignId('tower_id')->constrained()->default(0)->nullable();
+            $table->foreignId('wing_id')->constrained()->default(0)->nullable();
+            $table->foreignId('flat_id')->constrained()->default(0)->nullable(); 
+
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -29,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('flats');
+        Schema::dropIfExists('soc_documents');
     }
 };

@@ -15,9 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('wings_name')->nullable();
             $table->foreignId('tower_id')->constrained();
-            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
  		    $table->softDeletes();
             $table->timestamps();
         });
