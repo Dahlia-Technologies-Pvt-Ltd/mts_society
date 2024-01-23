@@ -12,6 +12,7 @@ use App\Http\Controllers\API\Master\ChangePasswordController;
 use App\Http\Controllers\API\Master\ForgotPasswordController;
 use App\Http\Controllers\API\Master\ProfileUpdateController;
 use App\Http\Controllers\API\Admin\TowerController;
+use App\Http\Controllers\API\Admin\FloorController;
 use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -61,12 +62,17 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
    
 });
 //Only For Admin
-Route::middleware('auth:sanctum','admin')->group(function () {
+Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
+    //tower apis
     Route::post('/add-tower', [TowerController::class, 'store']);
     Route::post('/list-tower', [TowerController::class, 'indexing']);
     Route::get('/show-tower/{id}', [TowerController::class, 'show']);
     Route::post('/delete-tower', [TowerController::class, 'delete']);
-
+    //floor apis
+    Route::post('/add-floor', [FloorController::class, 'store']);
+    Route::post('/list-floor', [FloorController::class, 'indexing']);
+    Route::get('/show-floor/{id}', [FloorController::class, 'show']);
+    Route::post('/delete-floor', [FloorController::class, 'delete']);
 });
 //Only For User
 Route::middleware('auth:sanctum','user')->group(function () {

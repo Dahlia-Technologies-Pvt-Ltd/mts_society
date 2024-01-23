@@ -24,7 +24,7 @@ class Kernel extends HttpKernel
     ];
     protected $routeMiddleware = [
         // ...
-        'connectsocietydb' => \App\Http\Middleware\ConnectSocietyDb::class,
+        // 'connectsocietydb' => \App\Http\Middleware\ConnectSocietyDb::class,
     ];
     /**
      * The application's route middleware groups.
@@ -72,5 +72,6 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AdminTypeMiddleware::class,
         'user' => \App\Http\Middleware\UserTypeMiddleware::class,
         'all' => \App\Http\Middleware\ForAllTypeMiddleware::class,
+        'connect.society' => \App\Http\Middleware\ConnectSocietyDb::class,
     ];
 }
