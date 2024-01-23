@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Mail;
 use App\Helpers\MailHelper;
+use Laravel\Sanctum\PersonalAccessTokenFactory;
 
 class AuthController extends ResponseController
 {
@@ -42,15 +43,11 @@ class AuthController extends ResponseController
             $credentialsUserCode = array(
                 'username' => $request->email, 'password' => $request->password, 'status' => 0,
             );
-
             $loginID = false; // Default false to send the response accordingly in the end
             // Attempt to authorize using username
             if (Auth::attemptWhen($credentialsUserCode)) {
                 $loginID = true;
             } else {
-                $credentialsEmail = array(
-                    'username' => $request->email, 'password' => $request->password, 'status' => 0,
-                );
                 if (isset($request->password)) {
                     if (is_numeric($request->email)) {
                         // Array to verify credentials using phone number
@@ -63,44 +60,47 @@ class AuthController extends ResponseController
                             'email' => $request->email, 'password' => $request->password, 'status' => 0,
                         );
                     }
+                    //Attempt to authorize using email
+                    if (Auth::attemptWhen($credentialsEmail)) {
+                        $loginID = true;
+                    }
                 } else {
+                    // 
                     $data_query = UserOtp::join('master_users', 'master_users.id', '=', 'user_otps.master_user_id')->where('otp', $request->otp);
-                    $keyword=$request->email;
-                     $data_query->where(function ($query) use ($keyword) {
-                        $query->where('master_users.phone_number', '=', $keyword )
-                            ->orWhere('master_users.email', '=', $keyword );
-                            
+                    $keyword = $request->email;
+                    $data_query->where(function ($query) use ($keyword) {
+                        $query->where('master_users.phone_number', '=', $keyword)
+                            ->orWhere('master_users.email', '=', $keyword);
                     });
-        $data_query->select([
-            'master_users.phone_number '
-           
-        ]);
-                   
+                    $data_query->select([
+                        'master_users.phone_number'
+                    ]);
+
                     if ($data_query->exists()) {
-                        $phone_number=$data_query->first()->phone_number;
+                        $phone_number = $data_query->first()->toArray()['phone_number'];
                         $credentialsEmail = array(
-                            'phone_number' => $phone_number, 'status' => 0,
+                            'phone_number' => $phone_number, 'status' => 0
                         );
-                        
+
                     } else {
                         $loginID = false;
                         $response['status'] = 404;
                         $response['message'] = 'Invalid Email or Phone Number.';
                     }
-                }
-                // Attempt to authorize using email
-                if (Auth::attemptWhen($credentialsEmail)) {
-                    $loginID = true;
+                    if (Auth::once($credentialsEmail)) {
+                        $loginID = true;
+                    }
                 }
             }
 
             if ($loginID == false) {
                 $response['status'] = 401;
                 $response['message'] = 'Invalid Email or Phone Number.';
-                // Call sendFailedLoginResponse() to check what is the issue in authenticating user
+                // Call sendFailedLoginResponse() to check what is the issue in     authenticating user
                 // and respond with the proper error message
                 return $this->sendFailedLoginResponse($request);
             } else {
+
                 $user = Auth::user();
                 $user['token'] = $user->createToken('MTSSOCIETY')->plainTextToken;
                 $response['status'] = 200;
