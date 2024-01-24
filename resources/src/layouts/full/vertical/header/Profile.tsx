@@ -37,7 +37,7 @@ const Profile = () => {
      try {
         const appUrl = import.meta.env.VITE_API_URL;
         const API_URL = appUrl + '/api/logout';
-        const response = await axios.post(`${API_URL}`);
+        //const response = await axios.post(`${API_URL}`);
          // Clear session storage
          localStorage.removeItem('authToken');
          localStorage.removeItem('userCode');
@@ -47,8 +47,8 @@ const Profile = () => {
          localStorage.removeItem('userRole');
          localStorage.removeItem('userType');
          localStorage.removeItem('prevPage');
-          //window.location.reload();
-        navigate('/login');
+        window.location.reload();
+        //navigate('/login');
      } catch (error) {
        console.error('Logout failed:', error);
      }

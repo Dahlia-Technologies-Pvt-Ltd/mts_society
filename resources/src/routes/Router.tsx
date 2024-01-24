@@ -14,6 +14,8 @@ const ChangePassword = Loadable(lazy(() => import('../admin/change-password/Chan
 const SuperAdminDashboard = Loadable(lazy(() => import('../superadmin/dashboard/SuperAdminDashboard')));
 const SubscriptionList = Loadable(lazy(() => import('../superadmin/mastersubscription/SubscriptionList')));
 const AddSubscription = Loadable(lazy(() => import('../superadmin/mastersubscription/AddSubscription')));
+const AddMasterUser = Loadable(lazy(() => import('../superadmin/masteruser/AddMasterUser')));
+const MasterUserList = Loadable(lazy(() => import('../superadmin/masteruser/MasterUserList')));
 
 // authentication
 const Login = Loadable(lazy(() => import('../auth/Login')));
@@ -45,6 +47,10 @@ const Router = [
       { path: '/super-admin/dashboard', exact: true, element: <SuperAdminDashboard /> },
       { path: '/super-admin/subscription-plan-list', exact: true, element: <SubscriptionList /> },
       { path: '/super-admin/add-subscription', exact: true, element: <AddSubscription /> },
+      { path: '/super-admin/edit-subscription/:id', exact: true, element: <AddSubscription /> },
+      { path: '/super-admin/society-admin-list', exact: true, element: <MasterUserList /> },
+      { path: '/super-admin/add-society-admin', exact: true, element: <AddMasterUser /> },
+      { path: '/super-admin/edit-society-admin/:id', exact: true, element: <AddMasterUser /> },
     ],
   },
 ];

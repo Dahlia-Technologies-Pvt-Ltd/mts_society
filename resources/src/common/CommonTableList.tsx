@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { alpha, useTheme } from '@mui/material/styles';
-import { format } from 'date-fns';
-import Spinner from '@src/views/spinner/Spinner';
 import {
   Box,
   Table,
@@ -190,18 +188,9 @@ const downloadExcel = async () => {
   try {
     const appUrl = import.meta.env.VITE_API_URL;
     const currentPath = window.location.pathname;
-
     let API_URL = appUrl + '/api/' + excelApiUrl;
     let method = 'post'; // Default method is POST
-
-    // Check if the current path starts with the condition
-    if (currentPath.startsWith('/admin/user-manual-section/')) {
-      API_URL = appUrl + '/api/' + excelApiUrl; // Change API endpoint if condition is met
-      method = 'get'; // Use GET method
-    }
-
-    const token = sessionStorage.getItem('authToken');
-    
+    const token = localStorage.getItem('authToken');
     const response = await axios({
       method: method,
       url: API_URL,
@@ -416,7 +405,7 @@ const CommonTableList = (props) => {
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [collapsed, setCollapsed] = React.useState<readonly string[]>([]);
   
-  const userId = sessionStorage.getItem('userId');
+  const userId = localStorage.getItem('userId');
   if(localStorage.getItem('currentURL') != window.location.href)//Condition to delete SortBy
   {
     localStorage.removeItem('sortByColumn');
@@ -1087,23 +1076,24 @@ const CommonTableList = (props) => {
 
               </TableBody>
             </Table>
+            {/* Delete Confirmation Modal */}
             <Dialog
               open={open}
               onClose={handleClose}
               aria-labelledby="alert-dialog-title"
               aria-describedby="alert-dialog-description"
               >
-              <DialogTitle id="alert-dialog-title">
+              <DialogTitle id="alert-dialog-title" color="error">
                   {"Are you sure ?"}
               </DialogTitle>
               <DialogContent>
                   <DialogContentText id="alert-dialog-description">
-                    you want to delete this record, this process can't be undone.
+                    You want to delete this record, this process can't be undone.
                   </DialogContentText>
               </DialogContent>
               <DialogActions>
-                  <Button color="error" onClick={handleClose}>Cancel</Button>
-                  <Button onClick={() => { props.handleDelete(rowId); handleClose(); }} autoFocus>
+                  <Button variant="contained" color="error" onClick={handleClose}>Cancel</Button>
+                  <Button variant="contained" color="primary" onClick={() => { props.handleDelete(rowId); handleClose(); }} autoFocus>
                     Delete
                   </Button>
               </DialogActions>
