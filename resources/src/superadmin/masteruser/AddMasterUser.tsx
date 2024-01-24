@@ -191,6 +191,53 @@ const AddSubscription = () => {
         fetchCountry();
     }, [id]);
 
+    useEffect(() => {
+        console.log(formik.values.country_id);
+        // Find the country from the fetched list based on country_id
+        const selectedCountryData = countryOptions.find(
+          (country) => country.id === parseInt(formik.values.country_id)
+        );
+        // If the country is found, set it as the selectedCountry
+        if (selectedCountryData) {
+          setSelectedCountry(selectedCountryData);
+        }
+    }, [countryOptions, formik.values.country_id]);
+
+    // Effect to fetch state when the country changes
+useEffect(() => {
+    const fetchData = async () => {
+        try {
+            if (selectedCountry) {
+                const formData = new FormData();
+                formData.append("sortBy", 'id');
+                formData.append('sortOrder', 'asc');
+                formData.append('country_id', selectedCountry.id);
+                const API_URL = appUrl + '/api/list-state';
+                const response = await axios.post(API_URL, formData);
+                
+                // Update state options with the fetched data
+                setStateData(response.data.data.data);
+
+                // Find the state from the fetched list based on state_id
+                const selectedStateData = response.data.data.data.find(
+                    (state) => state.id === parseInt(formik.values.state_id)
+                );
+
+                // If the state is found, set it as the selectedState
+                if (selectedStateData) {
+                    setSelectedState(selectedStateData);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setStateData([]); // Reset state data in case of an error
+        }
+    };
+
+    fetchData();
+}, [selectedCountry, formik.values.state_id]);
+
+
     const fetchData = async () => {
         try {
             const API_URL = `${appUrl}/api/show-master-user/${id}`;
@@ -213,11 +260,12 @@ const AddSubscription = () => {
                 city: data.city,
                 pincode: data.zipcode,
             });
+            fetchState(data.country_id);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
-
+    
     return (
         <>
             <PageContainer
