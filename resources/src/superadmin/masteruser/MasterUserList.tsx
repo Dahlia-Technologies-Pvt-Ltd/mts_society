@@ -14,7 +14,7 @@ const BCrumb = [
         title: "Home",
     },
     {
-        title: "Subscription Plan List",
+        title: "Society Admin Management",
     },
 ];
 
@@ -40,17 +40,24 @@ const SubscriptionList = () => {
             enableSorting:true,
         },
         {
-            id: "subscription_plan",
+            id: "name",
             numeric: false,
             disablePadding: false,
-            label: "Subscription Plan",
+            label: "Admin Name",
             enableSorting: true,
         },
         {
-            id: "price",
+            id: "email",
             numeric: false,
             disablePadding: false,
-            label: "Price (₹)",
+            label: "Email ID",
+            enableSorting: true,
+        },
+        {
+            id: "phone_number",
+            numeric: false,
+            disablePadding: false,
+            label: "Phone Number",
             enableSorting: true,
         },
         {
@@ -64,8 +71,9 @@ const SubscriptionList = () => {
 
     const dataColumns = [
         'srno',
-        "subscription_plan",
-        "price",
+        "name",
+        "email",
+        "phone_number",
     ];
 
     const rowSettings = {
@@ -74,11 +82,11 @@ const SubscriptionList = () => {
     //show = 1 for show the button show = 0 then button not show
     const actionSettings = {
         actions: {
-            edit: { url: "/super-admin/edit-subscription/", show: "1" },
-            delete: { url: "", show: "1" },
+            edit: { url: "/super-admin/edit-society-admin/", show: "1" },
+            delete: { url: "", show: "0" },
         },
     };
-    const addUrl = "/super-admin/add-subscription";
+    const addUrl = "/super-admin/add-society-admin";
     const [datas, setData] = useState([]); // State to store the fetched data
     const [totalPages, settotalPages] = useState([]); // State to store the fetched data
     useEffect(() => {
@@ -120,7 +128,7 @@ const SubscriptionList = () => {
                 searchKeyword !== null ? searchKeyword : ""
             );
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/list-master-subscription";
+            const API_URL = appUrl + "/api/list-master-user";
             const token = localStorage.getItem("authToken");
             const response = await axios.post(API_URL, formData, {
                 headers: {
@@ -153,7 +161,7 @@ const SubscriptionList = () => {
             const formData = new FormData();
             formData.append("id", id);
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/delete-master-subscription";
+            const API_URL = appUrl + "/api/delete-master-user";
             const token = localStorage.getItem("authToken");
             const response = await axios.post(API_URL, formData, {
                 headers: {
@@ -178,12 +186,12 @@ const SubscriptionList = () => {
         }
     };
     //For Download Excel variable
-    const excelName = "subscription_plan";
+    const excelName = "admin_list";
     const excelApiUrl = "";
     return (
         <PageContainer
-            title="Subscription Plan List"
-            description="this is Subscription Plan List page"
+            title="Society Admin Management"
+            description="Society Admin Management"
         >
             <Breadcrumb title="" />
             <Portal>
@@ -219,7 +227,7 @@ const SubscriptionList = () => {
                 {/* Left part */}
                 {/* ------------------------------------------- */}
                 <CommonTableList
-                    pageTitle={"Subscription Plan List"}
+                    pageTitle={"Society Admin Management"}
                     headCells={headCells}
                     dataRow={datas}
                     totalPage={totalPages}

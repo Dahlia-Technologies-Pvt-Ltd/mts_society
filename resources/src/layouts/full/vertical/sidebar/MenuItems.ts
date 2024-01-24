@@ -87,11 +87,19 @@ Menuitems = [
   },
   {
     id: uniqueId(),
+    title: 'Society Admin Management',
+    icon: IconUserCircle,
+    href: '/super-admin/society-admin-list',
+    activeUrls: ['/super-admin/society-admin-list',`/super-admin/add-society-admin`,`/super-admin/edit-society-admin/*`],
+  },
+  {
+    id: uniqueId(),
     title: 'Subscription Plan',
-    icon: IconCurrencyDollar,
+    icon: IconPackage,
     href: '/super-admin/subscription-plan-list',
     activeUrls: ['/super-admin/subscription-plan-list',`/super-admin/add-subscription`,`/super-admin/add-subscription/*`],
   },
+  
 ];
 }else if(userType === '1'){
   Menuitems = [

@@ -11,7 +11,7 @@ import {
     Paper,
     Alert,
     IconButton,
-    AlertTitle,CircularProgress
+    AlertTitle,CircularProgress,Checkbox
 } from "@mui/material";
 import { IconMinus, IconPlus, IconTrash } from '@tabler/icons';
 import { Portal } from '@mui/base';
@@ -25,6 +25,8 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import CustomFormLabel from "@src/components/forms/theme-elements/CustomFormLabel";
 import ParentCard from "@src/components/shared/ParentCard";
+import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill";
 
 const AddSubscription = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +36,7 @@ const AddSubscription = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const { id } = useParams(); // Access the 'id' parameter from the URL if it exists
     const navigate = useNavigate();
+    const [quillText, setQuillText] = useState("");
 
     const BCrumb = [
         {
@@ -48,12 +51,17 @@ const AddSubscription = () => {
     const validationSchema = yup.object().shape({
         subscription_plan: yup.string().required("Subscription plan is required"),
         price: yup.string().required("Price is required"),
+        frequency: yup.string().required("Frequency is required"),
+        features: yup.string().required("Features is required"),
     });
 
     const formik = useFormik({
         initialValues: {
             subscription_plan: "",
             price: "",
+            frequency:'',
+            is_renewal_plan: '0',
+            features: '',
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -63,12 +71,18 @@ const AddSubscription = () => {
                 const formData = new FormData();
                 // Append form fields to the FormData object
                 formData.append("subscription_plan", values.subscription_plan);
+                formData.append("price", values.price);
+                formData.append("frequency", values.frequency);
+                formData.append("is_renewal_plan", values.is_renewal_plan);
+                const cleanFeatures = values.features.replace(/<[^>]*>/g, '');
+                formData.append('features', cleanFeatures);
+
                 // Determine the API URL based on whether it's an edit or add operation
                 const appUrl = import.meta.env.VITE_API_URL;
-                let API_URL = appUrl + "/api/add-terms";
+                let API_URL = appUrl + "/api/add-master-subscription";
                 (id) ? formData.append("id", id) : '';
                 // Make the API POST request
-                const token = sessionStorage.getItem("authToken");
+                const token = localStorage.getItem("authToken");
                 const response = await axios.post(API_URL, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -78,7 +92,7 @@ const AddSubscription = () => {
                 setIsSuccessVisible(true);
                 setSuccessMessage(response.data.message);
                 sessionStorage.setItem("successMessage", response.data.message);
-                (id) ? fetchData() : navigate("/super-admin/subscription-plan-list");
+                navigate("/super-admin/subscription-plan-list");
             } catch (error) {
                 // Handle errors here
                 setIsErrorVisible(true);
@@ -113,8 +127,8 @@ const AddSubscription = () => {
     const fetchData = async () => {
         try {
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = `${appUrl}/api/show-terms/${id}`;
-            const token = sessionStorage.getItem("authToken");
+            const API_URL = `${appUrl}/api/show-master-subscription/${id}`;
+            const token = localStorage.getItem("authToken");
 
             const response = await axios.get(API_URL, {
                 headers: {
@@ -127,7 +141,11 @@ const AddSubscription = () => {
             formik.setValues({
                 subscription_plan: data.subscription_plan,
                 price: data.price,
+                frequency: data.frequency,
+                is_renewal_plan: (data.is_renewal_plan == 'Renewed') ? '1' : '0',
+                features: data.features,
             });
+            setQuillText(data.features);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -178,32 +196,13 @@ const AddSubscription = () => {
                 <form onSubmit={formik.handleSubmit}>
                     <Grid container spacing={2}>
                         {/* 1 */}
-                        <Grid
-                            item
-                            xs={12}
-                            display="flex"
-                            alignItems="center"
-                        >
+                        <Grid item xs={6}>
                             <CustomFormLabel
                                 htmlFor="subscription_plan"
                                 sx={{ mt: 0 }}
                             >
-                                Subscription Plan
+                                Subscription Plan <span style={{color:'red'}}>*</span>
                             </CustomFormLabel>
-                            <Typography
-                                variant="h5"
-                                sx={{
-                                    color: (theme) =>
-                                        theme.palette.error.main,
-                                    marginLeft: "3px",
-                                }}
-                            >
-                                {" "}
-                                *
-                            </Typography>
-                        </Grid>
-
-                        <Grid item xs={6}>
                             <CustomTextField
                                 id="subscription_plan"
                                 name="subscription_plan"
@@ -220,9 +219,14 @@ const AddSubscription = () => {
                                     formik.errors.subscription_plan
                                 }
                             />
-                        </Grid>
-
+                        </Grid>        
                         <Grid item xs={6}>
+                            <CustomFormLabel
+                                htmlFor="price"
+                                sx={{ mt: 0 }}
+                            >
+                                Price <span style={{color:'red'}}>*</span>
+                            </CustomFormLabel>
                             <CustomTextField
                                 id="price"
                                 name="price"
@@ -238,10 +242,87 @@ const AddSubscription = () => {
                                     formik.touched.price &&
                                     formik.errors.price
                                 }
+                                onKeyDown={(e) => {
+                                if (!(e.key === 'e' || e.key === '-' || e.key === '+' || !isNaN(Number(e.key)) || e.key === 'Backspace')) {
+                                    e.preventDefault();
+                                }
+                                }}  
                             />
                         </Grid>
-                        
-                        
+                        <Grid item xs={6}>
+                            <CustomFormLabel
+                                htmlFor="frequency"
+                                sx={{ mt: 0 }}
+                            >
+                                Frequency <span style={{color:'red'}}>*</span>
+                            </CustomFormLabel>
+                            <CustomTextField
+                                id="frequency"
+                                name="frequency"
+                                placeholder="Frequency"
+                                fullWidth
+                                value={formik.values.frequency}
+                                onChange={formik.handleChange}
+                                error={
+                                    formik.touched.frequency &&
+                                    Boolean(formik.errors.frequency)
+                                }
+                                helperText={
+                                    formik.touched.frequency &&
+                                    formik.errors.frequency
+                                }
+                                onKeyDown={(e) => {
+                                if (!(e.key === 'e' || e.key === '-' || e.key === '+' || !isNaN(Number(e.key)) || e.key === 'Backspace')) {
+                                    e.preventDefault();
+                                }
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        id="is_renewal_plan"
+                                        name="is_renewal_plan"
+                                        checked={formik.values.is_renewal_plan === '1'}
+                                        onChange={(e) => {
+                                            formik.setFieldValue(
+                                                'is_renewal_plan',
+                                                e.target.checked ? '1' : '0'
+                                            );
+                                        }}
+                                    />
+                                }
+                                label="Is Renewal Plan"
+                                sx={{ mt: 4 }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <CustomFormLabel
+                                htmlFor="features"
+                                sx={{ mt: 0 }}
+                            >
+                                Features <span style={{ color: 'red' }}>*</span>
+                            </CustomFormLabel>
+                            <ReactQuill
+                                style={{ height: "300px" }}
+                                value={quillText}
+                                onChange={(value) => {
+                                    setQuillText(value);
+                                    formik.setFieldValue(
+                                        "features",
+                                        value
+                                    );
+                                }}
+                                placeholder="Type here..."
+                            />
+                        </Grid>
+                        {/* Display error message below the ReactQuill component */}
+                        {formik.touched.features && formik.errors.features && (
+                            <Typography variant="caption" color="error" sx={{ mt: 6, ml: 3 }}>
+                                {formik.errors.features}
+                            </Typography>
+                        )}
 
                         {/* Submit Button */}
                         <Grid item xs={12} mt={5} display={'flex'} alignItems={'center'} justifyContent={'center'}>
@@ -258,6 +339,7 @@ const AddSubscription = () => {
                                 variant="contained"
                                 color="primary"
                                 type="submit"
+                                disabled={isLoading}
                             >
                                 {id ? "Update" : "Submit"}
                                 {isLoading && <CircularProgress size={24} color="inherit" />}
