@@ -34,14 +34,6 @@ class MasterUserController extends ResponseController
                 'country_id',
                 'created_at'
             );
-        }, 'city' => function ($query) {
-            $query->select(
-                'id',
-                'name',
-                'state_id',
-                'country_id',
-                'created_at'
-            );
         }])->where([['status', 0]]);
         // print_r($data_query);die();
         $data_query->select([

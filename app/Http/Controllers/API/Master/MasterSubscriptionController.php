@@ -56,10 +56,10 @@ class MasterSubscriptionController extends ResponseController
         }
         $id = empty($request->id) ? 'NULL' : $request->id;
         $validator = Validator::make($request->all(), [
-            'subscription_plan'                          => 'required|unique:master_subscriptions,subscription_plan,' . $id . ',id,deleted_at,NULL|max:255',
-            'price'                                    => 'required|integer|min:1',
-            'features'                        => 'required',
-            'frequency'                        => 'required|integer|min:1',
+            'subscription_plan'  => 'required|unique:master_subscriptions,subscription_plan,' . $id . ',id,deleted_at,NULL|max:255',
+            'price' => 'required|numeric|min:1|regex:/^\d+(\.\d{1,2})?$/',
+            'features'  => 'required',
+            'frequency' => 'required|integer|min:1',
             
         ]);
 
