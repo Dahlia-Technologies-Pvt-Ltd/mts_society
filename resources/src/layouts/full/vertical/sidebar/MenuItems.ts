@@ -94,6 +94,13 @@ Menuitems = [
   },
   {
     id: uniqueId(),
+    title: 'Society Management',
+    icon: IconAppWindow,
+    href: '/super-admin/society-list',
+    activeUrls: ['/super-admin/society-list',`/super-admin/add-society`,`/super-admin/edit-society/*`],
+  },
+  {
+    id: uniqueId(),
     title: 'Subscription Plan',
     icon: IconPackage,
     href: '/super-admin/subscription-plan-list',

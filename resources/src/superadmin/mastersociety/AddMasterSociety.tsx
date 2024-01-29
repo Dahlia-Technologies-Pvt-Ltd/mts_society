@@ -28,7 +28,7 @@ import ParentCard from "@src/components/shared/ParentCard";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 
-const AddMasterUser = () => {
+const AddMasterSociety = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isErrorVisible, setIsErrorVisible] = useState(false);
     const [isSuccessVisible, setIsSuccessVisible] = useState(false);
@@ -45,11 +45,11 @@ const AddMasterUser = () => {
 
     const BCrumb = [
         {
-            to: "/super-admin/society-admin-list",
-            title: "Society Admin Management",
+            to: "/super-admin/society-list",
+            title: "Society Management",
         },
         {
-            title: id ? "Edit Society Admin" : "Add Society Admin",
+            title: id ? "Edit Society" : "Add Society",
         },
     ];
     const handleCountryChange = (event, newValue) => {
@@ -108,23 +108,27 @@ const AddMasterUser = () => {
     };
 
     const validationSchema = yup.object().shape({
-        name: yup.string().required("Name is required"),
+        society_name: yup.string().required("Society Name is required"),
+        address: yup.string().required("Address is required"),
         email: yup.string().email('Please provide valid email').required("Email is required"),
         phone_number: yup.string().required("Phone Number is required"),
         country_id: yup.string().required("Country is required"),
         state_id: yup.string().required("State is required"),
         city: yup.string().required("City is required"),
+        user_id: yup.string().required("Society Admin is required"),
     });
 
     const formik = useFormik({
         initialValues: {
-            name: "",
+            society_name: "",
+            address: "",
             email: "",
             phone_number:'',
             country_id: '',
             state_id: '',
             city: '',
-            pincode: '',
+            zipcode: '',
+            user_id: '',
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -133,19 +137,18 @@ const AddMasterUser = () => {
                 // Create a FormData object
                 const formData = new FormData();
                 // Append form fields to the FormData object
-                formData.append("name", values.name);
+                formData.append("society_name", values.society_name);
                 formData.append("email", values.email);
                 formData.append("phone_number", values.phone_number);
                 formData.append("country_id", values.country_id);
                 formData.append("state_id", values.state_id);
                 formData.append("city", values.city);
-                formData.append("zipcode", values.pincode);
-                formData.append("usertype", '1');
-                formData.append("username", values.name);
-                formData.append("password", values.email);
+                formData.append("zipcode", values.zipcode);
+                formData.append("address", values.address);
+                formData.append("user_id", values.user_id);
 
                 // Determine the API URL based on whether it's an edit or add operation
-                let API_URL = appUrl + "/api/add-master-user";
+                let API_URL = appUrl + "/api/add-society";
                 (id) ? formData.append("id", id) : '';
                 // Make the API POST request
                 const token = localStorage.getItem("authToken");
@@ -158,7 +161,7 @@ const AddMasterUser = () => {
                 setIsSuccessVisible(true);
                 setSuccessMessage(response.data.message);
                 sessionStorage.setItem("successMessage", response.data.message);
-                navigate("/super-admin/society-admin-list");
+                navigate("/super-admin/society-list");
             } catch (error) {
                 // Handle errors here
                 setIsErrorVisible(true);
@@ -240,7 +243,7 @@ useEffect(() => {
 
     const fetchData = async () => {
         try {
-            const API_URL = `${appUrl}/api/show-master-user/${id}`;
+            const API_URL = `${appUrl}/api/show-society/${id}`;
             const token = localStorage.getItem("authToken");
 
             const response = await axios.get(API_URL, {
@@ -252,13 +255,15 @@ useEffect(() => {
 
             const data = response.data.data;
             formik.setValues({
-                name: data.name,
+                society_name: data.society_name,
                 email: data.email,
                 phone_number: data.phone_number,
                 country_id: data.country_id,
                 state_id: data.state_id,
                 city: data.city,
-                pincode: data.zipcode,
+                zipcode: data.zipcode,
+                address: data.address,
+                user_id: data.user_id,
             });
             fetchState(data.country_id);
         } catch (error) {
@@ -304,8 +309,8 @@ useEffect(() => {
             <ParentCard
                 title={
                     id
-                        ? "Edit Society Admin"
-                        : "Add Society Admin"
+                        ? "Edit Society"
+                        : "Add Society"
                 }
             >
                 <form onSubmit={formik.handleSubmit}>
@@ -313,25 +318,49 @@ useEffect(() => {
                         {/* 1 */}
                         <Grid item xs={7}>
                             <CustomFormLabel
-                                htmlFor="name"
+                                htmlFor="society_name"
                                 sx={{ mt: 0 }}
                             >
-                               Name <span style={{color:'red'}}>*</span>
+                               Society Name <span style={{color:'red'}}>*</span>
                             </CustomFormLabel>
                             <CustomTextField
-                                id="name"
-                                name="name"
-                                placeholder="Name"
+                                id="society_name"
+                                name="society_name"
+                                placeholder="Society Name"
                                 fullWidth
-                                value={formik.values.name}
+                                value={formik.values.society_name}
                                 onChange={formik.handleChange}
                                 error={
-                                    formik.touched.name &&
-                                    Boolean(formik.errors.name)
+                                    formik.touched.society_name &&
+                                    Boolean(formik.errors.society_name)
                                 }
                                 helperText={
-                                    formik.touched.name &&
-                                    formik.errors.name
+                                    formik.touched.society_name &&
+                                    formik.errors.society_name
+                                }
+                            />
+                        </Grid>        
+                        <Grid item xs={7}>
+                            <CustomFormLabel
+                                htmlFor="address"
+                                sx={{ mt: 0 }}
+                            >
+                               Address <span style={{color:'red'}}>*</span>
+                            </CustomFormLabel>
+                            <CustomTextField
+                                id="address"
+                                name="address"
+                                placeholder="Address"
+                                fullWidth
+                                value={formik.values.address}
+                                onChange={formik.handleChange}
+                                error={
+                                    formik.touched.address &&
+                                    Boolean(formik.errors.address)
+                                }
+                                helperText={
+                                    formik.touched.address &&
+                                    formik.errors.address
                                 }
                             />
                         </Grid>        
@@ -480,25 +509,25 @@ useEffect(() => {
 
                         <Grid item xs={6}>
                             <CustomFormLabel
-                                htmlFor="pincode"
+                                htmlFor="zipcode"
                                 sx={{ mt: 0 }}
                             >
-                                Pincode
+                                Zipcode
                             </CustomFormLabel>
                             <CustomTextField
-                                id="pincode"
-                                name="pincode"
-                                placeholder="Pincode"
+                                id="zipcode"
+                                name="zipcode"
+                                placeholder="Zipcode"
                                 fullWidth
-                                value={formik.values.pincode}
+                                value={formik.values.zipcode}
                                 onChange={formik.handleChange}
                                 error={
-                                    formik.touched.pincode &&
-                                    Boolean(formik.errors.pincode)
+                                    formik.touched.zipcode &&
+                                    Boolean(formik.errors.zipcode)
                                 }
                                 helperText={
-                                    formik.touched.pincode &&
-                                    formik.errors.pincode
+                                    formik.touched.zipcode &&
+                                    formik.errors.zipcode
                                 }
                                 onKeyDown={(e) => {
                                 if (!(e.key === 'e' || e.key === '-' || e.key === '+' || !isNaN(Number(e.key)) || e.key === 'Backspace')) {
@@ -507,10 +536,42 @@ useEffect(() => {
                                 }}  
                             />
                         </Grid>
+                        <Grid item xs={6}>
+                            <CustomFormLabel htmlFor="user_id">Society Admin<span style={{color:"red"}}>*</span></CustomFormLabel>
+                            <Autocomplete
+                            id="user_id"
+                            fullWidth
+                            options={countryOptions}
+                            getOptionLabel={(option) => option.name}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            value={selectedCountry}
+                            onChange={handleCountryChange}
+                            renderOption={(props, option) => (
+                                <MenuItem component="li" {...props}>
+                                {option.name}
+                                </MenuItem>
+                            )}
+                            renderInput={(params) => (
+                                <CustomTextField
+                                {...params}
+                                placeholder="Select"
+                                aria-label="Admin"
+                                autoComplete="off"
+                                inputProps={{
+                                    ...params.inputProps,
+                                    autoComplete: 'new-password', // disable autocomplete and autofill
+                                }}
+                                // Add error and helperText props based on Formik validation
+                                error={formik.touched.user_id && Boolean(formik.errors.user_id)}
+                                helperText={formik.touched.user_id && formik.errors.user_id}
+                                />
+                            )}
+                            />
+                        </Grid>
 
                         {/* Submit Button */}
                         <Grid item xs={12} mt={5} display={'flex'} alignItems={'center'} justifyContent={'center'}>
-                            <Link to="/super-admin/society-admin-list">
+                            <Link to="/super-admin/society-list">
                                 <Button
                                     color="warning"
                                     variant="contained"
@@ -537,4 +598,4 @@ useEffect(() => {
     );
 };
 
-export default AddMasterUser;
+export default AddMasterSociety;

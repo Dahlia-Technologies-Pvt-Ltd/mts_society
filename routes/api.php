@@ -41,26 +41,26 @@ Route::post('/reset-password', [ForgotPasswordController::class, 'ResetPassword'
 //Masters
 Route::post('/list-country', [CountryStateController::class, 'country']);
 Route::post('/list-state', [CountryStateController::class, 'state']);
-Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'indexing']);
+Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'index']);
 
 //Only For Super Admin
 Route::middleware('auth:sanctum','superadmin')->group(function () {
     //master society apis
     Route::post('/add-society', [SocietyController::class, 'store']);
-    Route::post('/list-society', [SocietyController::class, 'indexing']);
+    Route::post('/list-society', [SocietyController::class, 'index']);
     Route::get('/show-society/{id}', [SocietyController::class, 'show']);
-    Route::post('/delete-society', [SocietyController::class, 'delete']);
+    Route::post('/delete-society', [SocietyController::class, 'destroy']);
     //master subscription apis
     Route::post('/add-master-subscription', [MasterSubscriptionController::class, 'store']);
     Route::get('/show-master-subscription/{id}', [MasterSubscriptionController::class, 'show']);
-    Route::post('/delete-master-subscription', [MasterSubscriptionController::class, 'delete']);
+    Route::post('/delete-master-subscription', [MasterSubscriptionController::class, 'destroy']);
     //master user apis
     Route::post('/add-master-user', [MasterUserController::class, 'store']);
-    Route::post('/list-master-user', [MasterUserController::class, 'indexing']);
+    Route::post('/list-master-user', [MasterUserController::class, 'index']);
     Route::get('/show-master-user/{id}', [MasterUserController::class, 'show']);
-    Route::post('/delete-master-user', [MasterUserController::class, 'delete']);
+    Route::post('/delete-master-user', [MasterUserController::class, 'destroy']);
     //system settings apis
-    Route::post('/show-system-settings', [SettingsController::class, 'indexing']);
+    Route::post('/show-system-settings', [SettingsController::class, 'index']);
     Route::post('/edit-system-settings', [SettingsController::class, 'updating']);
     //User apis
     // MasterUserController
@@ -70,14 +70,14 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
 Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
     //tower apis
     Route::post('/add-tower', [TowerController::class, 'store']);
-    Route::post('/list-tower', [TowerController::class, 'indexing']);
+    Route::post('/list-tower', [TowerController::class, 'index']);
     Route::get('/show-tower/{id}', [TowerController::class, 'show']);
-    Route::post('/delete-tower', [TowerController::class, 'delete']);
+    Route::post('/delete-tower', [TowerController::class, 'destroy']);
     //floor apis
     Route::post('/add-floor', [FloorController::class, 'store']);
-    Route::post('/list-floor', [FloorController::class, 'indexing']);
+    Route::post('/list-floor', [FloorController::class, 'index']);
     Route::get('/show-floor/{id}', [FloorController::class, 'show']);
-    Route::post('/delete-floor', [FloorController::class, 'delete']);
+    Route::post('/delete-floor', [FloorController::class, 'destroy']);
 });
 //Only For User
 Route::middleware('auth:sanctum','user')->group(function () {

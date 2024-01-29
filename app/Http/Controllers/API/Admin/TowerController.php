@@ -27,7 +27,7 @@ class TowerController extends ResponseController
          ]);
          return $data_query;
      }
-    public function indexing(Request $request)
+    public function index(Request $request)
     {
         // print_r('tttt');die();
         $data_query = $this->list_show_query();
@@ -141,7 +141,7 @@ class TowerController extends ResponseController
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         $terms = Tower::find($request->id);
         if ($terms) {
