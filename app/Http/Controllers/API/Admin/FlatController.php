@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Admin\{Flat,Floor};
 
 class FlatController extends Controller
@@ -21,7 +23,14 @@ class FlatController extends Controller
      */
     public function store(Request $request)
     {
+       
         $societies_id = getsocietyid($request->header('society_id'));
+        $sql = "SELECT id,master_society_ids FROM users where master_society_ids= $societies_id";
+        $results = DB::select($sql);
+        $net_id=$results[0]->master_society_ids;
+        print_r($net_id);die();
+        $societies_id_json = json_encode($societies_id);
+        $sql = "SELECT id FROM users WHERE JSON_CONTAINS_ANY(master_society_id, '$societies_id_json')";
         $sql = "SELECT id FROM users WHERE master_society_id =  $societies_id";
         $results = DB::select($sql);
         $net_id=$results[0]->id;
@@ -52,15 +61,15 @@ class FlatController extends Controller
             return $this->validatorError($validator);
         } else {
             $message = empty($request->id) ? "Flat created successfully." : "Flat updated successfully.";
-            ,[flat_name]
-            ,[user_id]
-            ,[floor_id]
-            ,[status]
-            ,[created_by]
-            ,[updated_by]
-            ,[deleted_at]
-            ,[created_at]
-            ,[updated_at]
+            // ,[flat_name]
+            // ,[user_id]
+            // ,[floor_id]
+            // ,[status]
+            // ,[created_by]
+            // ,[updated_by]
+            // ,[deleted_at]
+            // ,[created_at]
+            // ,[updated_at]
 
             $ins_arr = [
                 'societies_id'                        => $net_id,

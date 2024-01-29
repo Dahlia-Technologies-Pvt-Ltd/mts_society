@@ -209,9 +209,47 @@ class ProfileUpdateController extends ResponseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id = 0)
     {
-        //
+                    
+        $id = $id > 0 ? $id : auth('sanctum')->user()->id;
+        $data_query = MasterUser::join('countries', 'countries.id', '=', 'master_users.country_id')
+        ->join('states', 'states.id', '=', 'master_users.state_id')
+        ->select(['master_users.id',
+        'master_users.name AS name',                       
+        'username',                
+        'email',                   
+        'phone_number',            
+        'gender',                     
+        'address',                   
+        'master_users.country_id',
+        'countries.name AS country_name',                  
+        'countries.country_code AS country_code',                  
+        'countries.phone_code  AS phone_code', 
+        'state_id',                 
+        'states.name AS state_name',                    
+        'states.state_code AS state_code',                                       
+        'city',                  
+        'zipcode',                   
+        'usertype',                   
+        'profile_picture','master_users.created_at',
+        ])->where('master_users.id', $id);
+
+        if ($data_query->exists()) {
+            $result = $data_query->first()->toArray();
+            $message = "Profile found!";
+            $response['message'] = $message;
+            $response['data'] = $result;
+            $response['status'] = 200;
+            return $this->sendResponse($response);
+        } else {
+            if ($id > 0) {
+                return false;
+            }
+            $response['message'] = 'Unable to find User!';
+            $response['status'] = 400;
+            return $this->sendError($response);
+        }
     }
 
     /**
