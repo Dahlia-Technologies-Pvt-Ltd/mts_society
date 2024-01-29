@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\ResponseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use App\Models\Admin\Tower;
+use App\Models\Admin\{Tower, Wing};
 use Illuminate\Support\Facades\DB;
 // use App\Models\Master\Tower;
 use Illuminate\Support\Facades\Crypt;
@@ -18,15 +18,14 @@ class TowerController extends ResponseController
      * Display a listing of the resource.
      */
 
-     function list_show_query()
-     {
-         $data_query = Tower::where([['status', 0]]);
-         $data_query->select([
-             'id',
-             'tower_name', 'societies_id', 'created_at'
-         ]);
-         return $data_query;
-     }
+    function list_show_query()
+    {
+        $data_query = Tower::select([
+            'id',
+            'tower_name', 'societies_id', 'created_at'
+        ]);
+        return $data_query;
+    }
     public function indexing(Request $request)
     {
         // print_r('tttt');die();
@@ -35,6 +34,7 @@ class TowerController extends ResponseController
             $keyword = $request->keyword;
             $data_query->where(function ($query) use ($keyword) {
                 $query->where('tower_name', 'LIKE', '%' . $keyword . '%');
+                    // ->orWhere('wings.wings_name', 'LIKE', '%' . $keyword . '%');
             });
         }
         $fields = ["id", "tower_name"];
@@ -49,7 +49,7 @@ class TowerController extends ResponseController
         $societies_id = getsocietyid($request->header('society_id'));
         $sql = "SELECT id FROM societies WHERE master_society_id =  $societies_id";
         $results = DB::select($sql);
-        $net_id=$results[0]->id;
+        $net_id = $results[0]->id;
         if ($request->id > 0) {
             $existingRecord = Tower::find($request->id);
             if (!$existingRecord) {
@@ -58,11 +58,10 @@ class TowerController extends ResponseController
                 return $this->sendError($response);
             }
         }
+        // print_r(json_decode($request->wings));die();
         $id = empty($request->id) ? 'NULL' : $request->id;
         $validator = Validator::make($request->all(), [
             'tower_name'                                    => 'required|unique:towers,tower_name,' . $id . ',id,deleted_at,NULL|max:255',
-            
-            
         ]);
 
         if ($validator->fails()) {
@@ -84,13 +83,25 @@ class TowerController extends ResponseController
                 ['id' => $request->id],
                 $ins_arr
             );
+            $wingsData = json_decode($request->wings, true);
+            if (empty($request->id)) {
+                if ($wingsData) {
+                    $ins_arr = [];
+                    foreach ($wingsData as $wingIdentifier => $wingValue) {
+                        $ins_arr[] = ['wings_name' => $wingValue, 'tower_id' => $qry->id];
+                    }
+                    Wing::insert($ins_arr);
+                }
+            }
         }
         if (request()->is('api/*')) {
             if ($qry) {
                 $response['status'] = 200;
                 $response['message'] = $message;
-                $response['data'] = ['id' => $qry->id,'child_society_id'=>$net_id,'master_societies_id' =>$societies_id , 
-                'tower_name' => $qry->tower_name];
+                $data_query = $this->list_show_query();
+                $data_query->where([['id', $qry->id]]);
+                $result = $data_query->get()->toArray();
+                $response['data'] = $result;
                 return $this->sendResponse($response);
             } else {
                 $response['status'] = 400;
@@ -115,7 +126,14 @@ class TowerController extends ResponseController
     public function show(string $id)
     {
         $data_query = $this->list_show_query();
-        $data_query->where([['id', $id]]);
+        $data_query->with(['wing' => function ($query) {
+            $query->select(
+                'id',
+                'wings_name',
+                'tower_id',
+                'created_at'
+            );
+        }])->where([['id', $id]]);
         if ($data_query->exists()) {
             $result = $data_query->first()->toArray();
             $message = "Particular tower found";

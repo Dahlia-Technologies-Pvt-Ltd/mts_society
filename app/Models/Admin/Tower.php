@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use App\Models\Admin\{Wing};
 
 class Tower extends Model
 {
@@ -16,6 +16,9 @@ class Tower extends Model
     protected $fillable = ['societies_id', 'tower_name',
     'status', 'created_by', 'updated_by'];
 
+    function wing(){
+        return $this->hasMany(Wing::class);
+    }
     public function getCreatedAtAttribute($data)
     {
         if (!isset($this->attributes['created_at'])) {
