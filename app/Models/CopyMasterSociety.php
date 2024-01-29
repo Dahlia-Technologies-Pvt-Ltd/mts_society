@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin\User;
 use App\Models\Admin\Society;
-use App\Models\Master\MasterUser;
+use App\Models\Master\{MasterUser, MasterSociety};
 
 class CopyMasterSociety extends Model
 {
@@ -23,7 +23,7 @@ class CopyMasterSociety extends Model
     public static function masterToSociety($params = [])
     {
         // Set the new database configuration for society_master
-        $societyMasterConnectionName = 'sqlsrv';
+        /*$societyMasterConnectionName = 'sqlsrv';
         $config =  Config::set("database.connections.$societyMasterConnectionName", [
             'driver' => 'sqlsrv',
             'host' => env('DB_HOST', ''),
@@ -39,13 +39,24 @@ class CopyMasterSociety extends Model
         Config::set("database.connections.$societyMasterConnectionName", $config);
         Config::set('database.default', $societyMasterConnectionName);
 
+
         // Fetch the last record from the master_users table in society_master database
-        $lastMasterUser = DB::connection($societyMasterConnectionName)->table('master_users')->latest()->first();
-        //$lastMasterUser = MasterUser::on($societyMasterConnectionName)->latest()->first();
+        $user_data = DB::connection($societyMasterConnectionName)->table('master_users')->latest()->first();
+        //$user_data = MasterUser::on($societyMasterConnectionName)->latest()->first();
 
-        $lastMasterSociety = DB::connection($societyMasterConnectionName)->table('master_socities')->latest()->first();
+        $society_data = DB::connection($societyMasterConnectionName)->table('master_socities')->latest()->first();*/
 
-        if ($lastMasterUser) {
+        if(!isset($params['master_user_id']) && !isset($params['master_socities_id']) && !isset($params['databaseName']) && !isset($params['databasePassword'])){
+            return false;
+        }
+        
+        $master_user_qry = MasterUser::where('id',$params['master_user_id']);
+        $master_society_qry = MasterSociety::where('id',$params['master_socities_id']);
+
+        if ($master_user_qry->exists() && $master_society_qry->exists()) {
+            $user_data = $master_user_qry->first();
+            $society_data = $master_society_qry->first();
+
             // Set the new database configuration for childdb
             $childdbConnectionName = 'sqlsrvclone';
             Config::set("database.connections.$childdbConnectionName", [
@@ -64,22 +75,22 @@ class CopyMasterSociety extends Model
             Config::set('database.default', $childdbConnectionName);
 
             // Create a new User in the childdb database
-            if ($lastMasterUser && $lastMasterSociety) {
+            if ($user_data && $society_data) {
                 // Create a new User in the user Table
                 $newUser = new User();
-                $newUser->master_socities_id = $lastMasterSociety->id;
-                $newUser->user_type_id = $lastMasterUser->usertype;
-                $newUser->full_name = $lastMasterUser->name;
-                $newUser->username = $lastMasterUser->username;
-                $newUser->email = $lastMasterUser->email;
-                $newUser->phone_number = $lastMasterUser->phone_number;
+                $newUser->master_socities_id = $society_data->id;
+                $newUser->user_type_id = $user_data->usertype;
+                $newUser->full_name = $user_data->name;
+                $newUser->username = $user_data->username;
+                $newUser->email = $user_data->email;
+                $newUser->phone_number = $user_data->phone_number;
                 $newUser->save();
 
                 // Create a new Society in the society Table
                 $newSociety = new Society();
-                $newSociety->master_society_id = $lastMasterSociety->id;
-                $newSociety->society_unique_code = $lastMasterSociety->society_unique_code;
-                $newSociety->society_name = $lastMasterSociety->society_name;
+                $newSociety->master_society_id = $society_data->id;
+                $newSociety->society_unique_code = $society_data->society_unique_code;
+                $newSociety->society_name = $society_data->society_name;
                 $newSociety->save();
             }
             return true;
