@@ -13,6 +13,7 @@ use App\Http\Controllers\API\Master\ForgotPasswordController;
 use App\Http\Controllers\API\Master\ProfileUpdateController;
 use App\Http\Controllers\API\Admin\TowerController;
 use App\Http\Controllers\API\Admin\FloorController;
+use App\Http\Controllers\API\Admin\FlatController;
 use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,11 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 Route::post('/register', [RegisterController::class, 'register']);
 //forgot passeword api
 Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
+//login send otp api
+Route::post('/login-send-otp', [AuthController::class, 'loginsendotp']);
+ 
+//reset password api
+Route::post('/reset-password', [ForgotPasswordController::class, 'ResetPassword']);
 //Masters
 Route::post('/list-country', [CountryStateController::class, 'country']);
 Route::post('/list-state', [CountryStateController::class, 'state']);
@@ -73,6 +79,11 @@ Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
     Route::post('/list-floor', [FloorController::class, 'indexing']);
     Route::get('/show-floor/{id}', [FloorController::class, 'show']);
     Route::post('/delete-floor', [FloorController::class, 'delete']);
+     //flat apis
+     Route::post('/add-flat', [FlatController::class, 'store']);
+     Route::post('/list-flat', [FlatController::class, 'indexing']);
+     Route::get('/show-flat/{id}', [FlatController::class, 'show']);
+     Route::post('/delete-flat', [FlatController::class, 'delete']);
 });
 //Only For User
 Route::middleware('auth:sanctum','user')->group(function () {
@@ -86,11 +97,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-profile-picture', [ProfileUpdateController::class, 'updateprofilepicture']);
     //change password api
     Route::post('/change-password', [ChangePasswordController::class, 'changepassword']);
-    //forgot passeword api
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
-    Route::post('/login-send-otp', [AuthController::class, 'loginsendotp']);
-    //reset password api
-    // Route::post('/reset-password', [ForgotPasswordController::class, 'ResetPassword']);
+
+    Route::get('/get-profile', [ProfileUpdateController::class, 'show']);
+    
+    
+    
     
 
 });
