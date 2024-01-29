@@ -14,6 +14,7 @@ use App\Http\Controllers\API\Master\ProfileUpdateController;
 use App\Http\Controllers\API\Admin\TowerController;
 use App\Http\Controllers\API\Admin\FloorController;
 use App\Http\Controllers\API\Admin\FlatController;
+use App\Http\Controllers\API\Admin\WingsController;
 use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -84,6 +85,9 @@ Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
      Route::post('/list-flat', [FlatController::class, 'indexing']);
      Route::get('/show-flat/{id}', [FlatController::class, 'show']);
      Route::post('/delete-flat', [FlatController::class, 'delete']);
+     //wings apis
+     Route::post('/edit-wing', [WingsController::class, 'edit']);
+     Route::post('/delete-wing', [WingsController::class, 'delete']);
 });
 //Only For User
 Route::middleware('auth:sanctum','user')->group(function () {
