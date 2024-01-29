@@ -53,6 +53,12 @@ const AccountTab = () => {
         setFile(files[0]);
     };
 
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setFile(file);
+        setOldFile(file);
+    };
+
     const [url, setUrl] = useState("");
 
     useEffect(() => {
@@ -72,7 +78,6 @@ const AccountTab = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [data, setData] = React.useState([]);
-    const [customerData, setCustomerData] = React.useState([]);
 
     //   currency
     const [currency, setCurrency] = React.useState("india");
@@ -184,8 +189,10 @@ const AccountTab = () => {
         const formData = new FormData();
         formData.append("profile_picture", file);
 
-        const API_URL = `${appUrl}/api/update-profile`;
+        const API_URL = `${appUrl}/api/update-profile-picture`;
         const token = localStorage.getItem("authToken");
+        const userId = localStorage.getItem("userId");
+        formData.append("id", userId);
         axios
             .post(API_URL, formData, {
                 headers: {
@@ -309,7 +316,7 @@ const AccountTab = () => {
                         >
                             <Box>
                                 <Avatar
-                                    src={url ? url : user1}
+                                    src={url ? url : ''}
                                     alt={user1}
                                     sx={{
                                         width: 120,
@@ -337,7 +344,7 @@ const AccountTab = () => {
                                     :
                                     <Button variant="contained" color="primary" component="label">
                                         Upload
-                                        <input hidden accept="image/*" type="file" />
+                                        <input hidden accept="image/*" name="profile_pic" id="profile_pic" type="file" onChange={handleFileChange} />
                                     </Button>
                                     }
                                 </Stack>
