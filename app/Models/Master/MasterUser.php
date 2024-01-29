@@ -16,11 +16,10 @@ class MasterUser extends Authenticatable
 {
     use HasFactory, SoftDeletes, Notifiable, HasApiTokens;
     protected $connection = 'sqlsrv';
-
     protected $fillable = [
         'name', 'username', 'user_code', 'email', 'password', 'phone_number',
         'master_society_ids', 'gender', 'address', 'country_id', 'state_id', 'city',
-        'zipcode', 'usertype', 'blocked_at', 
+        'zipcode', 'usertype', 'blocked_at', 'forgot_password_token','forgot_password_token_time',
         'profile_picture', 'status', 'created_by', 'updated_by'
     ];
 
@@ -28,7 +27,10 @@ class MasterUser extends Authenticatable
     {
         return MasterUser::where('email', '=', $Email)->where('status',0)->first();
     }
-
+    static public function getTokenSingle($Token)
+    {
+        return MasterUser::where('forgot_password_token', '=', $Token)->where('forgot_password_token_time', '>=', Carbon::now())->first();
+    }
     function country(){
         return $this->belongsTo(Country::class);
     }
