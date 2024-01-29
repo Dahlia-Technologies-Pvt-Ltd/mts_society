@@ -67,14 +67,6 @@ class FloorController extends ResponseController
                 return $this->sendError($response);
             }
         }
-        // if ($request->wing_id > 0) {
-        //     $existingRecord = Tower::find($request->wing_id);
-        //     if (!$existingRecord) {
-        //         $response['status'] = 400;
-        //         $response['message'] = 'Tower Record not found for the provided ID.';
-        //         return $this->sendError($response);
-        //     }
-        // }
         $id = empty($request->id) ? 'NULL' : $request->id;
         $validator = Validator::make($request->all(), [
             'floor_name'                                    => 'required|unique:floors,floor_name,' . $id . ',id,deleted_at,NULL|max:255',

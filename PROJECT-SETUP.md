@@ -1,6 +1,7 @@
 ## Download https://github.com/Dahlia-Technologies-Pvt-Ltd/mts_society
 * Copy Package1.json to Package.json and run
 * Copy  resources/src/index 1.tsx and rename to resources/src/index.tsx
+	- Uncomment this line {/*<BrowserRouter basename="/mts_society/public">*/} and set correct path.
 * composer update
 * npm install
 * .env : Change following Variables

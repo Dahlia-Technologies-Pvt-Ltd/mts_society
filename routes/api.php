@@ -13,6 +13,8 @@ use App\Http\Controllers\API\Master\ForgotPasswordController;
 use App\Http\Controllers\API\Master\ProfileUpdateController;
 use App\Http\Controllers\API\Admin\TowerController;
 use App\Http\Controllers\API\Admin\FloorController;
+use App\Http\Controllers\API\Admin\FlatController;
+use App\Http\Controllers\API\Admin\WingsController;
 use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -91,6 +93,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-profile-picture', [ProfileUpdateController::class, 'updateprofilepicture']);
     //change password api
     Route::post('/change-password', [ChangePasswordController::class, 'changepassword']);
+
+    Route::get('/get-profile', [ProfileUpdateController::class, 'show']);
     
     
     
