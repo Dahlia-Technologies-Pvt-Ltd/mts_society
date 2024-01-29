@@ -34,6 +34,7 @@
 * config/database.php
 	- 'default' => env('DB_CONNECTION', 'sqlsrv'),
     - under `connection` add new connection
+	```
          'sqlsrvclone' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),
@@ -47,6 +48,7 @@
             'prefix' => '',
             'prefix_indexes' => true,
         ],
+	```
 * config/cors.php
 	- change "paths"
 	- change "allowed_origins"
