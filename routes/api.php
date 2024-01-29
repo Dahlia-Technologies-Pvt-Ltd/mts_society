@@ -33,6 +33,11 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 Route::post('/register', [RegisterController::class, 'register']);
 //forgot passeword api
 Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
+//login send otp api
+Route::post('/login-send-otp', [AuthController::class, 'loginsendotp']);
+ 
+//reset password api
+Route::post('/reset-password', [ForgotPasswordController::class, 'ResetPassword']);
 //Masters
 Route::post('/list-country', [CountryStateController::class, 'country']);
 Route::post('/list-state', [CountryStateController::class, 'state']);
@@ -86,11 +91,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-profile-picture', [ProfileUpdateController::class, 'updateprofilepicture']);
     //change password api
     Route::post('/change-password', [ChangePasswordController::class, 'changepassword']);
-    //forgot passeword api
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
-    Route::post('/login-send-otp', [AuthController::class, 'loginsendotp']);
-    //reset password api
-    // Route::post('/reset-password', [ForgotPasswordController::class, 'ResetPassword']);
+    
+    
+    
     
 
 });

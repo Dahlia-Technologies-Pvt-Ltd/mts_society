@@ -57,13 +57,15 @@ class ForgotPasswordController extends ResponseController
 				return $this->sendError($response);
 			}
 			else{
-				$random = Str::random(30);
+				$user->forgot_password_token = Str::random(30);
+				$user->forgot_password_token_time = Carbon::now()->addMinutes(30);
+				$user->save();
 				try{
 					$AppURL = env('APP_URL');
 					$TemplateData = array(						
 						'EMAIL' => $user->email,
 						'USER_NAME' => $user->name,
-						'RESET_LINK' => "<a href='{$AppURL}/reset-password/{$random}'><button type='button' class='btn btn-primary'>Reset Password</button></a>",
+						'RESET_LINK' => "<a href='{$AppURL}/reset-password/{$user->forgot_password_token}'><button type='button' class='btn btn-primary'>Reset Password</button></a>",
                         // 'OTP' =>$random_otp 
 					);
 					MailHelper::sendMail('FORGOT_PASSWORD',$TemplateData);
@@ -78,7 +80,45 @@ class ForgotPasswordController extends ResponseController
 			}
 		}
 	}
-
+	public function ResetPassword(Request $request) : JsonResponse
+	{
+		$validator = \Validator::make($request->all(), 
+			[
+				'token' => 'required',
+				'new_password' => 'required|regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%&*_-])[a-zA-Z0-9!@#$%&*_-].{7,}+$/',
+				'con_password' => 'required|same:new_password',
+			],
+			[
+				'token.required' => 'Please provide token',
+				'new_password.required' => 'Please provide Password',
+				'new_password.regex' => 'Password must contain  at least one lower case letter, one upper case letter, one digit, one special character and minimum 8 characters',
+				'con_password.required' => 'Please provide Confirm Password',
+				'con_password.same' => 'Password and Confirm Password does not match',
+			]
+		);
+		if ($validator->fails()) 
+		{
+			return $this->validatorError($validator);
+		}
+		else
+		{
+			// Check user token exists / valid from database
+			$user = MasterUser::getTokenSingle($request->token);
+			if (empty($user)) {
+				$response['status'] = 401;
+				$response['message'] = 'Token expired or does not exists.';
+				return $this->sendError($response);
+			}
+			else {
+				//Change Password
+				$user->password = Hash::make($request->new_password);
+				$user->save();
+				$response['status'] = 200;
+				$response['message'] = 'Password reset successfully.';
+				return $this->sendResponse($response);
+			}
+		}
+	}
     /**
      * Display the specified resource.
      */
