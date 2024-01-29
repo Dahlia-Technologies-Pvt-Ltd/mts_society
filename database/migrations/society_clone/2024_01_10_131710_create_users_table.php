@@ -35,7 +35,9 @@ return new class extends Migration
             $table->foreignId('country')->constrained()->default(0)->nullable();
             $table->foreignId('state')->constrained()->default(0)->nullable();  
             $table->string('city', 50)->nullable()->default(null);
-            $table->string('zipcode')->nullable()->default(null);            
+            $table->string('zipcode')->nullable()->default(null);          
+            $table->string('forgot_password_token')->nullable()->default(null);
+            $table->timestamp('forgot_password_token_time')->nullable()->default(null);    
             $table->tinyInteger('is_approved')->default(0)->comment('0-Not_Approve,1-Approve');//)0-Not_Approve, 1-Means Approve-mobile 
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive        
             $table->unsignedBigInteger('created_by')->nullable();
