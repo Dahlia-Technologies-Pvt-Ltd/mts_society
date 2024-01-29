@@ -57,7 +57,7 @@
 * Allow Headers : GET,POST,PUT,PATCH,DELETE,OPTIONS
 * Allow Custom Headers : business-id,table-id,language-id
 	
-## importing Database
+## Importing Database
 * Create a database with name `mts_society` and run command
 	- php artisan migrate --database="sqlsrv" --path="database/migrations/society_master"
 
