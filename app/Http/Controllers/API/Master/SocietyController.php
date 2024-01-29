@@ -25,7 +25,7 @@ class SocietyController extends ResponseController
         ]);
         return $data_query;
     }
-    public function indexing(Request $request)
+    public function index(Request $request)
     {
         $data_query = $this->list_show_query();
         if (!empty($request->keyword)) {
@@ -66,7 +66,7 @@ class SocietyController extends ResponseController
         $validator = Validator::make($request->all(), [
             'society_name'                       =>'required|unique:master_socities,society_name,' . $id . ',id,deleted_at,NULL|max:255',
             'email' => 'required|email',
-            'user_id'=>'integer',
+            'user_id'=>'required|integer',
             'address'                       =>'required',
         ]);
 
@@ -82,7 +82,7 @@ class SocietyController extends ResponseController
                 'adress2'                             => $request->adress2,
                 'country_id'                          => $request->country_id,
                 'state_id'                            =>$request->state_id,
-                'city'                                  => $request->city,
+                'city'                                => $request->city,
                 'zipcode'                             => $request->zipcode,
                 'gst_number'                          =>$request->gst_number,
                 'pan_number'                          => $request->pan_number,
@@ -172,7 +172,7 @@ class SocietyController extends ResponseController
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         $terms = MasterSociety::find($request->id);
         if ($terms) {

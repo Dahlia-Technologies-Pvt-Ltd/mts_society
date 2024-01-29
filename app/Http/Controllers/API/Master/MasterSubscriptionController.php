@@ -24,7 +24,7 @@ class MasterSubscriptionController extends ResponseController
         ]);
         return $data_query;
     }
-    public function indexing(Request $request)
+    public function index(Request $request)
     {
         $data_query = $this->list_show_query();
         if (!empty($request->keyword)) {
@@ -143,7 +143,7 @@ class MasterSubscriptionController extends ResponseController
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         $subs = MasterSubscription::find($request->id);
         if ($subs) {

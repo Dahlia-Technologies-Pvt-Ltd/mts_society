@@ -18,15 +18,16 @@ class TowerController extends ResponseController
      * Display a listing of the resource.
      */
 
-    function list_show_query()
-    {
-        $data_query = Tower::select([
-            'id',
-            'tower_name', 'societies_id', 'created_at'
-        ]);
-        return $data_query;
-    }
-    public function indexing(Request $request)
+     function list_show_query()
+     {
+         $data_query = Tower::where([['status', 0]]);
+         $data_query->select([
+             'id',
+             'tower_name', 'societies_id', 'created_at'
+         ]);
+         return $data_query;
+     }
+    public function index(Request $request)
     {
         // print_r('tttt');die();
         $data_query = $this->list_show_query();
@@ -159,7 +160,7 @@ class TowerController extends ResponseController
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         $terms = Tower::find($request->id);
         if ($terms) {

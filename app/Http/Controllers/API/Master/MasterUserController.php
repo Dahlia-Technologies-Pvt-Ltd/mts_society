@@ -15,7 +15,7 @@ class MasterUserController extends ResponseController
     /**
      * Display a listing of the resource.
      */
-    function list_show_query()
+    function list_show_query($params = [])
     {
 
         $data_query = MasterUser::with(['country' => function ($query) {
@@ -44,11 +44,19 @@ class MasterUserController extends ResponseController
             'country_id', 'state_id', 'city', 'zipcode', 'usertype', 'blocked_at',
             'profile_picture', 'created_at'
         ]);
+        if (isset($params['usertype'])) {
+            $data_query->where('usertype', '=', $params['usertype']);
+        }
         return $data_query;
     }
-    public function indexing(Request $request)
+    public function index(Request $request)
     {
-        $data_query = $this->list_show_query();
+        if ($request->usertype) {
+            $params = ['usertype' => $request->usertype];
+        } else {
+            $params = [];
+        }
+        $data_query = $this->list_show_query($params);        
         if (!empty($request->keyword)) {
             $keyword = $request->keyword;
             $data_query->where(function ($query) use ($keyword) {
@@ -214,7 +222,7 @@ class MasterUserController extends ResponseController
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         $users = MasterUser::find($request->id);
         if ($users) {
