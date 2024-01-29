@@ -80,6 +80,14 @@ Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
     Route::post('/list-floor', [FloorController::class, 'index']);
     Route::get('/show-floor/{id}', [FloorController::class, 'show']);
     Route::post('/delete-floor', [FloorController::class, 'destroy']);
+     //flat apis
+     Route::post('/add-flat', [FlatController::class, 'store']);
+     Route::post('/list-flat', [FlatController::class, 'index']);
+     Route::get('/show-flat/{id}', [FlatController::class, 'show']);
+     Route::post('/delete-flat', [FlatController::class, 'destroy']);
+     //wings apis
+     Route::post('/edit-wing', [WingsController::class, 'edit']);
+     Route::post('/delete-wing', [WingsController::class, 'destroy']);
 });
 //Only For User
 Route::middleware('auth:sanctum','user')->group(function () {
