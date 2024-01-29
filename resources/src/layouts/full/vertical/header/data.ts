@@ -112,18 +112,18 @@ const messages: messageType[] = [
 //
 // Profile dropdown
 //
-const userType = sessionStorage.getItem('userType');
+const userType = localStorage.getItem('userType');
 let changeUrl='';
 let upUrl='';
 if(userType == '0'){
+  changeUrl = '/user/change-password';
+  upUrl = '/user/account-setting';
+}else if(userType == '1'){
   changeUrl = '/admin/change-password';
   upUrl = '/admin/account-setting';
-}else if(userType == '1'){
-  changeUrl = '/resolver/change-password';
-  upUrl = '/resolver/account-setting';
 }else if(userType == '2'){
-  changeUrl = '/customer/change-password';
-  upUrl = '/customer/account-setting';
+  changeUrl = '/super-admin/change-password';
+  upUrl = '/super-admin/account-setting';
 }
 
 
