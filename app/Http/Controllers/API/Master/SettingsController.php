@@ -17,7 +17,7 @@ class SettingsController extends ResponseController
         $data_query = Setting::orderBy('id', 'asc');
         return $data_query;
     }
-    public function indexing(Request $request){
+    public function index(Request $request){
         $data_query = $this->list_show_query();
         if ($data_query->exists()) {
         $result = $data_query->first()->toArray();

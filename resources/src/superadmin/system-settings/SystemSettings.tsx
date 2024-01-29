@@ -54,9 +54,9 @@ const SystemSettings = () => {
             .required("From Email Address is required").email("Enter a valid email"),
         mail_from_name: yup.string().required("Sender Name is required"),
         mail_ssl_enable: yup.string().required("SSL Value is required"),
-        google_analytics_key: yup
-            .string()
-            .required("Google Location Key is required"),
+        // google_analytics_key: yup
+        //     .string()
+        //     .required("Google Location Key is required"),
     });
     const formik = useFormik(
         {
@@ -110,7 +110,6 @@ const SystemSettings = () => {
                     },
                 });
                 //console.log('API Response:', response.data);
-                sessionStorage.setItem("successMessage", response.data.message);
                 setIsSuccessVisible(true);
                 setSuccessMessage(response.data.message);
             } catch (error) {
@@ -673,7 +672,7 @@ const SystemSettings = () => {
                             </Grid>
 
                             {/* 8 */}
-                            <Grid item xs={12} alignItems="center" md={6} p={2}>
+                            {/* <Grid item xs={12} alignItems="center" md={6} p={2}>
                                 <Grid
                                     item
                                     xs={12}
@@ -723,7 +722,7 @@ const SystemSettings = () => {
                                         }
                                     />
                                 </Grid>
-                            </Grid>
+                            </Grid> */}
 
                             {/* Submit Button */}
                             <Grid item xs={12} mt={3}
