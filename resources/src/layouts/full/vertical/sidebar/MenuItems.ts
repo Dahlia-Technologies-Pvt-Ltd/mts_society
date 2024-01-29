@@ -99,6 +99,13 @@ Menuitems = [
     href: '/super-admin/subscription-plan-list',
     activeUrls: ['/super-admin/subscription-plan-list',`/super-admin/add-subscription`,`/super-admin/add-subscription/*`],
   },
+  {
+    id: uniqueId(),
+    title: 'Setting',
+    icon: IconSettings,
+    href: '/super-admin/system-setting',
+    activeUrls: ['/super-admin/system-setting'],
+  },
   
 ];
 }else if(userType === '1'){
