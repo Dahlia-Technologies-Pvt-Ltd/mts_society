@@ -69,7 +69,7 @@ const ChangePassword = () => {
         formData.append('new_password', values.new_password);
         formData.append('confirm_password', values.confirm_password);
         // Retrieving data from Session Storage
-        const token = sessionStorage.getItem('authToken');
+        const token = localStorage.getItem('authToken');
         const response = await axios.post(API_URL, formData, {
           headers: {
             Authorization: `Bearer ${token}`,

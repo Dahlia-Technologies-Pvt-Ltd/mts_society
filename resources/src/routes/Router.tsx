@@ -8,7 +8,7 @@ const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')))
 
 /* ****Admin Pages***** */
 const AdminDashboard = Loadable(lazy(() => import('../admin/dashboard/AdminDashboard')));
-const ChangePassword = Loadable(lazy(() => import('../admin/change-password/ChangePassword')));
+const ChangePassword = Loadable(lazy(() => import('../common/change-password/ChangePassword')));
 
 /* ****Super Admin Pages***** */
 const SuperAdminDashboard = Loadable(lazy(() => import('../superadmin/dashboard/SuperAdminDashboard')));
@@ -16,6 +16,8 @@ const SubscriptionList = Loadable(lazy(() => import('../superadmin/mastersubscri
 const AddSubscription = Loadable(lazy(() => import('../superadmin/mastersubscription/AddSubscription')));
 const AddMasterUser = Loadable(lazy(() => import('../superadmin/masteruser/AddMasterUser')));
 const MasterUserList = Loadable(lazy(() => import('../superadmin/masteruser/MasterUserList')));
+const AccountSetting = Loadable(lazy(() => import('../common/account-settings/AccountSettings')))
+const SystemSettings = Loadable(lazy(() => import('../superadmin/system-settings/SystemSettings')));
 
 // authentication
 const Login = Loadable(lazy(() => import('../auth/Login')));
@@ -44,6 +46,8 @@ const Router = [
     children: [
       { path: '/admin/dashboard', exact: true, element: <AdminDashboard /> },
       { path: '/admin/change-password', exact: true, element: <ChangePassword /> },
+      { path: '/admin/account-setting', exact: true, element: <AccountSetting /> },
+
       { path: '/super-admin/dashboard', exact: true, element: <SuperAdminDashboard /> },
       { path: '/super-admin/subscription-plan-list', exact: true, element: <SubscriptionList /> },
       { path: '/super-admin/add-subscription', exact: true, element: <AddSubscription /> },
@@ -51,6 +55,10 @@ const Router = [
       { path: '/super-admin/society-admin-list', exact: true, element: <MasterUserList /> },
       { path: '/super-admin/add-society-admin', exact: true, element: <AddMasterUser /> },
       { path: '/super-admin/edit-society-admin/:id', exact: true, element: <AddMasterUser /> },
+      { path: '/super-admin/change-password', exact: true, element: <ChangePassword /> },
+      { path: '/super-admin/account-setting', exact: true, element: <AccountSetting /> },
+      { path: '/super-admin/system-setting', exact: true, element: <SystemSettings /> },
+      
     ],
   },
 ];
