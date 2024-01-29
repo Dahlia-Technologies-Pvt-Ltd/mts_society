@@ -12,8 +12,7 @@ class Flat extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $fillable = ['subscription_plan', 'price', 'frequency',
-     'features', 'is_renewal_plan',
+    protected $fillable = ['flat_name', 'user_id', 'floor_id',
     'status', 'created_by', 'updated_by'];
 
     public function getCreatedAtAttribute($data)
