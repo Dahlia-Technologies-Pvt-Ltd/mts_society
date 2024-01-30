@@ -39,8 +39,10 @@ const AddMasterSociety = () => {
     const [quillText, setQuillText] = useState("");
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [selectedState, setSelectedState] = useState(null);
+    const [selectedAdmin, setSelectedAdmin] = useState(null);
     const [countryOptions, setCountryData] = useState([]);
     const [stateOptions, setStateData] = useState([]);
+    const [adminOptions, setAdminData] = useState([]);
     const appUrl = import.meta.env.VITE_API_URL;
 
     const BCrumb = [
@@ -52,8 +54,17 @@ const AddMasterSociety = () => {
             title: id ? "Edit Society" : "Add Society",
         },
     ];
+    const handleAdminChange = (event, newValue) => {
+        setSelectedAdmin(newValue);
+        if(newValue){
+          formik.setFieldValue('user_id', newValue.id);
+          formik.setFieldValue('user_email', newValue.email);
+          formik.setFieldValue('user_phone', newValue.phone_number);
+        }else{
+          formik.setFieldValue('user_id', '');
+        }
+    };
     const handleCountryChange = (event, newValue) => {
-        //console.log('county_id', newValue);
         setSelectedCountry(newValue);
         if(newValue){
           fetchState(newValue.id);
@@ -67,6 +78,26 @@ const AddMasterSociety = () => {
     const handleStateChange = (event, newValue) => {
         setSelectedState(newValue);
         formik.setFieldValue('state_id', newValue.id);
+    };
+
+    // Function to fetch data from the API
+    const fetchAdmin = async () => {
+        try {
+            const formData = new FormData();
+            formData.append("sortBy", 'id');
+            formData.append('sortOrder', 'asc');
+            formData.append('usertype', '1');
+            const API_URL = appUrl + '/api/list-master-user';
+            const response = await axios.post(API_URL, formData);
+            //console.log(JSON.stringify(response.data.data.data));
+            if (response && response.data && response.data.data) {
+            setAdminData(response.data.data.data);
+            }else{
+            setAdminData([]);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error); // Log any errors
+        }
     };
 
     // Function to fetch data from the API
@@ -129,6 +160,8 @@ const AddMasterSociety = () => {
             city: '',
             zipcode: '',
             user_id: '',
+            user_phone: '',
+            user_email: '',
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -192,10 +225,10 @@ const AddMasterSociety = () => {
             fetchData();
         }
         fetchCountry();
+        fetchAdmin();
     }, [id]);
 
     useEffect(() => {
-        console.log(formik.values.country_id);
         // Find the country from the fetched list based on country_id
         const selectedCountryData = countryOptions.find(
           (country) => country.id === parseInt(formik.values.country_id)
@@ -241,6 +274,18 @@ useEffect(() => {
 }, [selectedCountry, formik.values.state_id]);
 
 
+    useEffect(() => {
+        // Find the admin from the fetched list based on user_id
+        const selectedAdminData = adminOptions.find(
+            (admin) => admin.id === parseInt(formik.values.user_id)
+        );
+        // If the admin is found, set it as the selectedAdmin
+        if (selectedAdminData) {
+            setSelectedAdmin(selectedAdminData);
+        }
+    }, [adminOptions, formik.values.user_id]);
+
+
     const fetchData = async () => {
         try {
             const API_URL = `${appUrl}/api/show-society/${id}`;
@@ -263,7 +308,9 @@ useEffect(() => {
                 city: data.city,
                 zipcode: data.zipcode,
                 address: data.address,
-                user_id: data.user_id,
+                user_id: data.society_owner.id,
+                user_phone: data.society_owner.phone_number,
+                user_email: data.society_owner.email,
             });
             fetchState(data.country_id);
         } catch (error) {
@@ -316,7 +363,7 @@ useEffect(() => {
                 <form onSubmit={formik.handleSubmit}>
                     <Grid container spacing={2}>
                         {/* 1 */}
-                        <Grid item xs={7}>
+                        <Grid item xs={6}>
                             <CustomFormLabel
                                 htmlFor="society_name"
                                 sx={{ mt: 0 }}
@@ -340,7 +387,7 @@ useEffect(() => {
                                 }
                             />
                         </Grid>        
-                        <Grid item xs={7}>
+                        <Grid item xs={6}>
                             <CustomFormLabel
                                 htmlFor="address"
                                 sx={{ mt: 0 }}
@@ -536,16 +583,16 @@ useEffect(() => {
                                 }}  
                             />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={4}>
                             <CustomFormLabel htmlFor="user_id">Society Admin<span style={{color:"red"}}>*</span></CustomFormLabel>
                             <Autocomplete
                             id="user_id"
                             fullWidth
-                            options={countryOptions}
+                            options={adminOptions}
                             getOptionLabel={(option) => option.name}
                             isOptionEqualToValue={(option, value) => option.id === value.id}
-                            value={selectedCountry}
-                            onChange={handleCountryChange}
+                            value={selectedAdmin}
+                            onChange={handleAdminChange}
                             renderOption={(props, option) => (
                                 <MenuItem component="li" {...props}>
                                 {option.name}
@@ -568,7 +615,57 @@ useEffect(() => {
                             )}
                             />
                         </Grid>
-
+                        <Grid item xs={4}>
+                            <CustomFormLabel
+                                htmlFor="user_phone"
+                                sx={{ mt: 4 }}
+                            >
+                                Phone Number
+                            </CustomFormLabel>
+                            <CustomTextField
+                                id="user_phone"
+                                name="user_phone"
+                                placeholder="Phone Number"
+                                fullWidth
+                                value={formik.values.user_phone}
+                                onChange={formik.handleChange}
+                                error={
+                                    formik.touched.user_phone &&
+                                    Boolean(formik.errors.user_phone)
+                                }
+                                helperText={
+                                    formik.touched.user_phone &&
+                                    formik.errors.user_phone
+                                }
+                                disabled={true}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <CustomFormLabel
+                                htmlFor="user_email"
+                                sx={{ mt: 4 }}
+                            >
+                                Email ID
+                            </CustomFormLabel>
+                            <CustomTextField
+                                id="user_email"
+                                name="user_email"
+                                placeholder="Email ID"
+                                fullWidth
+                                value={formik.values.user_email}
+                                onChange={formik.handleChange}
+                                error={
+                                    formik.touched.user_email &&
+                                    Boolean(formik.errors.user_email)
+                                }
+                                helperText={
+                                    formik.touched.user_email &&
+                                    formik.errors.user_email
+                                }
+                                disabled={true}
+                                readonly
+                            />
+                        </Grid>
                         {/* Submit Button */}
                         <Grid item xs={12} mt={5} display={'flex'} alignItems={'center'} justifyContent={'center'}>
                             <Link to="/super-admin/society-list">

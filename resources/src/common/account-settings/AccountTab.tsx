@@ -413,9 +413,9 @@ const AccountTab = () => {
                                     fontWeight={600}
                                     mb={0.5}
                                 >
-                                    {data.email_id === ""
+                                    {data.email === ""
                                         ? "-"
-                                        : data.email_id}
+                                        : data.email}
                                 </Typography>
                             </Grid>
                             <Grid item lg={6} xs={12} mt={1}>
@@ -433,6 +433,74 @@ const AccountTab = () => {
                                     {data.phone_number === ""
                                         ? "-"
                                         : data.phone_number}
+                                </Typography>
+                            </Grid>
+                            <Grid item lg={6} xs={12} mt={1}>
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    Country
+                                </Typography>
+                                <Typography
+                                    variant="subtitle1"
+                                    fontWeight={600}
+                                    mb={0.5}
+                                >
+                                    {data.country_name === ""
+                                        ? "-"
+                                        : data.country_name}
+                                </Typography>
+                            </Grid>
+                            <Grid item lg={6} xs={12} mt={1}>
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    State
+                                </Typography>
+                                <Typography
+                                    variant="subtitle1"
+                                    fontWeight={600}
+                                    mb={0.5}
+                                >
+                                    {data.state_name === ""
+                                        ? "-"
+                                        : data.state_name}
+                                </Typography>
+                            </Grid>
+                            <Grid item lg={6} xs={12} mt={1}>
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    City
+                                </Typography>
+                                <Typography
+                                    variant="subtitle1"
+                                    fontWeight={600}
+                                    mb={0.5}
+                                >
+                                    {data.city === ""
+                                        ? "-"
+                                        : data.city}
+                                </Typography>
+                            </Grid>
+                            <Grid item lg={6} xs={12} mt={1}>
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    Zipcode
+                                </Typography>
+                                <Typography
+                                    variant="subtitle1"
+                                    fontWeight={600}
+                                    mb={0.5}
+                                >
+                                    {(data.zipcode === "" || data.zipcode === null)
+                                        ? "-"
+                                        : data.zipcode}
                                 </Typography>
                             </Grid>
                        
