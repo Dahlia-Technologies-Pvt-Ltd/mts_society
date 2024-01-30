@@ -29,7 +29,6 @@ class MasterSociety extends Model
     public function getSocietyTokenAttribute()
     {
         return Crypt::encryptString($this->id);
-       
     }
     public function getDocumentsAttribute($data)
     {
@@ -93,7 +92,7 @@ class MasterSociety extends Model
      * @return void
      */
     function getSocietyOwnerAttribute(){
-        $master_user_qry = MasterUser::whereJsonContains('master_society_id', $this->id);
+        $master_user_qry = MasterUser::whereJsonContains('master_society_ids', $this->id);
         if($master_user_qry->exists()){
             return $master_user_qry->select([
                 'master_users.id',
