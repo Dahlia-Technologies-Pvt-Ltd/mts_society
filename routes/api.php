@@ -11,6 +11,7 @@ use App\Http\Controllers\API\Master\CountryStateController;
 use App\Http\Controllers\API\Master\ChangePasswordController;
 use App\Http\Controllers\API\Master\ForgotPasswordController;
 use App\Http\Controllers\API\Master\ProfileUpdateController;
+use App\Http\Controllers\API\Master\EmailController;
 use App\Http\Controllers\API\Admin\TowerController;
 use App\Http\Controllers\API\Admin\FloorController;
 use App\Http\Controllers\API\Admin\FlatController;
@@ -64,6 +65,11 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
     //system settings apis
     Route::post('/show-system-settings', [SettingsController::class, 'index']);
     Route::post('/edit-system-settings', [SettingsController::class, 'updating']);
+    //email template
+    Route::post('/add-emailtemplate', [EmailController::class, 'store']);
+    Route::post('/delete-emailtemplate', [EmailController::class, 'destroy']);
+    Route::post('/list-emailtemplate', [EmailController::class, 'index']);
+    Route::get('/show-emailtemplate/{id}', [EmailController::class, 'show']);
     //User apis
     // MasterUserController
    

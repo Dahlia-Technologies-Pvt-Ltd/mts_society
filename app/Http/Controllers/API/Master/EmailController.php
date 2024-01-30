@@ -1,44 +1,44 @@
 <?php
 
-namespace App\Http\Controllers\API\Admin;
+namespace App\Http\Controllers\API\Master;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\ResponseController as ResponseController;
+use App\Models\Master\EmailTemplate;
 use Illuminate\Http\Request;
-use App\Http\Controllers\API\ResponseController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
-use App\Models\Admin\{Floor, Tower};
 
-class FloorController extends ResponseController
+class EmailController extends ResponseController
 {
     /**
      * Display a listing of the resource.
      */
-    function list_show_query()
+    public function list_show_query()
     {
-        $data_query = Floor::join('towers', 'towers.id', '=', 'floors.tower_id')
-            ->Leftjoin('wings', 'wings.id', '=', 'floors.wing_id');
+        $data_query = EmailTemplate::query();
         $data_query->select([
-            'floors.id AS id',
-            'floors.floor_name AS floor_name',
-            'towers.tower_name AS tower_name',
-            'wings.wings_name',
-
+            'id',
+            'template_code',
+            'title',
+            'content',
+            'sequence',
+            'subject',
+            'template_variable',
+            'created_at',
         ]);
         return $data_query;
     }
     public function index(Request $request)
     {
         $data_query = $this->list_show_query();
-        if (!empty($request->keyword)) {
+        if (!empty(($request->keyword))) {
             $keyword = $request->keyword;
-            $data_query->where(function ($query) use ($keyword) {
-                $query->where('floors.floor_name', 'LIKE', '%' . $keyword . '%')
-                    ->orWhere('towers.tower_name', 'LIKE', '%' . $keyword . '%')
-                    ->orWhere('wings.wings_name', 'LIKE', '%' . $keyword . '%');
+            $data_query->where(function ($query)  use ($keyword) {
+                $query->where('template_code', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('title', 'LIKE', '%' . $keyword . '%')->orWhere('content', 'LIKE', '%' . $keyword . '%')->orWhere('subject', 'LIKE', '%' . $keyword . '%');
             });
         }
-        $fields = ["id", "floors.floor_name", "towers.tower_name", "wings.wings_name"];
+        $fields = ["id", "template_code", "title"];
         return $this->commonpagination($request, $data_query, $fields);
     }
 
@@ -47,63 +47,55 @@ class FloorController extends ResponseController
      */
     public function store(Request $request)
     {
-        $societies_id = getsocietyid($request->header('society_id'));
-        $sql = "SELECT id FROM societies WHERE master_society_id =  $societies_id";
-        $results = DB::select($sql);
-        $net_id = $results[0]->id;
         if ($request->id > 0) {
-            $existingRecord = Floor::find($request->id);
+            $existingRecord = EmailTemplate::find($request->id);
             if (!$existingRecord) {
                 $response['status'] = 400;
                 $response['message'] = 'Record not found for the provided ID.';
                 return $this->sendError($response);
             }
         }
-        if ($request->tower_id > 0) {
-            $existingRecord = Tower::find($request->tower_id);
-            if (!$existingRecord) {
-                $response['status'] = 400;
-                $response['message'] = 'Tower Record not found for the provided ID.';
-                return $this->sendError($response);
-            }
-        }
-        $id = empty($request->id) ? 'NULL' : $request->id;
         $validator = Validator::make($request->all(), [
-            'floor_name'                                    => 'required|unique:floors,floor_name,' . $id . ',id,deleted_at,NULL|max:255',
-            'tower_id'                                      => 'required|integer|min:1',
-            'wing_id'                                      => 'integer|min:1',
-
-
+            'template_code' => 'required|unique:email_templates,template_code,' . $request->id . ',id,deleted_at,NULL|max:255',
+            'title' => 'required|max:255',
+            'content' => 'required',
+            'subject' => 'required|max:255',
+            'sequence' => 'integer|min:0|max:1',
+            'template_variable' => 'required|max:255',
         ]);
-
         if ($validator->fails()) {
             return $this->validatorError($validator);
         } else {
-            $message = empty($request->id) ? "Tower created successfully." : "Tower updated successfully.";
-
+            $message = empty($request->id) ? "Email template created successfully." : "Email template updated successfully.";
             $ins_arr = [
-                'societies_id'                        => $net_id,
-                'floor_name'                     => $request->floor_name,
-                'tower_id'                     => $request->tower_id,
-                'wing_id'                     => isset($request->wing_id) ? $request->wing_id : 1,
-                'updated_by'                           => auth()->id(),
+                'template_code' => $request->template_code,
+                'title' => $request->title,
+                'content' => $request->content,
+                'subject' => $request->subject,
+                'template_variable' => $request->template_variable,
+                'sequence' => isset($request->sequence) ? $request->sequence : 0,
+                'updated_by' => auth()->id(),
             ];
             if (!$request->id) {
                 $ins_arr['created_by'] = auth()->id();
             } else {
                 $ins_arr['updated_by'] = auth()->id();
             }
-            $qry = Floor::updateOrCreate(
+
+            $qry = EmailTemplate::updateOrCreate(
                 ['id' => $request->id],
                 $ins_arr
             );
         }
         if (request()->is('api/*')) {
             if ($qry) {
+
                 $response['status'] = 200;
                 $response['message'] = $message;
                 $response['data'] = [
-                    'id' => $qry->id, 'floor_name' => $qry->floor_name
+                    'id' => $qry->id, 'template_code' => $qry->template_code, 'title' => $qry->title,
+                    'content' => $qry->content, 'subject' => $qry->subject, 'sequence' => $qry->sequence,
+                    'template_variable' => $qry->template_variable
                 ];
                 return $this->sendResponse($response);
             } else {
@@ -117,32 +109,30 @@ class FloorController extends ResponseController
                 $response['status'] = 200;
                 return $this->sendResponse($response);
             }
-            $response['message'] = 'Unable to save tower.';
+            $response['message'] = 'Unable to save Email template.';
             $response['status'] = 400;
             return $this->sendError($response);
         }
     }
-
-
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
         $data_query = $this->list_show_query();
-        $data_query->where([['floors.id', $id]]);
+        $data_query->where([['id', $id]]);
         if ($data_query->exists()) {
             $result = $data_query->first()->toArray();
-            $message = "Particular floor found";
+            $message = "Particular email template found";
             $response['message'] = $message;
             $response['data'] = $result;
             $response['status'] = 200;
-            return $this->sendResponse($response); //Assigning a Value
+            return $this->sendResponse($response);
         } else {
-            $response['message'] = 'Unable to find floor.';
+            $response['message'] = 'Unable to find email template.';
             $response['status'] = 400;
             return $this->sendError($response);
-        }
+        } //
     }
 
     /**
@@ -158,10 +148,10 @@ class FloorController extends ResponseController
      */
     public function destroy(Request $request)
     {
-        $terms = Floor::find($request->id);
+        $terms = EmailTemplate::find($request->id);
         if ($terms) {
             $ins_arr['deleted_by'] = auth()->id();
-            $qry = Floor::updateOrCreate(
+            $qry = EmailTemplate::updateOrCreate(
                 ['id' => $request->id],
                 $ins_arr
             );
@@ -172,6 +162,6 @@ class FloorController extends ResponseController
         }
         $response['message'] = $message;
         $response['status'] = 200;
-        return $this->sendResponse($response);
+        return $this->sendResponse($response); //
     }
 }
