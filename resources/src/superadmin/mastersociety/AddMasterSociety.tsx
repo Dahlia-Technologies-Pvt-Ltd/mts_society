@@ -40,9 +40,11 @@ const AddMasterSociety = () => {
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [selectedState, setSelectedState] = useState(null);
     const [selectedAdmin, setSelectedAdmin] = useState(null);
+    const [selectedSubscription, setSelectedSubscription] = useState(null);
     const [countryOptions, setCountryData] = useState([]);
     const [stateOptions, setStateData] = useState([]);
     const [adminOptions, setAdminData] = useState([]);
+    const [subscriptionOption, setMasterSubscriptionData] = useState([]);
     const appUrl = import.meta.env.VITE_API_URL;
 
     const BCrumb = [
@@ -62,6 +64,14 @@ const AddMasterSociety = () => {
           formik.setFieldValue('user_phone', newValue.phone_number);
         }else{
           formik.setFieldValue('user_id', '');
+        }
+    };
+    const handleSubscriptionChange = (event, newValue) => {
+        setSelectedSubscription(newValue);
+        if(newValue){
+          formik.setFieldValue('subscription_id', newValue.id);
+        }else{
+          formik.setFieldValue('subscription_id', '');
         }
     };
     const handleCountryChange = (event, newValue) => {
@@ -162,6 +172,7 @@ const AddMasterSociety = () => {
             user_id: '',
             user_phone: '',
             user_email: '',
+            subscription_id: '',
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -179,6 +190,7 @@ const AddMasterSociety = () => {
                 formData.append("zipcode", values.zipcode);
                 formData.append("address", values.address);
                 formData.append("user_id", values.user_id);
+                formData.append("subscription_id", values.subscription_id);
 
                 // Determine the API URL based on whether it's an edit or add operation
                 let API_URL = appUrl + "/api/add-society";
@@ -226,6 +238,7 @@ const AddMasterSociety = () => {
         }
         fetchCountry();
         fetchAdmin();
+        fetchMasterSubscription();
     }, [id]);
 
     useEffect(() => {
@@ -285,7 +298,24 @@ useEffect(() => {
         }
     }, [adminOptions, formik.values.user_id]);
 
-
+     // Function to fetch data from the API
+  const fetchMasterSubscription = async () => {
+        try {
+            const formData = new FormData();
+            formData.append("sortBy", 'id');
+            formData.append('sortOrder', 'asc');
+            const API_URL = appUrl + '/api/list-master-subscription';
+            const response = await axios.post(API_URL, formData);
+            //console.log(JSON.stringify(response.data.data.data));
+            if (response && response.data && response.data.data) {
+            setMasterSubscriptionData(response.data.data.data);
+            }else{
+            setMasterSubscriptionData([]);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error); // Log any errors
+        }
+    };
     const fetchData = async () => {
         try {
             const API_URL = `${appUrl}/api/show-society/${id}`;
@@ -311,6 +341,7 @@ useEffect(() => {
                 user_id: data.society_owner.id,
                 user_phone: data.society_owner.phone_number,
                 user_email: data.society_owner.email,
+                subscription_id: '',
             });
             fetchState(data.country_id);
         } catch (error) {
@@ -601,7 +632,7 @@ useEffect(() => {
                             renderInput={(params) => (
                                 <CustomTextField
                                 {...params}
-                                placeholder="Select"
+                                placeholder="Society Admin"
                                 aria-label="Admin"
                                 autoComplete="off"
                                 inputProps={{
@@ -664,6 +695,38 @@ useEffect(() => {
                                 }
                                 disabled={true}
                                 readonly
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <CustomFormLabel htmlFor="subscription_id">Subscription Plan<span style={{color:"red"}}>*</span></CustomFormLabel>
+                            <Autocomplete
+                            id="subscription_id"
+                            fullWidth
+                            options={subscriptionOption}
+                            getOptionLabel={(option) => option.subscription_plan}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            value={selectedSubscription}
+                            onChange={handleSubscriptionChange}
+                            renderOption={(props, option) => (
+                                <MenuItem component="li" {...props}>
+                                {option.subscription_plan}
+                                </MenuItem>
+                            )}
+                            renderInput={(params) => (
+                                <CustomTextField
+                                {...params}
+                                placeholder="Subscription Plan"
+                                aria-label="Admin"
+                                autoComplete="off"
+                                inputProps={{
+                                    ...params.inputProps,
+                                    autoComplete: 'new-password', // disable autocomplete and autofill
+                                }}
+                                // Add error and helperText props based on Formik validation
+                                error={formik.touched.subscription_id && Boolean(formik.errors.subscription_id)}
+                                helperText={formik.touched.subscription_id && formik.errors.subscription_id}
+                                />
+                            )}
                             />
                         </Grid>
                         {/* Submit Button */}
