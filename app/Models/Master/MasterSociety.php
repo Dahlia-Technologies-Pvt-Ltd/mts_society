@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\Master\MasterDatabase;
+use App\Models\Master\{MasterUser};
 
 class MasterSociety extends Model
 {
@@ -19,7 +20,7 @@ class MasterSociety extends Model
      'email', 'phone_number',
     'address','adress2','country_id','state_id','city','zipcode','gst_number','pan_number',
     'status','created_by', 'updated_by'];
-    protected $appends =['society_token'];
+    protected $appends =['society_token','society_owner'];
     
     function Databases(){
         return $this->hasOne(MasterDatabase::class, 'master_socities_id', 'id');
@@ -84,5 +85,23 @@ class MasterSociety extends Model
     {
         $count = self::whereRaw('datepart(yyyy,created_at) = year(getdate())')->count();
         return $count > 0 ? $count + 1 : 1;
+    }
+
+    /**
+     * Get Owner Detail of Society
+     *
+     * @return void
+     */
+    function getSocietyOwnerAttribute(){
+        $master_user_qry = MasterUser::whereJsonContains('master_society_id', $this->id);
+        if($master_user_qry->exists()){
+            return $master_user_qry->select([
+                'master_users.id',
+                'master_users.name',
+                'master_users.email',
+                'master_users.phone_number',
+            ])->first();
+        }
+        return [];
     }
 }
