@@ -80,7 +80,6 @@ class FlatController extends ResponseController
             $message = empty($request->id) ? "Flat created successfully." : "Flat updated successfully.";
             $ins_arr = [
                 'flat_name'                     => $request->flat_name,
-                // 'user_id'                     =>  auth()->id(),
                 'floor_id'                     => $request->floor_id,
                 'updated_by'                           => auth()->id(),
             ];

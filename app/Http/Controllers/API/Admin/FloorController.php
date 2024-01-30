@@ -157,10 +157,10 @@ class FloorController extends ResponseController
      */
     public function delete(Request $request)
     {
-        $terms = Tower::find($request->id);
+        $terms = Floor::find($request->id);
         if ($terms) {
             $ins_arr['deleted_by'] = auth()->id();
-            $qry = Tower::updateOrCreate(
+            $qry = Floor::updateOrCreate(
                 ['id' => $request->id],
                 $ins_arr
             );
