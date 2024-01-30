@@ -29,13 +29,12 @@ class TowerController extends ResponseController
      }
     public function index(Request $request)
     {
-        // print_r('tttt');die();
         $data_query = $this->list_show_query();
         if (!empty($request->keyword)) {
             $keyword = $request->keyword;
             $data_query->where(function ($query) use ($keyword) {
-                $query->where('tower_name', 'LIKE', '%' . $keyword . '%');
-                    // ->orWhere('wings.wings_name', 'LIKE', '%' . $keyword . '%');
+                $query->where('tower_name', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('id', 'LIKE', '%' . $keyword . '%');
             });
         }
         $fields = ["id", "tower_name"];
@@ -59,7 +58,6 @@ class TowerController extends ResponseController
                 return $this->sendError($response);
             }
         }
-        // print_r(json_decode($request->wings));die();
         $id = empty($request->id) ? 'NULL' : $request->id;
         $validator = Validator::make($request->all(), [
             'tower_name'                                    => 'required|unique:towers,tower_name,' . $id . ',id,deleted_at,NULL|max:255',

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\API\ResponseController;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Admin\{Flat,Floor};
+use App\Models\Admin\{Flat, Floor};
 
 class FlatController extends ResponseController
 {
@@ -16,31 +16,34 @@ class FlatController extends ResponseController
      */
     function list_show_query()
     {
-        $data_query = Flat::join('floors', 'floors.id', '=', 'flats.floor_id')
-        ->join('towers', 'towers.id', '=', 'floors.tower_id')->Leftjoin('wings', 'wings.id', '=', 'floors.wing_id')
-        ->join('users', 'users.id', '=', 'flats.user_id');
+        $data_query = Flat::join('floors', 'floors.id', '=', 'flats.floor_id')->Leftjoin('wings', 'wings.id', '=', 'floors.wing_id')
+            ->join('towers', 'towers.id', '=', 'floors.tower_id');
         $data_query->select([
             'flats.id AS id',
             'towers.tower_name AS tower_name',
             'wings.wings_name',
             'flats.flat_name AS flat_name',
             'floors.id AS floor_id',
-            'floors.floor_name AS floor_name',
-            'user_id',
-            'users.full_name AS full_name',
-            'users.username AS username',
-            'users.email AS email',
-            'users.zipcode AS zipcode'
-            // 'towers.tower_name AS tower_name',
-            // 
-            
+            'floors.floor_name AS floor_name'
         ]);
         return $data_query;
     }
-    public function indexing(Request $request)
+    public function index(Request $request)
     {
         $data_query = $this->list_show_query();
-        print_r($data_query->get()->toArray());die(); //
+        if (!empty($request->keyword)) {
+            $keyword = $request->keyword;
+            $data_query->where(function ($query) use ($keyword) {
+                $query->where('floors.floor_name', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('towers.tower_name', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('flats.id', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('flats.flat_name', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('towers.tower_name', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('wings.wings_name', 'LIKE', '%' . $keyword . '%');
+            });
+        }
+        $fields = ["id", "floors.floor_name", "towers.tower_name", "wings.wings_name"];
+        return $this->commonpagination($request, $data_query, $fields);
     }
 
     /**
@@ -48,7 +51,7 @@ class FlatController extends ResponseController
      */
     public function store(Request $request)
     {
-       
+
         $societies_id = getsocietyid($request->header('society_id'));
         if ($request->id > 0) {
             $existingRecord = Flat::find($request->id);
@@ -68,37 +71,65 @@ class FlatController extends ResponseController
         }
         $id = empty($request->id) ? 'NULL' : $request->id;
         $validator = Validator::make($request->all(), [
-            'flat_name'                                    => 'required|unique:flats,flat_name,' . $id . ',id,deleted_at,NULL|max:255',
-            'floor_id'      =>'required|integer|min:1'
-            
-            
+            // 'flat_name'                                    => 'required|unique:flats,flat_name,' . $id . ',id,deleted_at,NULL|max:255',
+            'floor_id'      => 'required|integer|min:1'
+
+
         ]);
 
         if ($validator->fails()) {
             return $this->validatorError($validator);
         } else {
             $message = empty($request->id) ? "Flat created successfully." : "Flat updated successfully.";
-            $ins_arr = [
-                'flat_name'                     => $request->flat_name,
-                'floor_id'                     => $request->floor_id,
-                'updated_by'                           => auth()->id(),
-            ];
-            if (!$request->id) {
-                $ins_arr['created_by'] = auth()->id();
+            if (empty($request->id)) {
+                $flatNumbersArray = json_decode($request->flat_number_arr, true);
+                $flatNumbersArray = array_map(function ($value) {
+                    return str_replace(' ', '', $value);
+                }, $flatNumbersArray);
+                if (count($flatNumbersArray) !== count(array_unique($flatNumbersArray))) {
+                    $response['status'] = 400;
+                    $response['message'] = 'Duplicate values of flats for a particular floor are not allowed.';
+                    return $this->sendError($response);
+                }
+                if ($flatNumbersArray) {
+                    $ins_arr = [];
+                    foreach ($flatNumbersArray as $key => $flatValue) {
+                        $ins_arr[] = ['flat_name' => $flatValue, 'floor_id' => $request->floor_id, 'created_by' => auth()->id()];
+                    }
+                    Flat::insert($ins_arr);
+                }
             } else {
-                $ins_arr['updated_by'] = auth()->id();
+                $flat = Flat::find($request->id);
+                if ($flat) {
+                    $existingFlat = Flat::where('flat_name', $request->flat_number)
+                        ->where('floor_id', $request->floor_id)
+                        ->where('id', '<>', $request->id)
+                        ->first();
+                    if ($existingFlat) {
+                        $response['status'] = 400;
+                        $response['message'] = 'Flat name must be unique for a particular floor.';
+                        return $this->sendError($response);
+                    }
+                    $flat->update([
+                        'flat_name' => $request->flat_number,
+                        'floor_id' => $request->floor_id,
+                        'updated_by' => auth()->id(),
+                    ]);
+                } else {
+                    $response['status'] = 400;
+                    $response['message'] = 'Record not found for the provided ID.';
+                    return $this->sendError($response);
+                }
             }
-            $qry = Flat::updateOrCreate(
-                ['id' => $request->id],
-                $ins_arr
-            );
         }
+        $data_query = $this->list_show_query();
+        $data_query->where('floors.id', $request->floor_id);  // Simplified where condition
+        $queryResult = $data_query->get();
         if (request()->is('api/*')) {
-            if ($qry) {
+            if ($queryResult) {
                 $response['status'] = 200;
                 $response['message'] = $message;
-                $response['data'] = ['id' => $qry->id,'user_id'=>$net_id,'floor_id' =>$qry->floor_id, 
-                'flat_name' => $qry->flat_name];
+                $response['data'] = $queryResult;
                 return $this->sendResponse($response);
             } else {
                 $response['status'] = 400;
@@ -106,7 +137,7 @@ class FlatController extends ResponseController
                 return $this->sendError($response);
             }
         } else {
-            if ($qry) {
+            if ($queryResult) {
                 $response['message'] = $message;
                 $response['status'] = 200;
                 return $this->sendResponse($response);
@@ -122,7 +153,20 @@ class FlatController extends ResponseController
      */
     public function show(string $id)
     {
-        //
+        $data_query = $this->list_show_query();
+        $data_query->where([['flats.id', $id]]);
+        if ($data_query->exists()) {
+            $result = $data_query->first()->toArray();
+            $message = "Particular flat found";
+            $response['message'] = $message;
+            $response['data'] = $result;
+            $response['status'] = 200;
+            return $this->sendResponse($response); //Assigning a Value
+        } else {
+            $response['message'] = 'Unable to find flat.';
+            $response['status'] = 400;
+            return $this->sendError($response);
+        }
     }
 
     /**
@@ -136,8 +180,22 @@ class FlatController extends ResponseController
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(string $id)
+    public function destroy(Request $request)
     {
-        //
+        $terms = Flat::find($request->id);
+        if ($terms) {
+            $ins_arr['deleted_by'] = auth()->id();
+            $qry = Flat::updateOrCreate(
+                ['id' => $request->id],
+                $ins_arr
+            );
+            $terms->destroy($request->id);
+            $message = "Record Deleted Successfully !";
+        } else {
+            $message = "Record Not Found !";
+        }
+        $response['message'] = $message;
+        $response['status'] = 200;
+        return $this->sendResponse($response);
     }
 }
