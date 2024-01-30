@@ -15,7 +15,7 @@ const App: FC = () => {
   const location = useLocation();
 
   // Array of paths to check against
-  const allowedPaths = ['/login', '/forgot-password'];
+  const allowedPaths = ['/login', '/forgot-password', '/register'];
 
   if (authToken) {
     // If the user is authenticated.

@@ -100,6 +100,7 @@ const MasterSocietyList = () => {
         actions: {
             edit: { url: "/super-admin/edit-society/", show: "1" },
             delete: { url: "", show: "0" },
+            preview: {url:'/super-admin/society-details/'},
         },
     };
     const addUrl = "/super-admin/add-society";
