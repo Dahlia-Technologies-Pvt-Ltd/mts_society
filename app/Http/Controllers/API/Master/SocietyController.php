@@ -103,9 +103,24 @@ class SocietyController extends ResponseController
                 ['id' => $request->id],
                 $ins_arr
             );
+            //Remove the society id from the existing user then update
+            $master_user_qry = MasterUser::whereJsonContains('master_society_ids', $request->id);
+            if ($master_user_qry->exists()) {
+                $user = $master_user_qry->select([
+                    'master_users.id',
+                    'master_users.master_society_ids',
+                ])->first();
+                // Decode the JSON string into an array
+                $masterSocietyIds = json_decode($user->master_society_ids, true);
+                // Remove the specified ID from the master_society_ids array
+                $masterSocietyIds = array_diff($masterSocietyIds, [$request->id]);
+                // Encode the array back to JSON
+                $user->master_society_ids = json_encode($masterSocietyIds);
+                $user->save();
+            }
+            //Update Society id in the master table
             $master_user=MasterUser::find($request->user_id);
             if ($master_user) {
-             
                 $decodedIds = is_array(json_decode($master_user->master_society_ids))
                 ? json_decode($master_user->master_society_ids)
                 : [];

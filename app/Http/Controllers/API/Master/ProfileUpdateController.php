@@ -218,6 +218,7 @@ class ProfileUpdateController extends ResponseController
         ->select(['master_users.id',
         'master_users.name AS name',                       
         'username',                
+        'user_code',                
         'email',                   
         'phone_number',            
         'gender',                     
