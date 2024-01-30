@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Admin\User;
 use App\Models\Admin\Society;
 use App\Models\Master\{MasterUser, MasterSociety};
+use Illuminate\Support\Facades\Log;
 
 class CopyMasterSociety extends Model
 {
@@ -22,9 +23,10 @@ class CopyMasterSociety extends Model
      */
     public static function masterToSociety($params = [])
     {
+        Log::info('Line 26 ' . DB::connection()->getDatabaseName());
         // Set the new database configuration for society_master
-        /*$societyMasterConnectionName = 'sqlsrv';
-        $config =  Config::set("database.connections.$societyMasterConnectionName", [
+        $societyMasterConnectionName = 'sqlsrv';
+       /* $config =  Config::set("database.connections.$societyMasterConnectionName", [
             'driver' => 'sqlsrv',
             'host' => env('DB_HOST', ''),
             'port' => env('DB_PORT', ''),
@@ -50,8 +52,8 @@ class CopyMasterSociety extends Model
             return false;
         }
         
-        $master_user_qry = MasterUser::where('id',$params['master_user_id']);
-        $master_society_qry = MasterSociety::where('id',$params['master_socities_id']);
+        $master_user_qry = MasterUser::on($societyMasterConnectionName)->where('id',$params['master_user_id']);
+        $master_society_qry = MasterSociety::on($societyMasterConnectionName)->where('id',$params['master_socities_id']);
 
         if ($master_user_qry->exists() && $master_society_qry->exists()) {
             $user_data = $master_user_qry->first();
@@ -93,6 +95,23 @@ class CopyMasterSociety extends Model
                 $newSociety->society_name = $society_data->society_name;
                 $newSociety->save();
             }
+            DB::disconnect();
+            $societyMasterConnectionName = 'sqlsrv';
+            $config =  Config::set("database.connections.$societyMasterConnectionName", [
+                'driver' => 'sqlsrv',
+                'host' => env('DB_HOST', ''),
+                'port' => env('DB_PORT', ''),
+                'database' => 'society_master',
+                'username' => 'sa',
+                'password' => 'sa@123',
+                'charset' => 'utf8',
+                'collation' => 'utf8_unicode_ci',
+                'prefix' => '',
+                'prefix_indexes' => true,
+            ]);
+            Config::set("database.connections.$societyMasterConnectionName", $config);
+            Config::set('database.default', $societyMasterConnectionName);
+
             return true;
         }
         return false;

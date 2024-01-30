@@ -14,9 +14,17 @@ use App\Services\DatabaseService;
 
 class RegisterController extends ResponseController
 {
+    
     //Register method
     public function register(Request $request): JsonResponse
     {
+        $dbName = '1';  
+    $dbPassword = '12345';
+    (new DatabaseService())->createDatabase(['dbname' => $dbName, 'dbpassword' => $dbPassword]);
+    (new CopyMasterSociety())->masterToSociety(['databaseName' => $dbName, 'databasePassword' => $dbPassword, 'master_user_id' => 3, 'master_socities_id' => 2]);
+
+    echo " dONE "; exit;
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:master_users',
@@ -96,7 +104,7 @@ class RegisterController extends ResponseController
             //If Master database inserted successfully then call DataServices
             ($master_database) ? $databaseValue = (new DatabaseService())->createDatabase(['dbname' => $dbName, 'dbpassword' => $dbPassword]) : '';
             $response['data'] = $databaseValue;
-            //(new CopyMasterSociety())->masterToSociety(['databaseName' => $databaseValue['dbname'], 'databasePassword' => $databaseValue['dbpassword']]);
+            (new CopyMasterSociety())->masterToSociety(['databaseName' => $databaseValue['dbname'], 'databasePassword' => $databaseValue['dbpassword'], 'master_user_id' => $master_user->id, 'master_socities_id' => $master_society->id]);
         }
         
         $response['status'] = 200;
