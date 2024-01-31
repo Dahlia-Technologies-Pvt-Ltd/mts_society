@@ -11,30 +11,25 @@ class User extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'master_socities_id',
-        'usertype',
-        'full_name',
+        'master_user_id',
+        'name',
+        'user_code',
         'username',
-        'password',
         'email',
         'phone_number',
+        'master_society_ids',
         'gender',
-        'towerid',
-        'wingid',
-        'floorid',
-        'flatid',
-        'image',
-        'street_address',
-        'country',
-        'state',
+        'address',
+        'country_id',
+        'state_id',
         'city',
         'zipcode',
-        'country_code',
-        'is_approv',
-        'multilogin',
+        'usertype',
         'status',
+        'blocked_at',
+        'profile_picture',
         'created_by',
-        'updated_by',
+        'updated_by'
     ];
 
     protected $dates = ['deleted_at'];

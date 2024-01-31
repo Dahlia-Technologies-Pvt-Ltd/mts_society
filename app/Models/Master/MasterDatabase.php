@@ -12,7 +12,7 @@ class MasterDatabase extends Model
     use HasFactory;
     use SoftDeletes;
     protected $table = 'master_database';
-    protected $connection = 'sqlsrv';
+    protected $connection = 'sqlsrvmaster';
     protected $fillable = ['databasename', 'databaseuid', 'databasepwd', 'master_user_id', 'master_socities_id',
     'status', 'created_by', 'updated_by'];
 

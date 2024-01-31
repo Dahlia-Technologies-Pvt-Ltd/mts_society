@@ -11,7 +11,7 @@ class EmailTemplate extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $connection = 'sqlsrv';
+    protected $connection = 'sqlsrvmaster';
     protected $fillable = [
         'template_code', 'title', 'content', 'subject', 'template_variable', 'created_by', 'updated_by','status','sequence'
     ];

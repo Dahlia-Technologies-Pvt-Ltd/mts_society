@@ -11,7 +11,7 @@ class UserSubscription extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $connection = 'sqlsrv';
+    protected $connection = 'sqlsrvmaster';
     protected $fillable = ['master_subscription_id', 'master_user_id', 'master_socities_id', 'subscription_plan', 'price', 'frequency',
     'features', 'is_renewal_plan', 'status', 'created_by', 'updated_by'];
 
