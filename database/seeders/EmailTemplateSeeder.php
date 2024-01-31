@@ -31,14 +31,14 @@ class EmailTemplateSeeder extends Seeder
             'template_variable' =>  json_encode(['USER_NAME','RESET_LINK','OTP']), 
         ]);
  //############################################LOGIN OTP############################################
-        $login_otp_content = 'Hi [USER_NAME], <br>
-        your login otp is :[OTP]';
+        $send_otp_content = 'Hi [USER_NAME], <br>
+        your otp is :[OTP]';
 
         EmailTemplate::create([
-            'template_code' => 'LOGIN_OTP',
-            'title' => 'Login Otp',
-            'content' => $login_otp_content,
-            'subject' => 'Your login otp',
+            'template_code' => 'SEND_OTP',
+            'title' => 'Send Otp',
+            'content' => $send_otp_content,
+            'subject' => 'Your otp',
             'template_variable' =>  json_encode(['USER_NAME','OTP']), 
         ]);
     }
