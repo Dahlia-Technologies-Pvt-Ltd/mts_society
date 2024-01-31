@@ -112,6 +112,8 @@ class ForgotPasswordController extends ResponseController
 			else {
 				//Change Password
 				$user->password = Hash::make($request->new_password);
+				$user->forgot_password_token = null;
+				$user->forgot_password_token_time = null;
 				$user->save();
 				$response['status'] = 200;
 				$response['message'] = 'Password reset successfully.';

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Admin\{Tower};
+use App\Models\Admin\{Tower,Parking};
 
 class Wing extends Model
 {
@@ -17,6 +17,10 @@ class Wing extends Model
 
     function tower(){
         return $this->belongsTo(Tower::class);
+    }
+    function parking()
+    {
+        return $this->hasMany(Parking::class);
     }
     public function getCreatedAtAttribute($data)
     {

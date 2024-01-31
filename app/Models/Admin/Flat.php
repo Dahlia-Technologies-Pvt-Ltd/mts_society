@@ -5,7 +5,7 @@ namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
-use App\Models\Admin\{Floor};
+use App\Models\Admin\{Floor,Parking};
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
@@ -21,6 +21,10 @@ class Flat extends Model
     function floor()
     {
         return $this->belongsTo(Floor::class);
+    }
+    function parking()
+    {
+        return $this->hasMany(Parking::class);
     }
 
     public function getCreatedAtAttribute($data)

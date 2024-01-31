@@ -31,5 +31,25 @@ function getsocietyid($header) {
     } catch (DecryptException $e) {
         // Handle decryption errors
         return 'Decryption error: ' . $e->getMessage();
-    }
+    }   
+}
+
+/**
+ * Echo Eloquent Sql Query With Bindings
+ *
+ * @param [type] $query
+ * @param integer $exit
+ * @return void
+ */
+function eq($query)
+{
+    /* $str = vsprintf(str_replace('?', '%s', $query->toSql()), collect($query->getBindings())->map(function ($binding) {
+    return is_numeric($binding) ? $binding : "'{$binding}'";
+    })->toArray());
+    */
+    return vsprintf(str_replace('?', '%s', $query->toSql()), collect($query->getBindings())->map(function ($binding) {
+        $binding = addslashes($binding);
+        return is_numeric($binding) ? $binding : "'{$binding}'";
+    })->toArray());
+   
 }
