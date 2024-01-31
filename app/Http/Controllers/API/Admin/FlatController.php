@@ -70,18 +70,26 @@ class FlatController extends ResponseController
             }
         }
         $id = empty($request->id) ? 'NULL' : $request->id;
-        $validator = Validator::make($request->all(), [
-            // 'flat_name'                                    => 'required|unique:flats,flat_name,' . $id . ',id,deleted_at,NULL|max:255',
-            'floor_id'      => 'required|integer|min:1'
+        // $validator = Validator::make($request->all(), [
+        //     // 'flat_name'                                    => 'required|unique:flats,flat_name,' . $id . ',id,deleted_at,NULL|max:255',
+        //     'floor_id'      => 'required|integer|min:1'
 
 
-        ]);
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->validatorError($validator);
-        } else {
+        // if ($validator->fails()) {
+        //     return $this->validatorError($validator);
+        // } else {
             $message = empty($request->id) ? "Flat created successfully." : "Flat updated successfully.";
             if (empty($request->id)) {
+                $validator = Validator::make($request->all(), [
+                    'floor_id' => 'required|integer|min:1',
+                    'flat_number_arr' => 'required|json',
+                ]);
+        
+                if ($validator->fails()) {
+                    return $this->validatorError($validator);
+                }
                 $flatNumbersArray = json_decode($request->flat_number_arr, true);
                 $flatNumbersArray = array_map(function ($value) {
                     return str_replace(' ', '', $value);
@@ -99,6 +107,14 @@ class FlatController extends ResponseController
                     Flat::insert($ins_arr);
                 }
             } else {
+                $validator = Validator::make($request->all(), [
+                    'floor_id' => 'required|integer|min:1',
+                    'flat_number' => 'required', // You can add more validation rules as needed
+                ]);
+        
+                if ($validator->fails()) {
+                    return $this->validatorError($validator);
+                }
                 $flat = Flat::find($request->id);
                 if ($flat) {
                     $existingFlat = Flat::where('flat_name', $request->flat_number)
@@ -120,7 +136,7 @@ class FlatController extends ResponseController
                     $response['message'] = 'Record not found for the provided ID.';
                     return $this->sendError($response);
                 }
-            }
+            // }
         }
         $data_query = $this->list_show_query();
         $data_query->where('floors.id', $request->floor_id);  // Simplified where condition

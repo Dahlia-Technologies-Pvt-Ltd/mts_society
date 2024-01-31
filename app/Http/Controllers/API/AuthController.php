@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Master\{MasterUser, UserOtp};
+use App\Models\Master\{MasterUser, UserOtp, Country, State};
 use Illuminate\Http\Request;
+// use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\API\ResponseController as ResponseController;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\Sanctum;
@@ -65,30 +67,18 @@ class AuthController extends ResponseController
                         $loginID = true;
                     }
                 } else {
-                    // 
-                    $data_query = UserOtp::join('master_users', 'master_users.id', '=', 'user_otps.master_user_id')->where('otp', $request->otp);
-                    $keyword = $request->email;
-                    $data_query->where(function ($query) use ($keyword) {
-                        $query->where('master_users.phone_number', '=', $keyword)
-                            ->orWhere('master_users.email', '=', $keyword);
-                    });
-                    $data_query->select([
-                        'master_users.phone_number'
-                    ]);
-
-                    if ($data_query->exists()) {
-                        $phone_number = $data_query->first()->toArray()['phone_number'];
-                        $credentialsEmail = array(
-                            'phone_number' => $phone_number, 'status' => 0
-                        );
-
+                    $otp_params['opt'] = $request->otp;
+                    $otp_params['keyword'] = $request->email;
+                    $user_otp_obj = new UserOtp();
+                    $opt_user_id = $user_otp_obj->verifyOtp($otp_params);
+                    if($opt_user_id > 0){
+                        if (Auth::loginUsingId($opt_user_id)) {
+                            $loginID = true;
+                        }
                     } else {
-                        $loginID = false;
-                        $response['status'] = 404;
-                        $response['message'] = 'Invalid Email or Phone Number.';
-                    }
-                    if (Auth::once($credentialsEmail)) {
-                        $loginID = true;
+                        $response['status'] = 400;
+                        $response['message'] = 'Invalid otp or the time has expired';
+                        return $this->sendError($response);
                     }
                 }
             }
@@ -96,8 +86,6 @@ class AuthController extends ResponseController
             if ($loginID == false) {
                 $response['status'] = 401;
                 $response['message'] = 'Invalid Email or Phone Number.';
-                // Call sendFailedLoginResponse() to check what is the issue in     authenticating user
-                // and respond with the proper error message
                 return $this->sendFailedLoginResponse($request);
             } else {
 
@@ -127,36 +115,174 @@ class AuthController extends ResponseController
         } else {
             // Load user from database 
             $user = MasterUser::getEmailSingle($request->email);
-            $id = $user->id;
-            $phone_number = $user->phone_number;
-            $random_otp = rand(100000, 999999);
-            $ins_arr = ['otp' => $random_otp];
+
+
             if (empty($user)) {
                 $response['status'] = 401;
                 $response['message'] = 'Email does not exists.';
                 return $this->sendError($response);
             } else {
-                $qry = UserOtp::updateOrCreate(
-                    ['master_user_id' => $id],
-                    $ins_arr
-                );
-                $random = Str::random(30);
-                try {
-                    $AppURL = env('APP_URL');
-                    $TemplateData = array(
-                        'EMAIL' => $user->email,
-                        'USER_NAME' => $user->name,
-                        'OTP' => $random_otp
-                    );
-                    MailHelper::sendMail('LOGIN_OTP', $TemplateData);
+                $id = $user->id;
+                $obj = new UserOtp();
+                $params['id'] = $id;
+                $params['name'] = $user->name;
+                $params['email'] = $user->email;
+                $sendOtp = $obj->sendotp($params);
+                if ($sendOtp['status'] == 200) {
+                    return $this->sendResponse($sendOtp);
+                } else {
+                    return $this->sendError($sendOtp);
+                }
+            }
+        }
+    }
+
+    public function registrationotpverify(Request $request): JsonResponse
+    {
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'email' => 'required', // Password is required unless OTP is provided
+                'otp' => 'required|integer', // OTP is required unless Password is provided
+            ],
+            [
+                'email.required' => 'Email is required.',
+                'otp.required' => 'OTP is required.',
+            ]
+        );
+        if ($validator->fails()) {
+            return $this->validatorError($validator);
+        } else {
+            $otp_params['opt'] = $request->otp;
+            $otp_params['keyword'] = $request->email;
+            $user_otp_obj = new UserOtp();
+            $opt_user_id = $user_otp_obj->verifyOtp($otp_params);
+            if($opt_user_id > 0){
+                    $user_status = MasterUser::find($opt_user_id)->first();
+                    $user_status->status = 2;//waiting for approval
+                    $user_status->save();
+
                     $response['status'] = 200;
-                    $response['message'] = 'Please check your email for the otp.';
+                    $response['message'] = 'User registered successfully.';
+                    $response['data'] = $user_status->only(['id', 'username', 'name', 'user_code', 'email', 'usertype','status', 'phone_number', 'token', 'profile_picture']);               
                     return $this->sendResponse($response);
-                } catch (Exception $exp) {
-                    $response['status'] = 503;
-                    $response['message'] = 'Oops ! We are unable to send mail , please try again after sometime.';
+
+            } else {
+                $response['status'] = 400;
+                $response['message'] = 'Invalid otp or the time has expired';
+                return $this->sendError($response);
+            }
+
+            //=========================================
+            /*$data_query = UserOtp::join('master_users', 'master_users.id', '=', 'user_otps.master_user_id')->where('otp', $request->otp)->where('expire_at', '>=', Carbon::now());
+            $keyword = $request->email;
+            $data_query->where(function ($query) use ($keyword) {
+                $query->where('master_users.phone_number', '=', $keyword)
+                    ->orWhere('master_users.email', '=', $keyword);
+            });
+            if ($data_query->exists()) {
+                $data_query->select([
+                    'master_users.id', 'user_otps.id AS otp_id','master_users.name AS name'
+                ]);
+                $user_otp_data = $data_query->first();
+                    $user_status = MasterUser::where('email', $request->email)->first();
+                    $user_status->status = 2;
+                    $user_status->save();
+                    $loginID = true;
+            } else {
+                $response['status'] = 400;
+                $response['message'] = 'Invalid otp or the time has expired';
+                return $this->sendError($response);
+            }
+            if ($loginID == false) {
+                $response['status'] = 401;
+                $response['message'] = 'Invalid Email or Phone Number.';
+                return $this->sendFailedLoginResponse($request);
+            } else {
+                $response['status'] = 200;
+                $response['message'] = 'User registered successfully.';
+                $response['data'] = $user_status->only(['id', 'username', 'name', 'user_code', 'email', 'usertype','status', 'phone_number', 'token', 'profile_picture']);
+                $user_otp = UserOtp::find($user_otp_data->otp_id);
+                $user_otp->otp = 0;
+                $user_otp->expire_at = Carbon::now()->subMinutes(5);
+                $user_otp->save();
+                return $this->sendResponse($response);
+            }*/
+        }
+    }
+    // 'name' => 'required|string|max:255',
+    // 'email' => 'required|email|unique:master_users,email',
+    // 'phone_number' => 'required|phone_number|unique:master_users,phone_number',
+    // 'country_id' => 'required|integer|min:1',
+    // 'state_id' => 'required|integer|min:1',
+    // 'city' => 'required|string'
+    public function residentregistration(Request $request): JsonResponse
+    {
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'required|unique:master_users',
+                'phone_number' => 'required|unique:master_users',
+                'country_id' => 'required|integer|min:1',
+                'state_id' => 'required|integer|min:1',
+                'city' => 'required|string'
+            ],
+            [
+                'email.required' => 'Email is required and should be unique.',
+                // 'phone_number.required' => 'Phone number is required and should be unique.',
+                'country_id.required' => 'Country is required.',
+                'state_id.required' => 'State is required.'
+            ]
+        );
+        // $validator = Validator::make($request->all(), [
+        //     'tower_name'                                    => 'required|unique:towers,tower_name,' . $id . ',id,deleted_at,NULL|max:255',
+        // ]);
+        if ($validator->fails()) {
+            return $this->validatorError($validator);
+        } else {
+            if ($request->country_id > 0) {
+                $existingRecord = Country::find($request->country_id);
+                if (!$existingRecord) {
+                    $response['status'] = 400;
+                    $response['message'] = 'Record not found for the provided country ID.';
                     return $this->sendError($response);
                 }
+            }
+            if ($request->state_id > 0) {
+                $existingRecord = State::find($request->state_id);
+                if (!$existingRecord) {
+                    $response['status'] = 400;
+                    $response['message'] = 'Record not found for the provided state ID.';
+                    return $this->sendError($response);
+                }
+            }
+            $obj = new MasterUser();
+            $user = MasterUser::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'user_name' => isset($request->user_name) ? $request->user_name : 'User',
+                'phone_number' => $request->phone_number,
+                'password' => Hash::make('password'),
+                'usertype' => 0,
+                'country_id' => $request->country_id,
+                'state_id' => $request->state_id,
+                'city' => $request->city,
+                'user_code' => $obj->generateUserCode(),
+                'status' => 1
+            ]);
+
+            // }
+            $obj2 = new UserOtp();
+            $id = $user->id;
+            $params['id'] = $id;
+            $params['name'] = $user->name;
+            $params['email'] = $user->email;
+            $sendOtp = $obj2->sendotp($params);
+            if ($sendOtp['status'] == 200) {
+                return $this->sendResponse($sendOtp);
+            } else {
+                return $this->sendError($sendOtp);
             }
         }
     }
