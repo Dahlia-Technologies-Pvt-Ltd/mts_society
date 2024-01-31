@@ -16,6 +16,7 @@ use App\Http\Controllers\API\Admin\TowerController;
 use App\Http\Controllers\API\Admin\FloorController;
 use App\Http\Controllers\API\Admin\FlatController;
 use App\Http\Controllers\API\Admin\WingsController;
+use App\Http\Controllers\API\Admin\ParkingController;
 use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,11 @@ Route::controller(AuthController::class)->group(function () {
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 //Register
 Route::post('/register', [RegisterController::class, 'register']);
+//resident register
+Route::post('/register-resident', [AuthController::class, 'residentregistration']);
+
+//verify resident register
+Route::post('/verify-resident', [AuthController::class, 'registrationotpverify']);
 //forgot passeword api
 Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
 //login send otp api

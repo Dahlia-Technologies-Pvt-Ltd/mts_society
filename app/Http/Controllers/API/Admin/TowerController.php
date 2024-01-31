@@ -33,8 +33,7 @@ class TowerController extends ResponseController
         if (!empty($request->keyword)) {
             $keyword = $request->keyword;
             $data_query->where(function ($query) use ($keyword) {
-                $query->where('tower_name', 'LIKE', '%' . $keyword . '%')
-                    ->orWhere('id', 'LIKE', '%' . $keyword . '%');
+                $query->where('tower_name', 'LIKE', '%' . $keyword . '%');
             });
         }
         $fields = ["id", "tower_name"];
