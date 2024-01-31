@@ -11,14 +11,14 @@ import { Portal } from '@mui/base';
 const BCrumb = [
     {
         to: "/super-admin/dashboard",
-        title: "Home",
+        title: "Society Management",
     },
     {
-        title: "Society Admin Management",
+        title: "Tower List",
     },
 ];
 
-const MasterUserList = () => {
+const TowerList = () => {
     const [isSuccessVisible, setIsSuccessVisible] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [isErrorVisible, setIsErrorVisible] = useState(false);
@@ -40,24 +40,17 @@ const MasterUserList = () => {
             enableSorting:true,
         },
         {
-            id: "name",
+            id: "subscription_plan",
             numeric: false,
             disablePadding: false,
-            label: "Admin Name",
+            label: "Tower Name",
             enableSorting: true,
         },
         {
-            id: "email",
+            id: "wings",
             numeric: false,
             disablePadding: false,
-            label: "Email ID",
-            enableSorting: true,
-        },
-        {
-            id: "phone_number",
-            numeric: false,
-            disablePadding: false,
-            label: "Phone Number",
+            label: "Wings",
             enableSorting: true,
         },
         {
@@ -71,9 +64,8 @@ const MasterUserList = () => {
 
     const dataColumns = [
         'srno',
-        "name",
-        "email",
-        "phone_number",
+        "tower_name",
+        "wings",
     ];
 
     const rowSettings = {
@@ -82,19 +74,17 @@ const MasterUserList = () => {
     //show = 1 for show the button show = 0 then button not show
     const actionSettings = {
         actions: {
-            edit: { url: "/super-admin/edit-society-admin/", show: "1" },
-            delete: { url: "", show: "0" },
-            preview: {url:'/super-admin/society-admin-details/'},
+            edit: { url: "/admin/edit-tower/", show: "1" },
+            delete: { url: "", show: "1" },
         },
     };
-    const addUrl = "/super-admin/add-society-admin";
+    const addUrl = "/admin/add-tower";
     const [datas, setData] = useState([]); // State to store the fetched data
     const [totalPages, settotalPages] = useState([]); // State to store the fetched data
     useEffect(() => {
         //when the component mounts
         fetchData();
         const storedSuccessMessage = sessionStorage.getItem("successMessage");
-
         if (storedSuccessMessage) {
             setIsSuccessVisible(true);
             setSuccessMessage(storedSuccessMessage);
@@ -123,14 +113,13 @@ const MasterUserList = () => {
             formData.append("sortBy", sortData);
             formData.append('sortOrder', IsSort);
             formData.append("perPage", perPage);
-            formData.append("usertype", '1');
             const searchKeyword = sessionStorage.getItem("searchKeyword");
             formData.append(
                 "keyword",
                 searchKeyword !== null ? searchKeyword : ""
             );
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/list-master-user";
+            const API_URL = appUrl + "/api/list-tower";
             const token = localStorage.getItem("authToken");
             const response = await axios.post(API_URL, formData, {
                 headers: {
@@ -163,7 +152,7 @@ const MasterUserList = () => {
             const formData = new FormData();
             formData.append("id", id);
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/delete-master-user";
+            const API_URL = appUrl + "/api/delete-tower";
             const token = localStorage.getItem("authToken");
             const response = await axios.post(API_URL, formData, {
                 headers: {
@@ -188,12 +177,12 @@ const MasterUserList = () => {
         }
     };
     //For Download Excel variable
-    const excelName = "admin_list";
+    const excelName = "tower_list";
     const excelApiUrl = "";
     return (
         <PageContainer
-            title="Society Admin Management"
-            description="Society Admin Management"
+            title="Tower List"
+            description="this is Tower List page"
         >
             <Breadcrumb title="" />
             <Portal>
@@ -229,7 +218,7 @@ const MasterUserList = () => {
                 {/* Left part */}
                 {/* ------------------------------------------- */}
                 <CommonTableList
-                    pageTitle={"Society Admin Management"}
+                    pageTitle={"Tower List"}
                     headCells={headCells}
                     dataRow={datas}
                     totalPage={totalPages}
@@ -251,4 +240,4 @@ const MasterUserList = () => {
     );
 };
 
-export default MasterUserList;
+export default TowerList;

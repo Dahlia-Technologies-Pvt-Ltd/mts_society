@@ -134,6 +134,17 @@ Menuitems = [
       href: '/admin/dashboard',
       chipColor: 'secondary',
     },
+    {
+      navlabel: true,
+      subheader: 'Society Management',
+    },
+    {
+      id: uniqueId(),
+      title: 'Tower',
+      icon: IconMessage2,
+      href: '/admin/tower-list',
+      activeUrls: ['/admin/tower-list', '/admin/add-tower', '/admin/edit-tower/*'],
+    },
   ];
 }else if(userType === '0'){
   Menuitems = [
