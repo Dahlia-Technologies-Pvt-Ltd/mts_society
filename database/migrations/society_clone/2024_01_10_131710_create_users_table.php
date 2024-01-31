@@ -15,10 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('master_user_id')->constrained()->default(0);
             $table->string('master_society_ids')->nullable();
-            $table->foreignId('user_type_id')->constrained()->default(0)->nullable();
-            $table->foreignId('user_sub_type_id')->constrained()->default(0)->nullable();
-            //$table->integer('usertype')->default(0);
-            //$table->integer('usersubtype')->default(0);
+            $table->tinyInteger('usertype')->default(0)->comment('0-every other user,1-admin,2-superadmin');;
             $table->string('full_name');
             $table->string('username')->unique();
             $table->string('password');
@@ -26,10 +23,6 @@ return new class extends Migration
             $table->string('country_code')->nullable()->default(null);
             $table->string('phone_number', 15)->nullable()->default(null);
             $table->enum('gender', ['Male','Female'])->nullable()->default(null);
-            $table->unsignedBigInteger('towerid')->default(0);
-            $table->unsignedBigInteger('wingid')->nullable()->default(null);
-            $table->unsignedBigInteger('floorid')->default(0);
-            $table->unsignedBigInteger('flatid')->default(0);
             $table->string('image')->nullable()->default(null);
             $table->string('street_address')->nullable()->default(null);
             $table->foreignId('country')->constrained()->default(0)->nullable();

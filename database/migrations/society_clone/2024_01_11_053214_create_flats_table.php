@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('flats', function (Blueprint $table) {
             $table->id();
-            $table->string('flat_name');//Flat Number
-            $table->foreignId('user_id')->constrained()->default(0)->nullable();
+            $table->string('flat_name');//Flat Number            
             $table->foreignId('floor_id')->constrained();
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
             $table->unsignedBigInteger('created_by')->nullable();
