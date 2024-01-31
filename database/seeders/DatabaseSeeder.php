@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             StatesSeeder::class,
             CitiestableSeeder::class,
             MasterSubscriptionPlansSeeder::class,
-            masterSocietySeeder::class,
+            //masterSocietySeeder::class,
             masterusersSeeder::class,
             EmailTemplateSeeder::class,
             currenciestableSeeder::class

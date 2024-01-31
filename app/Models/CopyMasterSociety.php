@@ -27,7 +27,8 @@ class CopyMasterSociety extends Model
         if(!isset($params['master_user_id']) && !isset($params['master_socities_id']) && !isset($params['databaseName']) && !isset($params['databasePassword'])){
             return false;
         }
-        
+        DB::disconnect();
+        DB::setDefaultConnection('sqlsrvmaster');
         $master_user_qry = MasterUser::where('id',$params['master_user_id']);       
         $master_society_qry = MasterSociety::where('id',$params['master_socities_id']);
         Log::info('Line A60 ' . DB::connection()->getDatabaseName());
