@@ -35,8 +35,8 @@ class MasterusersSeeder extends Seeder
             'updated_at'        => Carbon::now()->format('Y-m-d H:i:s'),
             'created_at'        => Carbon::now()->format('Y-m-d H:i:s')
         ]);
-
-        $data = MasterSociety::get();
+        
+        /* $data = MasterSociety::get();
         $data_query = $data->first()->toArray()['id'];
 
         MasterUser::create([
@@ -52,8 +52,8 @@ class MasterusersSeeder extends Seeder
             'country_id'        => 101,
             'state_id'          => 12,
             'city'              => 5,
-            'updated_at'        => Carbon::now()->format('Y-m-d H:i:s'),
-            'created_at'        => Carbon::now()->format('Y-m-d H:i:s')
-        ]);
+            'updated_at'       => Carbon::now()->format('Y-m-d H:i:s'),
+            'created_at'      => Carbon::now()->format('Y-m-d H:i:s')
+        ]);*/
     }
 }
