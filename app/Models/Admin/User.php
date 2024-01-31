@@ -12,8 +12,7 @@ class User extends Model
 
     protected $fillable = [
         'master_socities_id',
-        'user_type_id',
-        'user_sub_type_id',
+        'usertype',
         'full_name',
         'username',
         'password',
