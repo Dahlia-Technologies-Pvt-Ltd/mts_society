@@ -24,16 +24,14 @@ class ConnectSocietyDb
 
         $master_society = MasterSociety::where([['master_socities.id', $master_society_id], ['status', 0]])->join('master_database', function($join){ $join->on('master_database.master_socities_id', '=', 'master_socities.id');});
         //Also we need to check subscription is valid and active - this check is pending
-// print_r( $master_society->first()->toArray());die();
+
         if ($master_society->exists()) {
-            $master_society_obj = $master_society
-            // ->select("master_database.databasename,master_database.databaseuid,master_database.databasepwd")
-            ->first();
+            $master_society_obj = $master_society->first();
             // Disconnect the current connection
             // print_r($master_society_obj->toArray());die();
             DB::disconnect();
             // Set the second database connection
-            Config::set("database.connections.sqlsrvclone", [
+            Config::set("database.connections.sqlsrv", [
                 'driver'        => 'sqlsrv',
                 'url'           => env('DATABASE_URL'),
                 'host'          => env('DB_HOST', 'localhost'),
@@ -49,9 +47,9 @@ class ConnectSocietyDb
                 'engine'        => null,
             ]); 
             //DB::reconnect('sqlsrv');
-            DB::setDefaultConnection('sqlsrvclone');
-        } else {
             DB::setDefaultConnection('sqlsrv');
+        } else {
+            DB::setDefaultConnection('sqlsrvmaster');
         }
         return $next($request);
     }
