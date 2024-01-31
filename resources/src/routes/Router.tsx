@@ -21,6 +21,7 @@ const SystemSettings = Loadable(lazy(() => import('../superadmin/system-settings
 const MasterSocietyList = Loadable(lazy(() => import('../superadmin/mastersociety/MasterSocietyList')));
 const AddMasterSociety = Loadable(lazy(() => import('../superadmin/mastersociety/AddMasterSociety')));
 const MasterSocietyDetails = Loadable(lazy(() => import('../superadmin/mastersociety/MasterSocietyDetails')));
+const EmailTemplate = Loadable(lazy(() => import('../superadmin/email/EmailTemplate')));
 
 // authentication
 const Login = Loadable(lazy(() => import('../auth/Login')));
@@ -65,6 +66,7 @@ const Router = [
       { path: '/super-admin/add-society', exact: true, element: <AddMasterSociety /> },
       { path: '/super-admin/edit-society/:id', exact: true, element: <AddMasterSociety /> },
       { path: '/super-admin/society-details/:id', exact: true, element: <MasterSocietyDetails /> },
+      { path: '/super-admin/email-template', exact: true, element: <EmailTemplate /> },
       
     ],
   },

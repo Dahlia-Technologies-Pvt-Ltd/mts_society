@@ -113,7 +113,13 @@ Menuitems = [
     href: '/super-admin/system-setting',
     activeUrls: ['/super-admin/system-setting'],
   },
-  
+  {
+    id: uniqueId(),
+    title: 'Email Template',
+    icon: IconMail,
+    href: '/super-admin/email-template',
+    activeUrls: ['/super-admin/email-template'],
+  },
 ];
 }else if(userType === '1'){
   Menuitems = [
