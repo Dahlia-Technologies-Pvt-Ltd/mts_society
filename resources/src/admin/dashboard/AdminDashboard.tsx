@@ -18,7 +18,7 @@ import RecentTransactions from '@src/components/dashboards/ecommerce/RecentTrans
 
 const AdminDashboard = () => {
   return (
-    <PageContainer title="Dashboard" description="this is Dashboard page">
+    <PageContainer title="Admin Dashboard" description="this is Admin Dashboard page">
       <Box mt={3}>
         <Grid container spacing={3}>
           {/* column */}

@@ -9,6 +9,8 @@ const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')))
 /* ****Admin Pages***** */
 const AdminDashboard = Loadable(lazy(() => import('../admin/dashboard/AdminDashboard')));
 const ChangePassword = Loadable(lazy(() => import('../common/change-password/ChangePassword')));
+const TowerList = Loadable(lazy(() => import('../admin/tower/TowerList')));
+const AddTower = Loadable(lazy(() => import('../admin/tower/AddTower')));
 
 /* ****Super Admin Pages***** */
 const SuperAdminDashboard = Loadable(lazy(() => import('../superadmin/dashboard/SuperAdminDashboard')));
@@ -21,6 +23,8 @@ const SystemSettings = Loadable(lazy(() => import('../superadmin/system-settings
 const MasterSocietyList = Loadable(lazy(() => import('../superadmin/mastersociety/MasterSocietyList')));
 const AddMasterSociety = Loadable(lazy(() => import('../superadmin/mastersociety/AddMasterSociety')));
 const MasterSocietyDetails = Loadable(lazy(() => import('../superadmin/mastersociety/MasterSocietyDetails')));
+const EmailTemplate = Loadable(lazy(() => import('../superadmin/email/EmailTemplate')));
+const MasterUserDetails = Loadable(lazy(() => import('../superadmin/masteruser/MasterUserDetails')));
 
 // authentication
 const Login = Loadable(lazy(() => import('../auth/Login')));
@@ -50,13 +54,19 @@ const Router = [
       { path: '/admin/dashboard', exact: true, element: <AdminDashboard /> },
       { path: '/admin/change-password', exact: true, element: <ChangePassword /> },
       { path: '/admin/account-setting', exact: true, element: <AccountSetting /> },
+      { path: '/admin/tower-list', exact: true, element: <TowerList /> },
+      { path: '/admin/add-tower', exact: true, element: <AddTower /> },
 
+
+
+      /**/
       { path: '/super-admin/dashboard', exact: true, element: <SuperAdminDashboard /> },
       { path: '/super-admin/subscription-plan-list', exact: true, element: <SubscriptionList /> },
       { path: '/super-admin/add-subscription', exact: true, element: <AddSubscription /> },
       { path: '/super-admin/edit-subscription/:id', exact: true, element: <AddSubscription /> },
       { path: '/super-admin/society-admin-list', exact: true, element: <MasterUserList /> },
       { path: '/super-admin/add-society-admin', exact: true, element: <AddMasterUser /> },
+      { path: '/super-admin/society-admin-details/:id', exact: true, element: <MasterUserDetails /> },
       { path: '/super-admin/edit-society-admin/:id', exact: true, element: <AddMasterUser /> },
       { path: '/super-admin/change-password', exact: true, element: <ChangePassword /> },
       { path: '/super-admin/account-setting', exact: true, element: <AccountSetting /> },
@@ -65,6 +75,7 @@ const Router = [
       { path: '/super-admin/add-society', exact: true, element: <AddMasterSociety /> },
       { path: '/super-admin/edit-society/:id', exact: true, element: <AddMasterSociety /> },
       { path: '/super-admin/society-details/:id', exact: true, element: <MasterSocietyDetails /> },
+      { path: '/super-admin/email-template', exact: true, element: <EmailTemplate /> },
       
     ],
   },

@@ -79,6 +79,8 @@ const AddMasterSociety = () => {
         if(newValue){
           fetchState(newValue.id);
           formik.setFieldValue('country_id', newValue.id);
+          formik.setFieldValue('state_id', '');
+          setSelectedState(null);
         }else{
           setStateData([]);
           formik.setFieldValue('state_id', '');
@@ -151,13 +153,16 @@ const AddMasterSociety = () => {
     const validationSchema = yup.object().shape({
         society_name: yup.string().required("Society Name is required"),
         address: yup.string().required("Address is required"),
-        email: yup.string().email('Please provide valid email').required("Email is required"),
+        email: yup.string().email('Please provide a valid email').required("Email is required"),
         phone_number: yup.string().required("Phone Number is required"),
         country_id: yup.string().required("Country is required"),
         state_id: yup.string().required("State is required"),
         city: yup.string().required("City is required"),
         user_id: yup.string().required("Society Admin is required"),
-    });
+        // Conditionally include subscription_id validation
+        ...(id ? {} : { subscription_id: yup.string().required("Subscription Plan is required") }),
+      });
+      
 
     const formik = useFormik({
         initialValues: {
@@ -190,7 +195,7 @@ const AddMasterSociety = () => {
                 formData.append("zipcode", values.zipcode);
                 formData.append("address", values.address);
                 formData.append("user_id", values.user_id);
-                formData.append("subscription_id", values.subscription_id);
+                (id) ? '' : formData.append("master_subscription_id", values.subscription_id);
 
                 // Determine the API URL based on whether it's an edit or add operation
                 let API_URL = appUrl + "/api/add-society";
@@ -343,7 +348,7 @@ useEffect(() => {
                 user_email: data.society_owner.email,
                 subscription_id: '',
             });
-            fetchState(data.country_id);
+            //fetchState(data.country_id);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -697,6 +702,7 @@ useEffect(() => {
                                 readonly
                             />
                         </Grid>
+                        {!id && (
                         <Grid item xs={4}>
                             <CustomFormLabel htmlFor="subscription_id">Subscription Plan<span style={{color:"red"}}>*</span></CustomFormLabel>
                             <Autocomplete
@@ -729,6 +735,7 @@ useEffect(() => {
                             )}
                             />
                         </Grid>
+                        )}
                         {/* Submit Button */}
                         <Grid item xs={12} mt={5} display={'flex'} alignItems={'center'} justifyContent={'center'}>
                             <Link to="/super-admin/society-list">
