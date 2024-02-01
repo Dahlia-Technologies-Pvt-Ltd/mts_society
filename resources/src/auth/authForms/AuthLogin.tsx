@@ -69,7 +69,16 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           localStorage.setItem('userEmail', response.data.data.email);
           localStorage.setItem('userType', response.data.data.usertype);
           localStorage.setItem('profilePicture', response.data.data.profile_picture);
-          //dispatch(addProfilePicture(response.data.data.profile_picture));
+          const society_array = response.data.data.societies;
+          if (society_array.length === 1) {
+              localStorage.setItem('societyToken', society_array[0].society_token);
+          } else {
+              // Convert the array of objects to a JSON string
+              const societyArrayString = JSON.stringify(society_array);
+              // Store the JSON string in localStorage
+              localStorage.setItem('societyArray', societyArrayString);
+          }
+          dispatch(addProfilePicture(response.data.data.profile_picture));
           const user_role = (response.data.data.usertype == '2') ? 'Super Admin' : (response.data.data.usertype == '1') ? 'Admin' : 'User'
           localStorage.setItem('userRole', user_role);
           // Navigate to another page

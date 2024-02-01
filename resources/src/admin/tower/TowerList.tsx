@@ -47,13 +47,6 @@ const TowerList = () => {
             enableSorting: true,
         },
         {
-            id: "wings",
-            numeric: false,
-            disablePadding: false,
-            label: "Wings",
-            enableSorting: true,
-        },
-        {
             id: "action",
             numeric: false,
             disablePadding: false,
@@ -65,7 +58,6 @@ const TowerList = () => {
     const dataColumns = [
         'srno',
         "tower_name",
-        "wings",
     ];
 
     const rowSettings = {
@@ -99,6 +91,7 @@ const TowerList = () => {
         setpageSortOrder(IsSort);
         if (page == "") {
             setPage("1");
+            page='1';
         }
         
         if (perPage == "") {
@@ -121,7 +114,7 @@ const TowerList = () => {
             const appUrl = import.meta.env.VITE_API_URL;
             const API_URL = appUrl + "/api/list-tower";
             const token = localStorage.getItem("authToken");
-            const society_token = "eyJpdiI6InM0Y2tXaHFvMDlPcjQwb2hXZmNmS1E9PSIsInZhbHVlIjoiWDhzRmkzdWVmSlJXTkZCN3p0VUpsZz09IiwibWFjIjoiMmYxNmFmNTRhY2E3NmNhMTQxYzFhM2NlMDRkYTZmMmU2ZWQ4YTY4ZDM3NTAxNTRmZmZmNTdmMzY5NWY0MDI0ZCIsInRhZyI6IiJ9";
+            const society_token = localStorage.getItem("societyToken");
             const response = await axios.post(API_URL, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -133,8 +126,8 @@ const TowerList = () => {
                 settotalPages(response.data.data.last_page);
                 setTotalCount(response.data.data.total);
             } else {
-                setData(response.data);
-                settotalPages(response.data.data.last_page);
+                setData([]);
+                settotalPages(1);
                 setTotalCount(0);
                 console.error("Error: Unexpected response structure", response);
             }
