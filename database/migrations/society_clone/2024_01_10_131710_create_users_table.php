@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('city', 50)->nullable()->default(null);
             $table->string('zipcode')->nullable()->default(null);
             $table->tinyInteger('usertype')->default(0)->comment('0-every other user,1-admin,2-superadmin');;
-            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive,2-Send-For-Approval,2-Blocked');
+            $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive(opt verification pending),2-(opt verified &)Send-For-Approval,2-Blocked');
             $table->timestamp('blocked_at')->nullable()->default(null);
             $table->string('profile_picture',255)->nullable()->default(null);
             $table->unsignedBigInteger('created_by')->nullable()->default(null);
