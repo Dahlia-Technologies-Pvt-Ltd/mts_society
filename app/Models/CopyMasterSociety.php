@@ -52,6 +52,7 @@ class CopyMasterSociety extends Model
                 // Create a new User in the user Table
                 $newUser = new User();
                 $newUser->master_society_ids = jsonEncodeIntArr([$master_society_data->id]);
+                $newUser->master_user_id = $master_user_data->id;
                 $newUser->usertype = $master_user_data->usertype;
                 $newUser->name = $master_user_data->name;
                 $newUser->username = $master_user_data->username;
