@@ -56,6 +56,7 @@ const Router = [
       { path: '/admin/account-setting', exact: true, element: <AccountSetting /> },
       { path: '/admin/tower-list', exact: true, element: <TowerList /> },
       { path: '/admin/add-tower', exact: true, element: <AddTower /> },
+      { path: '/admin/edit-tower/:id', exact: true, element: <AddTower /> },
 
 
 
