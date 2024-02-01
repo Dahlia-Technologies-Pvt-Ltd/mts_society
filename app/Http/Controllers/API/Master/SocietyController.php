@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\ResponseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use App\Models\Master\{MasterSociety,SubscriptionPlan,MasterUser,MasterDatabase};
+use App\Models\Master\{MasterSociety, SubscriptionPlan, MasterUser, MasterDatabase, MasterSubscription, UserSubscription};
 
 
 class SocietyController extends ResponseController
@@ -104,19 +104,21 @@ class SocietyController extends ResponseController
                 $ins_arr
             );
             //Remove the society id from the existing user then update
-            $master_user_qry = MasterUser::whereJsonContains('master_society_ids', $request->id);
-            if ($master_user_qry->exists()) {
-                $user = $master_user_qry->select([
-                    'master_users.id',
-                    'master_users.master_society_ids',
-                ])->first();
-                // Decode the JSON string into an array
-                $masterSocietyIds = json_decode($user->master_society_ids, true);
-                // Remove the specified ID from the master_society_ids array
-                $masterSocietyIds = array_diff($masterSocietyIds, [$request->id]);
-                // Encode the array back to JSON
-                $user->master_society_ids = json_encode($masterSocietyIds);
-                $user->save();
+            if(!empty($request->id)){
+                $master_user_qry = MasterUser::whereJsonContains('master_society_ids', $request->id);
+                if ($master_user_qry->exists()) {
+                    $user = $master_user_qry->select([
+                        'master_users.id',
+                        'master_users.master_society_ids',
+                    ])->first();
+                    // Decode the JSON string into an array
+                    $masterSocietyIds = json_decode($user->master_society_ids, true);
+                    // Remove the specified ID from the master_society_ids array
+                    $masterSocietyIds = array_diff($masterSocietyIds, [$request->id]);
+                    // Encode the array back to JSON
+                    $user->master_society_ids = json_encode($masterSocietyIds);
+                    $user->save();
+                }
             }
             //Update Society id in the master table
             $master_user=MasterUser::find($request->user_id);
@@ -130,6 +132,22 @@ class SocietyController extends ResponseController
                     'master_society_ids' => $updatedIds
                 ]);
             } 
+
+            //Fetch data master Subscription through master_subscription_id and insert respective data in to user subscription table
+            if(empty($request->id)){
+                $masterSubscriptionData = MasterSubscription::select('id', 'subscription_plan', 'price', 'frequency', 'features')
+                ->where('id', $request->master_subscription_id)->first();
+                //Insert Into User Subscription
+                $user_subscription = UserSubscription::create([
+                    'master_subscription_id' => $request->master_subscription_id,
+                    'master_user_id' => $master_user->id,
+                    'master_socities_id' => $qry->id,
+                    'subscription_plan' => $masterSubscriptionData->subscription_plan,
+                    'price' => $masterSubscriptionData->price,
+                    'frequency' => $masterSubscriptionData->frequency,
+                    'features' => $masterSubscriptionData->features,
+                ]);
+            }
         }
         if (request()->is('api/*')) {
             if ($qry) {

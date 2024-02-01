@@ -22,36 +22,35 @@ class MasterusersSeeder extends Seeder
         $obj = new MasterUser();
         MasterUser::create([
             'name'              => 'Super Admin',
-            'user_code'       => $obj->generateUserCode(),
+            'user_code'         => $obj->generateUserCode(),
             'username'          => 'superadmin001',
             'email'             => 'superadmin@dahlia.com',
             'phone_number'      => '9988998899',
             'gender'            => 'Male',
             'password'          => Hash::make('admin@123'),
             'usertype'          => 2,
-            'country_id'           => 101,
-            'state_id'             => 12,
+            'country_id'        => 101,
+            'state_id'          => 12,
             'city'              => 5,
-            'updated_at'       => Carbon::now()->format('Y-m-d H:i:s'),
-            'created_at'      => Carbon::now()->format('Y-m-d H:i:s')
-
-
+            'updated_at'        => Carbon::now()->format('Y-m-d H:i:s'),
+            'created_at'        => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         
         /* $data = MasterSociety::get();
         $data_query = $data->first()->toArray()['id'];
+
         MasterUser::create([
             'name'              => 'Admin',
-            'user_code'       => $obj->generateUserCode(),
+            'user_code'         => $obj->generateUserCode(),
             'username'          => 'admin002',
             'email'             => 'admin@dahlia.com',
             'phone_number'      => '9988998898',
             'gender'            => 'Male',
-            'master_society_ids' => jsonEncodeIntArr([$data_query]),
+            'master_society_ids'=> json_encode([$data_query]),
             'password'          => Hash::make('admin@123'),
             'usertype'          => 1,
-            'country_id'           => 101,
-            'state_id'             => 12,
+            'country_id'        => 101,
+            'state_id'          => 12,
             'city'              => 5,
             'updated_at'       => Carbon::now()->format('Y-m-d H:i:s'),
             'created_at'      => Carbon::now()->format('Y-m-d H:i:s')
