@@ -113,7 +113,13 @@ Menuitems = [
     href: '/super-admin/system-setting',
     activeUrls: ['/super-admin/system-setting'],
   },
-  
+  {
+    id: uniqueId(),
+    title: 'Email Template',
+    icon: IconMail,
+    href: '/super-admin/email-template',
+    activeUrls: ['/super-admin/email-template'],
+  },
 ];
 }else if(userType === '1'){
   Menuitems = [
@@ -127,6 +133,17 @@ Menuitems = [
       icon: IconAperture,
       href: '/admin/dashboard',
       chipColor: 'secondary',
+    },
+    {
+      navlabel: true,
+      subheader: 'Society Management',
+    },
+    {
+      id: uniqueId(),
+      title: 'Tower',
+      icon: IconMessage2,
+      href: '/admin/tower-list',
+      activeUrls: ['/admin/tower-list', '/admin/add-tower', '/admin/edit-tower/*'],
     },
   ];
 }else if(userType === '0'){

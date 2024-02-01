@@ -29,25 +29,25 @@ import {
 
 const BCrumb = [
   {
-    to: '/super-admin/society-list',
-    title: 'Society Management',
+    to: '/super-admin/society-admin-list',
+    title: 'Society Admin Management',
   },
   {
-    title: 'Society Details',
+    title: 'Admin Details',
   },
 ];
 
-const MasterSocietyDetails = () => {
+const MasterUserDetails = () => {
 
   const { id } = useParams(); // Get the 'id' parameter from the URL
-  const [societyData, setSocietyData] = useState(null);
+  const [fetchedData, setFetchedData] = useState(null);
   const [error, setError] = useState(null);
   const theme = useTheme();
   const appUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
-      const apiUrl = `${appUrl}/api/show-society/${id}`;
+      const apiUrl = `${appUrl}/api/show-master-user/${id}`;
       try {
         const token = localStorage.getItem('authToken');
         const response = await axios.get(apiUrl, {
@@ -57,7 +57,7 @@ const MasterSocietyDetails = () => {
         });
 
         if (response && response.data && response.data.data) {
-          setSocietyData(response.data.data);
+          setFetchedData(response.data.data);
         } else {
           console.error("Error: Unexpected response structure", response);
         }
@@ -71,35 +71,35 @@ const MasterSocietyDetails = () => {
     fetchData();
   }, [id]);
   const customButton = (
-    <Link to="/super-admin/society-list"><Button variant="contained" color="primary">
+    <Link to="/super-admin/society-admin-list"><Button variant="contained" color="primary">
     Back
   </Button></Link>
   );
   return (
-    <PageContainer title="Society Details" description="this is Society Details page">
+    <PageContainer title="Society Admin Details" description="this is Society Admin Details page">
       {/* breadcrumb */}
       <Breadcrumb title="" items={BCrumb} />
       {/* end breadcrumb */} 
   
-      <ParentCard title="Society Details" button={customButton}>
+      <ParentCard title="Society Admin Details" button={customButton}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12} lg={12}>
             <Grid container spacing={3} pt={1}>
               <Grid item xs={12} sm={12} lg={6} mt={2} pb={3}>
                 <Grid container spacing={3} mb={2}>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2" color="grey.400">Society Name</Typography>
+                    <Typography fontWeight={100} variant="subtitle2" color="grey.400">Name</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{societyData && societyData.society_name ? societyData.society_name : '-'}</Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.name ? fetchedData.name : '-'}</Typography>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} mb={2}>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2" color="grey.400">Society Unique Code</Typography>
+                    <Typography fontWeight={100} variant="subtitle2" color="grey.400">Unique Code</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{societyData && societyData.society_unique_code ? societyData.society_unique_code : '-'}</Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.user_code ? fetchedData.user_code : '-'}</Typography>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} mb={2}>
@@ -107,7 +107,7 @@ const MasterSocietyDetails = () => {
                     <Typography fontWeight={100} variant="subtitle2" color="grey.400">Phone Number</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{societyData && societyData.phone_number ? societyData.phone_number : '-'}</Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.phone_number ? fetchedData.phone_number : '-'}</Typography>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} mb={2}>
@@ -115,15 +115,15 @@ const MasterSocietyDetails = () => {
                     <Typography fontWeight={100} variant="subtitle2" color="grey.400">Email ID</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{societyData && societyData.email ? societyData.email : '-'}  </Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.email ? fetchedData.email : '-'}  </Typography>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} mb={2}>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2" color="grey.400">Address</Typography>
+                    <Typography fontWeight={100} variant="subtitle2" color="grey.400">User Type</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{societyData && societyData.address ? societyData.address : '-'}</Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.usertype == '1' ? 'Admin' : '-'}</Typography>
                   </Grid>
                 </Grid>
               </Grid>
@@ -134,7 +134,7 @@ const MasterSocietyDetails = () => {
                     <Typography fontWeight={100} variant="subtitle2" color="grey.400">Country</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{societyData && societyData.country_id ? societyData.country_id : '-'}</Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.country ? fetchedData.country.name : '-'}</Typography>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} mb={2}>
@@ -142,7 +142,7 @@ const MasterSocietyDetails = () => {
                     <Typography fontWeight={100} variant="subtitle2" color="grey.400">State</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{societyData && societyData.state_id ? societyData.state_id : '-'}</Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.state ? fetchedData.state.name : '-'}</Typography>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} mb={2}>
@@ -150,7 +150,7 @@ const MasterSocietyDetails = () => {
                     <Typography fontWeight={100} variant="subtitle2" color="grey.400">City</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{societyData && societyData.city ? societyData.city : '-'}</Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.city ? fetchedData.city : '-'}</Typography>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} mb={2}>
@@ -158,7 +158,7 @@ const MasterSocietyDetails = () => {
                     <Typography fontWeight={100} variant="subtitle2" color="grey.400">Zipcode</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{societyData && societyData.zipcode ? societyData.zipcode : '-'}</Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.zipcode ? fetchedData.zipcode : '-'}</Typography>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} mb={2}>
@@ -166,7 +166,7 @@ const MasterSocietyDetails = () => {
                     <Typography fontWeight={100} variant="subtitle2" color="grey.400">Created On</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{societyData && societyData.created_at ? societyData.created_at : '-'}</Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.created_at ? fetchedData.created_at : '-'}</Typography>
                   </Grid>
                 </Grid>
               </Grid>
@@ -178,4 +178,4 @@ const MasterSocietyDetails = () => {
   );
 };
 
-export default MasterSocietyDetails;
+export default MasterUserDetails;
