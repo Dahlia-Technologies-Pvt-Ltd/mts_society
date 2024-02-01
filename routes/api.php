@@ -13,6 +13,7 @@ use App\Http\Controllers\API\Master\ForgotPasswordController;
 use App\Http\Controllers\API\Master\ProfileUpdateController;
 use App\Http\Controllers\API\Master\EmailController;
 use App\Http\Controllers\API\Admin\TowerController;
+use App\Http\Controllers\API\Admin\ApprovalController;
 use App\Http\Controllers\API\Admin\FloorController;
 use App\Http\Controllers\API\Admin\FlatController;
 use App\Http\Controllers\API\Admin\WingsController;
@@ -82,6 +83,9 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
 });
 //Only For Admin
 Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
+    
+    Route::post('/list-user-for-approval', [ApprovalController::class, 'index']);
+    Route::post('/user-for-approval', [ApprovalController::class, 'approval']);
     //tower apis
     Route::post('/add-tower', [TowerController::class, 'store']);
     Route::post('/list-tower', [TowerController::class, 'index']);

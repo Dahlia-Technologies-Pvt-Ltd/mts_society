@@ -41,5 +41,16 @@ class EmailTemplateSeeder extends Seeder
             'subject' => 'Your otp',
             'template_variable' =>  json_encode(['USER_NAME','OTP']), 
         ]);
+         //############################################congrats email############################################
+         $Congrats_content = 'Congrats [USER_NAME], <br>
+         you have been successfully registered in your society';
+ 
+         EmailTemplate::create([
+             'template_code' => 'CONGRATS',
+             'title' => 'Congrats',
+             'content' => $Congrats_content,
+             'subject' => 'Congratulation mail',
+             'template_variable' =>  json_encode(['USER_NAME']), 
+         ]);
     }
 }
