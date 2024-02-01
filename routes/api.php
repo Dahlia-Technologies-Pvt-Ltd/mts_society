@@ -36,10 +36,10 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 //Register
 Route::post('/register', [RegisterController::class, 'register']);
 //resident register
-Route::post('/register-resident', [AuthController::class, 'residentregistration']);
+Route::post('/register-resident', [RegisterController::class, 'residentregistration']);
 
 //verify resident register
-Route::post('/verify-resident', [AuthController::class, 'registrationotpverify']);
+Route::post('/verify-resident', [RegisterController::class, 'registrationotpverify']);
 //forgot passeword api
 Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
 //login send otp api
