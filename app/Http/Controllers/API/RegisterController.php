@@ -11,20 +11,15 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use App\Services\DatabaseService;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends ResponseController
 {
-    
+
     //Register method
     public function register(Request $request): JsonResponse
     {
-        $dbName = '1';  
-    $dbPassword = '12345';
-    (new DatabaseService())->createDatabase(['dbname' => $dbName, 'dbpassword' => $dbPassword]);
-    (new CopyMasterSociety())->masterToSociety(['databaseName' => $dbName, 'databasePassword' => $dbPassword, 'master_user_id' => 3, 'master_socities_id' => 2]);
-
-    echo " dONE "; exit;
-
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:master_users',
@@ -45,34 +40,34 @@ class RegisterController extends ResponseController
             'phone_number' => $request->phone_number,
             'password' => Hash::make($request->password),
             'usertype' => 1,
-            'country_id' =>isset($request->country_id)?$request->country_id:'-',
-            'state_id' =>isset($request->state_id)?$request->state_id:'-',
-            'city' =>isset($request->city)?$request->city:'-',
-        ]); 
+            'country_id' => isset($request->country_id) ? $request->country_id : '-',
+            'state_id' => isset($request->state_id) ? $request->state_id : '-',
+            'city' => isset($request->city) ? $request->city : '-',
+        ]);
         // Insert Master Society
-        if($master_user){
+        if ($master_user) {
             $master_society = MasterSociety::create([
                 'society_unique_code' => (new MasterSociety())->generateSocietyCode(),
                 'society_name' => $request->society_name,
                 'address' => $request->address,
                 'country_id' => $request->country_id,
                 'city' => $request->city,
-                'state_id' => isset($request->state_id)?$request->state_id:'-',
+                'state_id' => isset($request->state_id) ? $request->state_id : '-',
                 'zipcode' => $request->zipcode,
                 'created_by' => $master_user->id, // insert Master User Id
             ]);
             //Update Master User Column master_society_ids newly generated master society ids as an array
             if ($master_society) {
-                $master_society_ids = json_decode($master_user->master_society_ids, true) ?? [];
+                $master_society_ids = jsonEncodeIntArr($master_user->master_society_ids, true) ?? [];
                 $master_society_ids[] = $master_society->id;
                 $master_user->update([
-                    'master_society_ids' => json_encode($master_society_ids),
+                    'master_society_ids' => jsonEncodeIntArr($master_society_ids),
                 ]);
-            }            
+            }
 
             //Fetch data master Subscription through master_subscription_id and insert respective data in to user subscription table
             $masterSubscriptionData = MasterSubscription::select('id', 'subscription_plan', 'price', 'frequency', 'features')
-            ->where('id', $request->master_subscription_id)->first();
+                ->where('id', $request->master_subscription_id)->first();
             //Insert Into User Subscription
             $user_subscription = UserSubscription::create([
                 'master_subscription_id' => $request->master_subscription_id,
@@ -85,7 +80,7 @@ class RegisterController extends ResponseController
             ]);
             //Call DatabaseService to Create dynamic database
             $dbName = 'soc_' . $this->cleanName($request->society_name);
-            $dbPassword = $dbName.'@123';//Generate random number for database
+            $dbPassword = $dbName . '@123'; //Generate random number for database
             //Here we use Crypt facade for store the database credential as encrypted format
             // $encryptedDbName = Crypt::encryptString($dbName);
             // $encryptedDbUid = Crypt::encryptString($dbName);
@@ -101,12 +96,14 @@ class RegisterController extends ResponseController
                 'master_user_id' => $master_user->id,
                 'master_socities_id' => $master_society->id,
             ]);
+            Log::info('Reg 106 ' . DB::connection()->getDatabaseName());
             //If Master database inserted successfully then call DataServices
             ($master_database) ? $databaseValue = (new DatabaseService())->createDatabase(['dbname' => $dbName, 'dbpassword' => $dbPassword]) : '';
             $response['data'] = $databaseValue;
+            Log::info('Reg 110 ' . DB::connection()->getDatabaseName());
             (new CopyMasterSociety())->masterToSociety(['databaseName' => $databaseValue['dbname'], 'databasePassword' => $databaseValue['dbpassword'], 'master_user_id' => $master_user->id, 'master_socities_id' => $master_society->id]);
         }
-        
+
         $response['status'] = 200;
         $response['message'] = 'User registered successfully.';
 
@@ -125,12 +122,13 @@ class RegisterController extends ResponseController
     }
 
     //Generate Random Password
-    function generatePassword($len){
-        $az = range("a","z");
-        $AZ = range("A","Z");
-        $num = range(0,9);
-        $password = array_merge($az,$AZ,$num);
-        return substr(str_shuffle(implode("",$password)),0, $len);
+    function generatePassword($len)
+    {
+        $az = range("a", "z");
+        $AZ = range("A", "Z");
+        $num = range(0, 9);
+        $password = array_merge($az, $AZ, $num);
+        return substr(str_shuffle(implode("", $password)), 0, $len);
     }
 
     public function registrationotpverify(Request $request): JsonResponse

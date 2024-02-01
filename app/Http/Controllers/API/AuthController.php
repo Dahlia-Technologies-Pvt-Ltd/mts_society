@@ -88,12 +88,11 @@ class AuthController extends ResponseController
                 $response['message'] = 'Invalid Email or Phone Number.';
                 return $this->sendFailedLoginResponse($request);
             } else {
-
                 $user = Auth::user();
                 $user['token'] = $user->createToken('MTSSOCIETY')->plainTextToken;
                 $response['status'] = 200;
                 $response['message'] = 'User authenticated successfully.';
-                $response['data'] = $user->only(['id', 'username', 'name', 'user_code', 'email', 'usertype', 'phone_number', 'token', 'profile_picture']);
+                $response['data'] = $user->only(['id', 'username', 'name', 'user_code', 'email', 'usertype', 'phone_number', 'token', 'profile_picture','master_society_ids','societies']);
                 return $this->sendResponse($response);
             }
         }

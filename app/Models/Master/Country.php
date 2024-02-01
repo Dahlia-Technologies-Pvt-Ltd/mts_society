@@ -10,7 +10,7 @@ class Country extends Model
 {
     use HasFactory;
     protected $table = 'countries';
-    protected $connection = 'sqlsrv';
+    protected $connection = 'sqlsrvmaster';
     public function masteruser(){
         return $this->hasMany(MasterUser::class);
     }

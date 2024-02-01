@@ -10,18 +10,32 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
-use App\Models\Master\{Country,State,City};
+use App\Models\Master\{Country,State,City,MasterSociety};
 
 class MasterUser extends Authenticatable
 {
     use HasFactory, SoftDeletes, Notifiable, HasApiTokens;
-    protected $connection = 'sqlsrv';
+    protected $connection = 'sqlsrvmaster';
     protected $fillable = [
         'name', 'username', 'user_code', 'email', 'password', 'phone_number',
         'master_society_ids', 'gender', 'address', 'country_id', 'state_id', 'city',
         'zipcode', 'usertype', 'blocked_at', 'forgot_password_token','forgot_password_token_time',
         'profile_picture', 'status', 'created_by', 'updated_by'
     ];
+    protected $appends = ['societies'];
+
+    function getSocietiesAttribute()
+    {
+        if (!isset($this->attributes['master_society_ids'])) {
+            return [];
+        }
+        $master_society_ids = json_decode($this->attributes['master_society_ids']);
+        $ms_obj = MasterSociety::whereIn('id',$master_society_ids)->where('status',0);
+        if($ms_obj->exists()){
+            return $ms_obj->select(['id','society_name'])->get()->makeHidden('society_owner');
+        }
+        return [];
+    }
 
     static public function getEmailSingle($Email)
     {

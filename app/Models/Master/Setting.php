@@ -11,7 +11,7 @@ class Setting extends Model
 {
     use HasFactory;
     protected $table = 'settings';
-    protected $connection = 'sqlsrv';
+    protected $connection = 'sqlsrvmaster';
     protected $fillable = ['mail_through_ip', 'mail_mailer', 'mail_host','mail_port',
      'mail_username', 'mail_password','mail_from_address','mail_from_name','mail_ssl_enable',
      'support_email'];

@@ -13,10 +13,7 @@ class Flat extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $fillable = [
-        'flat_name', 'user_id', 'floor_id',
-        'status', 'created_by', 'updated_by'
-    ];
+    protected $fillable = ['flat_name', 'floor_id', 'status', 'created_by', 'updated_by'];
 
     function floor()
     {

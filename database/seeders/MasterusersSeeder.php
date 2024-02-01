@@ -37,7 +37,8 @@ class MasterusersSeeder extends Seeder
 
 
         ]);
-        $data = MasterSociety::get();
+        
+        /* $data = MasterSociety::get();
         $data_query = $data->first()->toArray()['id'];
         MasterUser::create([
             'name'              => 'Admin',
@@ -54,8 +55,6 @@ class MasterusersSeeder extends Seeder
             'city'              => 5,
             'updated_at'       => Carbon::now()->format('Y-m-d H:i:s'),
             'created_at'      => Carbon::now()->format('Y-m-d H:i:s')
-
-
-        ]);
+        ]);*/
     }
 }
