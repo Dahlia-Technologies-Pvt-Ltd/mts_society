@@ -4,9 +4,7 @@ import PageContainer from "@src/components/container/PageContainer";
 import CommonTableList from "@src/common/CommonTableList";
 import BlankCard from "@src/components/shared/BlankCard";
 import axios from "axios";
-import { Alert, AlertTitle } from "@mui/material";
-import Snackbar from "@mui/material/Snackbar";
-import { Portal } from '@mui/base';
+import { useApiMessages } from '@src/common/Utils'; // Import the utility
 
 const BCrumb = [
     {
@@ -19,17 +17,16 @@ const BCrumb = [
 ];
 
 const TowerList = () => {
-    const [isSuccessVisible, setIsSuccessVisible] = useState(false);
-    const [successMessage, setSuccessMessage] = useState("");
-    const [isErrorVisible, setIsErrorVisible] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    //const [perPage, setPerPage] = useState('');
+    const { showSuccessMessage, showErrorMessage, renderSuccessMessage, renderErrorMessage } = useApiMessages();
     const [page, setPage] = useState("");
     const [totalCount, setTotalCount] = useState("");
     const [keyword, setkeyword] = useState("");
     const [loading, setLoading] = useState(true);
     const [pageSortOrder, setpageSortOrder] = useState('');
-    //let page = '';
+    //Site Tokens
+    const token = localStorage.getItem("authToken");
+    const society_token = localStorage.getItem("societyToken");
+
     let perPage = "";
     const headCells = [
         {
@@ -78,8 +75,7 @@ const TowerList = () => {
         fetchData();
         const storedSuccessMessage = sessionStorage.getItem("successMessage");
         if (storedSuccessMessage) {
-            setIsSuccessVisible(true);
-            setSuccessMessage(storedSuccessMessage);
+            showSuccessMessage(storedSuccessMessage);
             sessionStorage.removeItem("successMessage");
         }
     }, [setData]);
@@ -113,8 +109,6 @@ const TowerList = () => {
             );
             const appUrl = import.meta.env.VITE_API_URL;
             const API_URL = appUrl + "/api/list-tower";
-            const token = localStorage.getItem("authToken");
-            const society_token = localStorage.getItem("societyToken");
             const response = await axios.post(API_URL, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -148,27 +142,17 @@ const TowerList = () => {
             formData.append("id", id);
             const appUrl = import.meta.env.VITE_API_URL;
             const API_URL = appUrl + "/api/delete-tower";
-            const token = localStorage.getItem("authToken");
             const response = await axios.post(API_URL, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    "society_id": `${society_token}`,
                 },
             });
-            setIsSuccessVisible(true);
-            setSuccessMessage(response.data.message);
+            showSuccessMessage(response.data.message);
             fetchData();
             //console.log("Success deleting data:", response.data);
         } catch (error) {
-            setIsErrorVisible(true);
-            if (
-                error.response &&
-                error.response.data &&
-                error.response.data.message
-            ) {
-                setErrorMessage(error.response.data.message);
-            } else {
-                setErrorMessage("An error occurred while deleting the terms.");
-            }
+            showErrorMessage(error);
         }
     };
     //For Download Excel variable
@@ -180,34 +164,8 @@ const TowerList = () => {
             description="this is Tower List page"
         >
             <Breadcrumb title="" />
-            <Portal>
-            <Snackbar
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                open={isErrorVisible}
-                autoHideDuration={3000}
-                onClose={() => setIsErrorVisible(false)}
-            >
-                <Alert severity="error">
-                    <div style={{ fontSize: "14px", padding: "2px" }}>
-                        {errorMessage && <div>{errorMessage}</div>}
-                    </div>
-                </Alert>
-            </Snackbar>
-            </Portal>
-            <Portal>
-            <Snackbar
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                open={isSuccessVisible}
-                autoHideDuration={3000}
-                onClose={() => setIsSuccessVisible(false)}
-            >
-                <Alert severity="success">
-                    <div style={{ fontSize: "14px", padding: "2px" }}>
-                        {successMessage && <div>{successMessage}</div>}
-                    </div>
-                </Alert>
-            </Snackbar>
-            </Portal>
+            {renderSuccessMessage()}
+            {renderErrorMessage()}
             <BlankCard>
                 {/* ------------------------------------------- */}
                 {/* Left part */}

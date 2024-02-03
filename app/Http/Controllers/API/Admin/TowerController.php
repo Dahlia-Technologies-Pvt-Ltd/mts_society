@@ -82,14 +82,12 @@ class TowerController extends ResponseController
                 $ins_arr
             );
             $wingsData = json_decode($request->wings, true);
-            if (empty($request->id)) {
-                if ($wingsData) {
-                    $ins_arr = [];
-                    foreach ($wingsData as $wingIdentifier => $wingValue) {
-                        $ins_arr[] = ['wings_name' => $wingValue, 'tower_id' => $qry->id];
-                    }
-                    Wing::insert($ins_arr);
+            if ($wingsData) {
+                $ins_arr = [];
+                foreach ($wingsData as $wingIdentifier => $wingValue) {
+                    $ins_arr[] = ['wings_name' => $wingValue, 'tower_id' => $qry->id];
                 }
+                Wing::insert($ins_arr);
             }
         }
         if (request()->is('api/*')) {
@@ -159,17 +157,24 @@ class TowerController extends ResponseController
      */
     public function destroy(Request $request)
     {
-        $terms = Tower::find($request->id);
-        if ($terms) {
+        $tower = Tower::find($request->id);
+        if (!$tower) {
+            $response['message'] = "Record Not Found !";
+            $response['status'] = 404;
+            return $this->sendResponse($response);
+        }
+        // Delete related Wings first
+        $wingsDeleted = Wing::where('tower_id', $tower->id)->delete();
+        if ($wingsDeleted) {
             $ins_arr['deleted_by'] = auth()->id();
             $qry = Tower::updateOrCreate(
                 ['id' => $request->id],
                 $ins_arr
             );
-            $terms->destroy($request->id);
+            $tower->destroy($request->id);
             $message = "Record Deleted Successfully !";
         } else {
-            $message = "Record Not Found !";
+            $message = "Failed to delete record. Please try again.";
         }
         $response['message'] = $message;
         $response['status'] = 200;
