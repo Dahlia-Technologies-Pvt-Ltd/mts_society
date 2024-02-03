@@ -98,7 +98,7 @@ class WingsController extends ResponseController
             return $this->sendError($response);
         }
     }
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         $terms = Wing::find($request->id);
         if ($terms) {
@@ -128,14 +128,6 @@ class WingsController extends ResponseController
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
     {
         //
     }

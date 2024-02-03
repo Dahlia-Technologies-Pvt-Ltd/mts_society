@@ -1,55 +1,75 @@
 // Utils.js
 
-import axios from "axios";
+import { useState } from 'react';
+import { Snackbar, Alert } from '@mui/material';
 
-// Utility function for involving secondary CRM
-export const involveSecondaryCrm = async (id, escalation_id, fetchData, setEscalationStatus, setSuccessMessage, setIsSuccessVisible, setErrorMessage, setIsErrorVisible) => {
-  try {
-    const formData = new FormData();
-    formData.append("id", id);
-    const appUrl = import.meta.env.VITE_API_URL;
-    const API_URL = appUrl + "/api/involve-secondary_crm";
-    const token = sessionStorage.getItem("authToken");
-    const response = await axios.post(API_URL, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    closeEscalation(escalation_id, fetchData, setEscalationStatus, setSuccessMessage, setIsSuccessVisible, setErrorMessage, setIsErrorVisible);
-  } catch (error) {
-    handleApiError(error, setErrorMessage, setIsErrorVisible);
-  }
-};
+//Common for showing success message and error message
+export const useApiMessages = () => {
+    const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [isErrorVisible, setIsErrorVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
-// Utility function for closing escalation
-export const closeEscalation = async (id, fetchData, setEscalationStatus, setSuccessMessage, setIsSuccessVisible, setErrorMessage, setIsErrorVisible) => {
-  try {
-    const formData = new FormData();
-    formData.append("escalation_id", id);
-    const appUrl = import.meta.env.VITE_API_URL;
-    const API_URL = appUrl + "/api/escalations-status-update";
-    const token = sessionStorage.getItem("authToken");
-    const response = await axios.post(API_URL, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setEscalationStatus('1');
-    setSuccessMessage(response.data.message);
-    setIsSuccessVisible(true);
-    fetchData();
-  } catch (error) {
-    handleApiError(error, setErrorMessage, setIsErrorVisible);
-  }
-};
+    const showSuccessMessage = (message) => {
+        setIsSuccessVisible(true);
+        setSuccessMessage(message);
+    };
 
+    const showErrorMessage = (error) => {
+        setIsErrorVisible(true);
+        if(error.response && error.response.data && error.response.data.validation_error){
+          const validationErrors = error.response.data.validation_error;
+          const errorMessages = [];
+          // Iterate through each field in the validation_errors object
+          for (const field in validationErrors) {
+              if (validationErrors.hasOwnProperty(field)) {
+                  const errorMessage = validationErrors[field][0];
+                  errorMessages.push(errorMessage);
+              }
+          }
+          const concatenatedErrorMessage = errorMessages.join("\n");
+          setErrorMessage(concatenatedErrorMessage);
+        }else if (error.response && error.response.data && error.response.data.message) {
+          setErrorMessage(error.response.data.message);
+        } else {
+          setErrorMessage('An error occurred while processing the request.');
+        }
+    };
 
-// Utility function to handle API errors
-export const handleApiError = (error, setErrorMessage, setIsErrorVisible) => {
-  setIsErrorVisible(true);
-  if (error.response && error.response.data && error.response.data.message) {
-    setErrorMessage(error.response.data.message);
-  } else {
-    setErrorMessage("An error occurred while updating status.");
-  }
+    const closeMessages = () => {
+        setIsSuccessVisible(false);
+        setIsErrorVisible(false);
+    };
+
+    const renderSuccessMessage = () => (
+        <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={isSuccessVisible}
+            autoHideDuration={3000}
+            onClose={closeMessages}
+        >
+            <Alert severity="success">
+                <div style={{ fontSize: '14px', padding: '2px' }}>
+                    {successMessage && <div>{successMessage}</div>}
+                </div>
+            </Alert>
+        </Snackbar>
+    );
+
+    const renderErrorMessage = () => (
+        <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={isErrorVisible}
+            autoHideDuration={3000}
+            onClose={closeMessages}
+        >
+            <Alert severity="error">
+                <div style={{ fontSize: '14px', padding: '2px' }}>
+                    {errorMessage && <div>{errorMessage}</div>}
+                </div>
+            </Alert>
+        </Snackbar>
+    );
+
+    return { showSuccessMessage, showErrorMessage, renderSuccessMessage, renderErrorMessage };
 };
