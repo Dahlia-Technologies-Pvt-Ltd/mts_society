@@ -46,7 +46,7 @@ class EmailTemplateSeeder extends Seeder
          you have been successfully registered in your society';
  
          EmailTemplate::create([
-             'template_code' => 'CONGRATS',
+             'template_code' => 'RESIDENT_USER_APPROVED',
              'title' => 'Congrats',
              'content' => $Congrats_content,
              'subject' => 'Congratulation mail',
