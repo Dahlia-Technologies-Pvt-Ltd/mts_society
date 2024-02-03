@@ -145,6 +145,13 @@ Menuitems = [
       href: '/admin/tower-list',
       activeUrls: ['/admin/tower-list', '/admin/add-tower', '/admin/edit-tower/*'],
     },
+    {
+      id: uniqueId(),
+      title: 'Floor',
+      icon: IconBorderVertical,
+      href: '/admin/floor-list',
+      activeUrls: ['/admin/floor-list', '/admin/add-floor', '/admin/edit-floor/*'],
+    },
   ];
 }else if(userType === '0'){
   Menuitems = [
