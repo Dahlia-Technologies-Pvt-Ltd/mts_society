@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Mail\CommonMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Models\Master\{EmailTemplate};
 use App\Models\{EmailLog};
 
 class MailHelper
@@ -35,7 +36,7 @@ class MailHelper
     public static function getEmailData($templateCode = 'x', $data = [], $attachments = [])
     {
 
-        $template = DB::table('email_templates')->where('template_code', $templateCode)->first();
+        $template =EmailTemplate::where('template_code', $templateCode)->first();
         if (!isset($template->content)) {
             return false;
         }

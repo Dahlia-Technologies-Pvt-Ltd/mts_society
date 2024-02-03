@@ -70,16 +70,6 @@ class FlatController extends ResponseController
             }
         }
         $id = empty($request->id) ? 'NULL' : $request->id;
-        // $validator = Validator::make($request->all(), [
-        //     // 'flat_name'                                    => 'required|unique:flats,flat_name,' . $id . ',id,deleted_at,NULL|max:255',
-        //     'floor_id'      => 'required|integer|min:1'
-
-
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return $this->validatorError($validator);
-        // } else {
             $message = empty($request->id) ? "Flat created successfully." : "Flat updated successfully.";
             if (empty($request->id)) {
                 $validator = Validator::make($request->all(), [
