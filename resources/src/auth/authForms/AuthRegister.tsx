@@ -113,7 +113,17 @@ const AuthRegister = () => {
       fullName: yup.string().required('Full Name is required'),
       phone_number: yup.string().required('Mobile Number is required'),
       email: yup.string().email('Invalid email address').required('Email Address is required'),
-      password: yup.string().required('Password is required'),
+      password: yup
+        .string()
+        .required('Password is required')
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+          'Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long'
+        ),
+      confirm_password: yup
+        .string()
+        .oneOf([yup.ref('password')], 'Confirm Password did not match with Password')
+        .required('Confirm Password is required'),
     }),
     // Validation schema for Step 2
     yup.object({
@@ -195,6 +205,7 @@ const AuthRegister = () => {
       state: '',
       city: '',
       pincode: '',
+      confirm_password: '',
     },
     validationSchema: validationSchema[validActiveStep],
     onSubmit: async (values) => {
@@ -329,6 +340,19 @@ const AuthRegister = () => {
                 onChange={formik.handleChange}
                 error={formik.touched.password && Boolean(formik.errors.password)}
                 helperText={formik.touched.password && formik.errors.password}
+                onBlur={formik.handleBlur}
+              />
+              <CustomFormLabel htmlFor="confirm_password">Confirm Password<span style={{ color: 'red' }}>*</span></CustomFormLabel>
+              <CustomTextField
+                id="confirm_password"
+                placeholder="Confirm Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                value={formik.values.confirm_password}
+                onChange={formik.handleChange}
+                error={formik.touched.confirm_password && Boolean(formik.errors.confirm_password)}
+                helperText={formik.touched.confirm_password && formik.errors.confirm_password}
                 onBlur={formik.handleBlur}
               />
             </Grid>

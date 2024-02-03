@@ -29,6 +29,7 @@ import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const AddTower = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -36,9 +37,13 @@ const AddTower = () => {
     const [isSuccessVisible, setIsSuccessVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
+    const [wingsData, setWingsdata] = useState([]);
     const { id } = useParams(); // Access the 'id' parameter from the URL if it exists
     const navigate = useNavigate();
     const [quillText, setQuillText] = useState("");
+    //Site Tokens
+    const token = localStorage.getItem("authToken");
+    const society_token = localStorage.getItem("societyToken");
 
     const BCrumb = [
         {
@@ -64,21 +69,20 @@ const AddTower = () => {
             try {
                 setIsLoading(true);
                 // Create a FormData object
-                console.log('wing data', values.wing_name);
-                return;
                 const formData = new FormData();
                 // Append form fields to the FormData object
                 formData.append("tower_name", values.tower_name);
+                formData.append("wings", JSON.stringify(values.wing_name));
                 // Determine the API URL based on whether it's an edit or add operation
                 const appUrl = import.meta.env.VITE_API_URL;
                 let API_URL = appUrl + "/api/add-tower";
                 (id) ? formData.append("id", id) : '';
                 // Make the API POST request
-                const token = localStorage.getItem("authToken");
                 const response = await axios.post(API_URL, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data",
+                        "society_id": `${society_token}`,
                     },
                 });
                 setIsSuccessVisible(true);
@@ -134,26 +138,35 @@ const AddTower = () => {
         try {
             const appUrl = import.meta.env.VITE_API_URL;
             const API_URL = `${appUrl}/api/show-tower/${id}`;
-            const token = localStorage.getItem("authToken");
-
             const response = await axios.get(API_URL, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",
+                    "society_id": `${society_token}`,
                 },
             });
 
             const data = response.data.data;
             formik.setValues({
                 tower_name: data.tower_name,
-                wing_name: data.wing_name,
+                wing_name: [],
             });
-            setQuillText(data.features);
+            setWingsdata(data.wing);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
 
+    const updateWingName = (wingId) => {
+        // Implement logic to update the wing with the given wingId
+        console.log(`Updating wing with id ${wingId}`);
+    };
+    
+    const deleteWingName = (wingId) => {
+        // Implement logic to delete the wing with the given wingId
+        console.log(`Deleting wing with id ${wingId}`);
+    };
+    
     return (
         <>
             <PageContainer
@@ -224,57 +237,122 @@ const AddTower = () => {
                             />
                         </Grid>        
                        
-                        <Grid item xs={6}>
+                        <Grid item xs={12}>
                             <CustomFormLabel htmlFor={`wing_name`} sx={{ mt: 0 }}>
-                                Wing Name
+                                Wings
                             </CustomFormLabel>
-                            {formik.values.wing_name.map((wingName, index) => (
-                                <Grid container spacing={1} alignItems="center" key={index}>
-                                    <Grid item xs={8} mt={(index === 0) ? 0 : 1}>
-                                        <CustomTextField
-                                            id={`wing_name_${index}`}
-                                            name={`wing_name[${index}]`}
-                                            placeholder="Wing Name"
-                                            fullWidth
-                                            value={wingName}
-                                            onChange={formik.handleChange}
-                                            error={
-                                            formik.touched.wing_name &&
-                                            formik.touched.wing_name[index] &&
-                                            Boolean(formik.errors.wing_name) &&
-                                            Boolean(formik.errors.wing_name[index])
-                                            }
-                                            helperText={
-                                            formik.touched.wing_name &&
-                                            formik.touched.wing_name[index] &&
-                                            formik.errors.wing_name &&
-                                            formik.errors.wing_name[index]
-                                            }
-                                        />
+
+                            {/* This is for updating the existing one */}
+                            <Grid container spacing={1} alignItems="center">
+                                {wingsData.map((wings, index) => (
+                                    <Grid item xs={4} key={index}>
+                                        <Grid container spacing={1} alignItems="center">
+                                            <Grid item xs={6} mt={(index === 0) ? 0 : 1}>
+                                            <CustomTextField
+                                                id={`wingname_${index}`}
+                                                name={`wingname[${index}]`}
+                                                placeholder="Wing Name"
+                                                fullWidth
+                                                value={wingsData[index].wings_name}
+                                                onChange={(e) => {
+                                                    const updatedWingsData = wingsData.map((wing, i) =>
+                                                        i === index ? { ...wing, wings_name: e.target.value } : wing
+                                                    );
+
+                                                }}
+                                            />
+
+                                            </Grid>
+                                            <Grid item xs={6} mt={(index === 0) ? 0 : 1}>
+                                                <Button
+                                                    variant="outlined"
+                                                    color="success"
+                                                    onClick={() => updateWingName(wings.id)}
+                                                    title="Update"
+                                                >
+                                                    Update
+                                                </Button>
+
+                                                <Button
+                                                    variant="outlined"
+                                                    color="error"
+                                                    onClick={() => deleteWingName(wings.id)}
+                                                    title="Delete"
+                                                    style={{ marginLeft: '4px' }}
+                                                >
+                                                    <DeleteIcon />
+                                                </Button>
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={2} mt={(index === 0) ? 0 : 1}>
-                                    {(index === 0) ? 
-                                        <Button
-                                            variant="outlined"
-                                            color="success"
-                                            onClick={addWingName}
-                                            title="Add"
-                                        >
-                                            <AddIcon />
-                                        </Button>
-                                    :
-                                        <Button
-                                            variant="outlined"
-                                            color="error"
-                                            onClick={() => removeWingName(index)}
-                                            title="Remove"
-                                        >
-                                            <RemoveIcon />
-                                        </Button>
-                                    }
+                                ))}
+                            </Grid>
+
+                            <Grid container spacing={1} alignItems="center">        
+                                {/* This one for inserting new one */}
+                                {formik.values.wing_name.map((wingName, index) => (
+                                    <Grid item xs={8} key={index} mt={1}>
+                                        <Grid container spacing={1} alignItems="center">
+                                            <Grid item xs={8}>
+                                                <CustomTextField
+                                                    id={`wing_name_${index}`}
+                                                    name={`wing_name[${index}]`}
+                                                    placeholder="Wing Name"
+                                                    fullWidth
+                                                    value={wingName}
+                                                    onChange={formik.handleChange}
+                                                    error={
+                                                        formik.touched.wing_name &&
+                                                        formik.touched.wing_name[index] &&
+                                                        Boolean(formik.errors.wing_name) &&
+                                                        Boolean(formik.errors.wing_name[index])
+                                                    }
+                                                    helperText={
+                                                        formik.touched.wing_name &&
+                                                        formik.touched.wing_name[index] &&
+                                                        formik.errors.wing_name &&
+                                                        formik.errors.wing_name[index]
+                                                    }
+                                                />
+                                            </Grid>
+                                            <Grid item xs={2} mt={(index === 0) ? 0 : 1}>
+                                                {(index === 0) ? 
+                                                    id ? 
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="error"
+                                                        onClick={() => removeWingName(index)}
+                                                        title="Remove"
+                                                    >
+                                                        <RemoveIcon />
+                                                    </Button> : ''
+                                                :
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="error"
+                                                        onClick={() => removeWingName(index)}
+                                                        title="Remove"
+                                                    >
+                                                        <RemoveIcon />
+                                                    </Button>
+                                                }
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            ))}
+                                ))}
+                            </Grid>
+                            <Grid item xs={12} mt={2}>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    onClick={addWingName}
+                                    title="Add"
+                                    style={{float:'right'}}
+                                >
+                                    <AddIcon />
+                                    Add More
+                                </Button>  
+                            </Grid>                      
                         </Grid>
                         
                         {/* Submit Button */}
