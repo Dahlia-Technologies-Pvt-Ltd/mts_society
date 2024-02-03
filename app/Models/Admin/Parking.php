@@ -17,7 +17,7 @@ class Parking extends Model
         'status', 'created_by', 'updated_by'
     ];
 
-    public function getVehicleTypeAttribute($data)
+    public function getVehicleTypeValueAttribute($data)
     {
         if (!isset($this->attributes['vehicle_type'])) {
             return '';
@@ -30,7 +30,7 @@ class Parking extends Model
             return config('util.vehichle_type')['0'];
         }
     }
-    public function getParkingTypeAttribute($data)
+    public function getParkingTypeValueAttribute($data)
     {
         if (!isset($this->attributes['parking_type'])) {
             return '';

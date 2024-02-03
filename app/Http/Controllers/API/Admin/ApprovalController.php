@@ -129,7 +129,7 @@ class ApprovalController extends ResponseController
                                 'EMAIL' => $user_data_for_approval->email,
                                 'USER_NAME' => $user_data_for_approval->name,
                             );
-                            MailHelper::sendMail('CONGRATS', $TemplateData);
+                            MailHelper::sendMail('RESIDENT_USER_APPROVED', $TemplateData);
                         } catch (Exception $exp) {
                             $response['message'] = 'Oops ! We are unable to send mail , please try again after sometime.';
                             $response['status'] = 503;
