@@ -104,6 +104,11 @@ Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
      //wings apis
      Route::post('/edit-wing', [WingsController::class, 'edit']);
      Route::post('/delete-wing', [WingsController::class, 'destroy']);
+     //parking api
+     Route::post('/add-parking', [ParkingController::class, 'store']);
+     Route::post('/list-parking', [ParkingController::class, 'index']);
+     Route::get('/show-parking/{id}', [ParkingController::class, 'show']);
+     Route::post('/delete-parking', [ParkingController::class, 'destroy']);
 });
 //Only For User
 Route::middleware('auth:sanctum','user')->group(function () {
