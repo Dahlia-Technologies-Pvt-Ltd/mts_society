@@ -13,7 +13,9 @@ use App\Http\Controllers\API\Master\ForgotPasswordController;
 use App\Http\Controllers\API\Master\ProfileUpdateController;
 use App\Http\Controllers\API\Master\EmailController;
 use App\Http\Controllers\API\Admin\TowerController;
+use App\Http\Controllers\API\Admin\ApprovalController;
 use App\Http\Controllers\API\Admin\FloorController;
+use App\Http\Controllers\API\Admin\MasterServiceProviderController;
 use App\Http\Controllers\API\Admin\FlatController;
 use App\Http\Controllers\API\Admin\WingsController;
 use App\Http\Controllers\API\Admin\ParkingController;
@@ -82,6 +84,9 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
 });
 //Only For Admin
 Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
+    
+    Route::post('/list-user-for-approval', [ApprovalController::class, 'index']);
+    Route::post('/user-for-approval', [ApprovalController::class, 'approval']);
     //tower apis
     Route::post('/add-tower', [TowerController::class, 'store']);
     Route::post('/list-tower', [TowerController::class, 'index']);
@@ -100,6 +105,17 @@ Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
      //wings apis
      Route::post('/edit-wing', [WingsController::class, 'edit']);
      Route::post('/delete-wing', [WingsController::class, 'destroy']);
+     //parking api
+     Route::post('/add-parking', [ParkingController::class, 'store']);
+     Route::post('/list-parking', [ParkingController::class, 'index']);
+     Route::get('/show-parking/{id}', [ParkingController::class, 'show']);
+     Route::post('/delete-parking', [ParkingController::class, 'destroy']);
+      //service provider api
+      Route::post('/add-service-provider', [MasterServiceProviderController::class, 'store']);
+      Route::post('/list-service-provider', [MasterServiceProviderController::class, 'index']);
+      Route::get('/show-service-provider/{id}', [MasterServiceProviderController::class, 'show']);
+      Route::post('/delete-service-provider', [MasterServiceProviderController::class, 'destroy']);
+     
 });
 //Only For User
 Route::middleware('auth:sanctum','user')->group(function () {
