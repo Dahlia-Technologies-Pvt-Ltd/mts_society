@@ -15,6 +15,8 @@ const FloorList = Loadable(lazy(() => import('../admin/floor/FloorList')));
 const AddFloor = Loadable(lazy(() => import('../admin/floor/AddFloor')));
 const FlatList = Loadable(lazy(() => import('../admin/flat/FlatList')));
 const AddFlat = Loadable(lazy(() => import('../admin/flat/AddFlat')));
+const ParkingList = Loadable(lazy(() => import('../admin/parking/ParkingList')));
+const AddParking = Loadable(lazy(() => import('../admin/parking/AddParking')));
 
 /* ****Super Admin Pages***** */
 const SuperAdminDashboard = Loadable(lazy(() => import('../superadmin/dashboard/SuperAdminDashboard')));
@@ -67,6 +69,9 @@ const Router = [
       { path: '/admin/flat-list', exact: true, element: <FlatList /> },
       { path: '/admin/add-flat', exact: true, element: <AddFlat /> },
       { path: '/admin/edit-flat/:id', exact: true, element: <AddFlat /> },
+      { path: '/admin/parking-list', exact: true, element: <ParkingList /> },
+      { path: '/admin/add-parking', exact: true, element: <AddParking /> },
+      { path: '/admin/edit-parking/:id', exact: true, element: <AddParking /> },
 
 
 

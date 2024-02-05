@@ -47,6 +47,7 @@ export const useApiMessages = () => {
             open={isSuccessVisible}
             autoHideDuration={3000}
             onClose={closeMessages}
+            style={{ marginRight: '50px' }}
         >
             <Alert severity="success">
                 <div style={{ fontSize: '14px', padding: '2px' }}>
@@ -62,6 +63,7 @@ export const useApiMessages = () => {
             open={isErrorVisible}
             autoHideDuration={3000}
             onClose={closeMessages}
+            style={{ marginRight: '50px' }}
         >
             <Alert severity="error">
                 <div style={{ fontSize: '14px', padding: '2px' }}>
