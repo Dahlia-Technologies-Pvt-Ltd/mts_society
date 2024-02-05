@@ -83,7 +83,7 @@ const TowerList = () => {
     // Function to fetch data from the API
     const fetchData = async (perPage = "", page = "", sortBy = "",search="",IsAsc="") => {
         var sortData = (sortBy == "") ? "id" : sortBy;
-        var IsSort = (IsAsc == "") ? "asc" : IsAsc;
+        var IsSort = (IsAsc == "") ? "desc" : IsAsc;
         setpageSortOrder(IsSort);
         if (page == "") {
             setPage("1");

@@ -22,7 +22,9 @@ class FloorController extends ResponseController
             'floors.id AS id',
             'floors.floor_name AS floor_name',
             'towers.tower_name AS tower_name',
+            'floors.tower_id',
             'wings.wings_name',
+            'floors.wing_id',
 
         ]);
         return $data_query;
@@ -79,7 +81,7 @@ class FloorController extends ResponseController
         if ($validator->fails()) {
             return $this->validatorError($validator);
         } else {
-            $message = empty($request->id) ? "Tower created successfully." : "Tower updated successfully.";
+            $message = empty($request->id) ? "Floor created successfully." : "Floor updated successfully.";
 
             $ins_arr = [
                 'societies_id'                        => $net_id,
@@ -117,7 +119,7 @@ class FloorController extends ResponseController
                 $response['status'] = 200;
                 return $this->sendResponse($response);
             }
-            $response['message'] = 'Unable to save tower.';
+            $response['message'] = 'Unable to save floor.';
             $response['status'] = 400;
             return $this->sendError($response);
         }
