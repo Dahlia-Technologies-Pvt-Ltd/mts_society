@@ -11,6 +11,8 @@ const AdminDashboard = Loadable(lazy(() => import('../admin/dashboard/AdminDashb
 const ChangePassword = Loadable(lazy(() => import('../common/change-password/ChangePassword')));
 const TowerList = Loadable(lazy(() => import('../admin/tower/TowerList')));
 const AddTower = Loadable(lazy(() => import('../admin/tower/AddTower')));
+const FloorList = Loadable(lazy(() => import('../admin/floor/FloorList')));
+const AddFloor = Loadable(lazy(() => import('../admin/floor/AddFloor')));
 
 /* ****Super Admin Pages***** */
 const SuperAdminDashboard = Loadable(lazy(() => import('../superadmin/dashboard/SuperAdminDashboard')));
@@ -57,6 +59,9 @@ const Router = [
       { path: '/admin/tower-list', exact: true, element: <TowerList /> },
       { path: '/admin/add-tower', exact: true, element: <AddTower /> },
       { path: '/admin/edit-tower/:id', exact: true, element: <AddTower /> },
+      { path: '/admin/floor-list', exact: true, element: <FloorList /> },
+      { path: '/admin/add-floor', exact: true, element: <AddFloor /> },
+      { path: '/admin/edit-floor/:id', exact: true, element: <AddFloor /> },
 
 
 
