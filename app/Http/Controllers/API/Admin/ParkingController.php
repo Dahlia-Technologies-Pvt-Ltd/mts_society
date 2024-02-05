@@ -15,17 +15,17 @@ class ParkingController extends ResponseController
      */
     function list_show_query()
     {
-        $data_query = Parking::join('flats', 'flats.id', '=', 'parkings.flat_id')->join('floors', 'floors.id', '=', 'parkings.floor_id')->Leftjoin('wings', 'wings.id', '=', 'parkings.wing_id')
+        $data_query = Parking::join('floors', 'floors.id', '=', 'parkings.floor_id')->Leftjoin('wings', 'wings.id', '=', 'parkings.wing_id')
             ->join('towers', 'towers.id', '=', 'parkings.tower_id');
         $data_query->select([
             'parkings.id AS id',
             'parking_area_number',
             'parking_type',
             'vehicle_type',
-            'flats.id AS flat_id',
+            // 'flats.id AS flat_id',
             'towers.tower_name AS tower_name',
             'wings.wings_name',
-            'flats.flat_name AS flat_name',
+            // 'flats.flat_name AS flat_name',
             'floors.id AS floor_id',
             'floors.floor_name AS floor_name'
         ]);
@@ -41,12 +41,12 @@ class ParkingController extends ResponseController
                     ->orWhere('towers.tower_name', 'LIKE', '%' . $keyword . '%')
                     ->orWhere('parkings.parking_area_number', 'LIKE', '%' . $keyword . '%')
                     //  ->orWhere('parkings.id', 'LIKE', '%' . $keyword . '%')
-                    ->orWhere('flats.flat_name', 'LIKE', '%' . $keyword . '%')
+                    // ->orWhere('flats.flat_name', 'LIKE', '%' . $keyword . '%')
                     ->orWhere('towers.tower_name', 'LIKE', '%' . $keyword . '%')
                     ->orWhere('wings.wings_name', 'LIKE', '%' . $keyword . '%');
             });
         }
-        $fields = ["id","parkings.parking_area_number","flats.flat_name","floors.floor_name", "towers.tower_name", "wings.wings_name"];
+        $fields = ["id","parkings.parking_area_number","floors.floor_name", "towers.tower_name", "wings.wings_name"];
         return $this->commonpagination($request, $data_query, $fields);
     }
 
@@ -80,14 +80,6 @@ class ParkingController extends ResponseController
                 return $this->sendError($response);
             }
         }
-        if ($request->flat_id > 0) {
-            $existingRecord = Flat::find($request->flat_id);
-            if (!$existingRecord) {
-                $response['status'] = 400;
-                $response['message'] = 'Record not found for the provided ID.';
-                return $this->sendError($response);
-            }
-        }
         if ($request->floor_id > 0) {
             $existingRecord = Floor::find($request->floor_id);
             if (!$existingRecord) {
@@ -102,7 +94,6 @@ class ParkingController extends ResponseController
             if (empty($request->id)) {
                 $validator = Validator::make($request->all(), [
                     'floor_id' => 'required|integer|min:1',
-                    'flat_id' => 'required|integer|min:1',
                     'wing_id' => 'required|integer|min:1',
                     'tower_id' => 'required|integer|min:1',
                     'vehicle_type' => 'required|integer|in:0,2,4',// 2-Wheeler,4-Wheeler,0-other vehichle
@@ -136,7 +127,6 @@ class ParkingController extends ResponseController
                         'wing_id'                         => $request->wing_id,
                         'vehicle_type'    =>isset($request->vehicle_type)?$request->vehicle_type:0,
                         'parking_type'    =>in_array($request->parking_type, [0, 2, 4]) ? $request->parking_type : 2,
-                        'flat_id'                         => $request->flat_id,
                         'created_by'                       => auth()->id()];
                     }
                     Parking::insert($ins_arr);
@@ -185,10 +175,11 @@ class ParkingController extends ResponseController
                     $response['message'] = 'Record not found for the provided ID.';
                     return $this->sendError($response);
                 }}
-                $data_query = $this->list_show_query();
-                $data_query->where('flats.id', $request->flat_id);
-                $queryResult = $data_query->get();
+               
                 if (request()->is('api/*')) {
+                    $data_query = $this->list_show_query();
+                    $data_query->where('flats.id', $request->flat_id);
+                    $queryResult = $data_query->get();
                     if ($queryResult) {
                         $response['status'] = 200;
                         $response['message'] = $message;

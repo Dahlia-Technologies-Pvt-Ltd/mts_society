@@ -81,6 +81,25 @@ class FlatController extends ResponseController
                     return $this->validatorError($validator);
                 }
                 $flatNumbersArray = json_decode($request->flat_number_arr, true);
+                foreach ($flatNumbersArray as $key => $flatValue) {
+                    $towerId = Floor::find($request->floor_id)->tower_id;
+                    $existingFlat = Flat::join('floors', 'floors.id', '=', 'flats.floor_id')
+                        ->where('flat_name', $flatValue)
+                        ->whereHas('floor', function ($query) use ($towerId) {
+                            $query->where('tower_id', $towerId);
+                        })
+                        ->exists();
+                
+                    if ($existingFlat) {
+                        // Handle the case where the flat number already exists for the selected tower
+                        $response['status'] = 400;
+                        $response['message'] = 'Flat number ' . $flatValue . ' already exists for the selected tower.';
+                        return $this->sendError($response);
+                    }
+                
+                    // Continue processing if the flat number is unique for the selected tower
+                    // Your other logic here...
+                }
                 $flatNumbersArray = array_map(function ($value) {
                     return str_replace(' ', '', $value);
                 }, $flatNumbersArray);
