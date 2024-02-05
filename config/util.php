@@ -9,5 +9,9 @@ return
         2 => '2 Wheeler',
         4 => '4 Wheeler',
         0=>'other vehichles'
-            ]
+    ],
+    'parking_type' => [
+        0 => 'Resident Parking',
+        1 => 'Visitors Parking'
+    ]
 ];
