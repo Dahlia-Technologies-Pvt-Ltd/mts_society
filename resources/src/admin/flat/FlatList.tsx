@@ -12,11 +12,11 @@ const BCrumb = [
         title: "Society Management",
     },
     {
-        title: "Tower List",
+        title: "Flat List",
     },
 ];
 
-const TowerList = () => {
+const FlatList = () => {
     const { showSuccessMessage, showErrorMessage, renderSuccessMessage, renderErrorMessage } = useApiMessages();
     const [page, setPage] = useState("");
     const [totalCount, setTotalCount] = useState("");
@@ -40,7 +40,28 @@ const TowerList = () => {
             id: "tower_name",
             numeric: false,
             disablePadding: false,
-            label: "Tower Name",
+            label: "Tower",
+            enableSorting: true,
+        },
+        {
+            id: "wings_name",
+            numeric: false,
+            disablePadding: false,
+            label: "Wing",
+            enableSorting: true,
+        },
+        {
+            id: "floor_name",
+            numeric: false,
+            disablePadding: false,
+            label: "Floor",
+            enableSorting: true,
+        },
+        {
+            id: "flat_name",
+            numeric: false,
+            disablePadding: false,
+            label: "Flat No",
             enableSorting: true,
         },
         {
@@ -55,6 +76,9 @@ const TowerList = () => {
     const dataColumns = [
         'srno',
         "tower_name",
+        "wings_name",
+        "floor_name",
+        "flat_name",
     ];
 
     const rowSettings = {
@@ -63,11 +87,11 @@ const TowerList = () => {
     //show = 1 for show the button show = 0 then button not show
     const actionSettings = {
         actions: {
-            edit: { url: "/admin/edit-tower/", show: "1" },
+            edit: { url: "/admin/edit-flat/", show: "1" },
             delete: { url: "", show: "1" },
         },
     };
-    const addUrl = "/admin/add-tower";
+    const addUrl = "/admin/add-flat";
     const [datas, setData] = useState([]); // State to store the fetched data
     const [totalPages, settotalPages] = useState([]); // State to store the fetched data
     useEffect(() => {
@@ -108,7 +132,7 @@ const TowerList = () => {
                 searchKeyword !== null ? searchKeyword : ""
             );
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/list-tower";
+            const API_URL = appUrl + "/api/list-flat";
             const response = await axios.post(API_URL, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -141,7 +165,7 @@ const TowerList = () => {
             const formData = new FormData();
             formData.append("id", id);
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/delete-tower";
+            const API_URL = appUrl + "/api/delete-flat";
             const response = await axios.post(API_URL, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -156,12 +180,12 @@ const TowerList = () => {
         }
     };
     //For Download Excel variable
-    const excelName = "tower_list";
+    const excelName = "flat_list";
     const excelApiUrl = "";
     return (
         <PageContainer
-            title="Tower List"
-            description="this is Tower List page"
+            title="Flat List"
+            description="this is Flat List page"
         >
             <Breadcrumb title="" />
             {renderSuccessMessage()}
@@ -171,7 +195,7 @@ const TowerList = () => {
                 {/* Left part */}
                 {/* ------------------------------------------- */}
                 <CommonTableList
-                    pageTitle={"Tower List"}
+                    pageTitle={"Flat List"}
                     headCells={headCells}
                     dataRow={datas}
                     totalPage={totalPages}
@@ -193,4 +217,4 @@ const TowerList = () => {
     );
 };
 
-export default TowerList;
+export default FlatList;

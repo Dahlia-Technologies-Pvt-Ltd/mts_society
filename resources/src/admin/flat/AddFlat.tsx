@@ -30,13 +30,16 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useApiMessages } from '@src/common/Utils'; // Import the utility
 
-const AddFloor = () => {
+const AddFlat = () => {
     const { showSuccessMessage, showErrorMessage, renderSuccessMessage, renderErrorMessage } = useApiMessages();
     const [isLoading, setIsLoading] = useState(false);
     const [wingOption, setWingData] = useState([]);
     const [towerOption, setTowerData] = useState([]);
+    const [floorOption, setFloorData] = useState([]);
     const [selectedTower, setSelectedTower] = useState(null);
     const [selectedWing, setSelectedWing] = useState(null);
+    const [selectedFloor, setSelectedFloor] = useState(null);
+    const [flatsData, setFlatsdata] = useState([]);
     const { id } = useParams(); // Access the 'id' parameter from the URL if it exists
     const navigate = useNavigate();
     const [quillText, setQuillText] = useState("");
@@ -46,24 +49,29 @@ const AddFloor = () => {
 
     const BCrumb = [
         {
-            to: "/admin/floor-list",
-            title: "Floor List",
+            to: "/admin/flat-list",
+            title: "Flat List",
         },
         {
-            title: id ? "Edit Floor" : "Add Floor",
+            title: id ? "Edit Flat" : "Add Flat",
         },
     ];
 
-    const validationSchema = yup.object().shape({
-        floor: yup.string().required("Floor is required"),
-        tower_id: yup.string().required("Tower is required"),
-    });
-
+    const validationSchema = (id) => {
+        return yup.object().shape({
+          floor_id: yup.string().required("Floor Number is required"),
+          tower_id: yup.string().required("Tower is required"),
+          flatname: id ? yup.string().required("Flat is required") : yup.string(),
+        });
+      };
+    
     const formik = useFormik({
         initialValues: {
-            floor: "",
             tower_id: "",
             wing_id: "",
+            floor_id: "",
+            flat_name: [""],
+            flatname: "",
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -72,12 +80,18 @@ const AddFloor = () => {
                 // Create a FormData object
                 const formData = new FormData();
                 // Append form fields to the FormData object
-                formData.append("floor_name", values.floor);
+                formData.append("floor_id", values.floor_id);
                 formData.append("tower_id", values.tower_id);
                 formData.append("wing_id", values.wing_id);
+                if (id) {
+                    formData.append("flat_number", values.flatname);
+                } else {
+                    formData.append("flat_number_arr", JSON.stringify(values.flat_name));
+                }
+
                 // Determine the API URL based on whether it's an edit or add operation
                 const appUrl = import.meta.env.VITE_API_URL;
-                let API_URL = appUrl + "/api/add-floor";
+                let API_URL = appUrl + "/api/add-flat";
                 (id) ? formData.append("id", id) : '';
                 // Make the API POST request
                 const response = await axios.post(API_URL, formData, {
@@ -88,7 +102,7 @@ const AddFloor = () => {
                     },
                 });
                 sessionStorage.setItem("successMessage", response.data.message);
-                navigate("/admin/floor-list");
+                navigate("/admin/flat-list");
             } catch (error) {
                 // Handle errors here
                 showErrorMessage(error);
@@ -110,7 +124,7 @@ const AddFloor = () => {
     const fetchData = async () => {
         try {
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = `${appUrl}/api/show-floor/${id}`;
+            const API_URL = `${appUrl}/api/show-flat/${id}`;
             const response = await axios.get(API_URL, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -121,10 +135,13 @@ const AddFloor = () => {
 
             const data = response.data.data;
             formik.setValues({
-                floor: data.floor_name,
                 tower_id: data.tower_id,
                 wing_id: data.wing_id,
-            });
+                floor_id: data.floor_id,
+                flat_name: [],
+                flatname: data.flat_name
+            }); 
+            fetchFloor(data.tower_id, data.wing_id);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -173,22 +190,67 @@ const AddFloor = () => {
             console.error("Error fetching data:", error); // Log any errors
         }
     };
+
+    // Function to fetch data from the API
+    const fetchFloor = async (tower_id = '', wing_id = '') => {
+        try {
+            const appUrl = import.meta.env.VITE_API_URL;
+            const formData = new FormData();
+            formData.append("sortBy", 'id');
+            formData.append('sortOrder', 'asc');
+            formData.append('tower_id', tower_id);
+            formData.append('wing_id', wing_id);
+            const API_URL = appUrl + '/api/list-floor';
+            const response = await axios.post(API_URL, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "society_id": `${society_token}`,
+                },
+            });
+            //console.log(JSON.stringify(response.data.data.data));
+            if (response && response.data && response.data.data) {
+                setFloorData(response.data.data.data);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error); // Log any errors
+        }
+    };
     const handleTowerChange = (event, newValue) => {
         setSelectedTower(newValue);
         if(newValue){
         fetchWing(newValue.id);
+        fetchFloor(newValue.id);
         formik.setFieldValue('tower_id', newValue.id);
         formik.setFieldValue('wing_id', '');
         setSelectedWing(null);
+        formik.setFieldValue('floor_id', '');
+        setSelectedFloor(null);
         }else{
           setWingData([]);
           formik.setFieldValue('wing_id', '');
           setSelectedWing(null);
+          setFloorData([]);
+          formik.setFieldValue('floor_id', '');
+          setSelectedFloor(null);
         }
     };
     const handleWingChange = (event, newValue) => {
         setSelectedWing(newValue);
-        formik.setFieldValue('wing_id', newValue.id);
+        if(newValue){
+            formik.setFieldValue('wing_id', newValue.id);
+            fetchFloor(formik.values.tower_id, newValue.id);
+            formik.setFieldValue('floor_id', '');
+            setSelectedFloor(null);
+        }else{
+            setFloorData([]);
+            formik.setFieldValue('floor_id', '');
+            setSelectedFloor(null);
+        }
+        
+    };
+    const handleFloorChange = (event, newValue) => {
+        setSelectedFloor(newValue);
+        formik.setFieldValue('floor_id', newValue.id);
     };
 
     useEffect(() => {
@@ -239,11 +301,36 @@ const AddFloor = () => {
         }
     }, [selectedTower, formik.values.wing_id]);
 
+    useEffect(() => {
+        if(id){
+            const selectedFloorData = floorOption.find(
+                (floor) => floor.id === parseInt(formik.values.floor_id)
+            );
+            // If the data is found, set it as the selected
+            if (selectedFloorData) {
+                setSelectedFloor(selectedFloorData);
+            }
+        }
+    }, [selectedTower, selectedWing, formik.values.floor_id]);
+
+     // Helper function to add a new name field
+     const addMoreFields = () => {
+        formik.setFieldValue('flat_name', [
+        ...formik.values.flat_name,
+        ''
+        ]);
+    };
+    // Helper function to remove a name field
+    const removeMoreFields = (index) => {
+        const updatedNames = [...formik.values.flat_name];
+        updatedNames.splice(index, 1);
+        formik.setFieldValue('flat_name', updatedNames);
+    };
     return (
         <>
             <PageContainer
-                title="Floor"
-                description="This is Floor"
+                title="Flat"
+                description="This is Flat"
             >
             <Breadcrumb title="" items={BCrumb} />
             {renderSuccessMessage()}
@@ -251,11 +338,11 @@ const AddFloor = () => {
             <ParentCard
                 title={
                     id
-                        ? "Edit Floor"
-                        : "Add Floor"
+                        ? "Edit Flat"
+                        : "Add Flat"
                 }
             >
-                <form onSubmit={formik.handleSubmit}>
+                <form onSubmit={formik.handleSubmit} autoComplete="new-password">
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <CustomFormLabel htmlFor="tower_id">Tower <span style={{color:"red"}}>*</span></CustomFormLabel>
@@ -324,34 +411,139 @@ const AddFloor = () => {
                         </Grid>
 
                         <Grid item xs={6}>
+                            <CustomFormLabel htmlFor="floor_id">Floor Number <span style={{color:"red"}}>*</span></CustomFormLabel>
+                            <Autocomplete
+                            id="floor_id"
+                            fullWidth
+                            options={floorOption}
+                            getOptionLabel={(option) => option.floor_name}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            value={selectedFloor}
+                            onChange={handleFloorChange}
+                            renderOption={(props, option) => (
+                                <MenuItem component="li" {...props}>
+                                {option.floor_name}
+                                </MenuItem>
+                            )}
+                            renderInput={(params) => (
+                                <CustomTextField
+                                {...params}
+                                placeholder="Select"
+                                aria-label="Floor"
+                                autoComplete="off"
+                                inputProps={{
+                                    ...params.inputProps,
+                                    autoComplete: 'new-password', // disable autocomplete and autofill
+                                }}
+                                // Add error and helperText props based on Formik validation
+                                error={formik.touched.floor_id && Boolean(formik.errors.floor_id)}
+                                helperText={formik.touched.floor_id && formik.errors.floor_id}
+                                />
+                            )}
+                            />
+                        </Grid>
+                        {id && (
+                        <Grid item xs={6}>
                             <CustomFormLabel
-                                htmlFor="floor"
-                                sx={{ mt: 0 }}
+                                htmlFor="flatname"
+                                sx={{ mt: 4 }}
                             >
-                                Floor <span style={{color:'red'}}>*</span>
+                                Flat Number <span style={{color:'red'}}>*</span>
                             </CustomFormLabel>
                             <CustomTextField
-                                id="floor"
-                                name="floor"
-                                placeholder="Floor"
+                                id="flatname"
+                                name="flatname"
+                                placeholder="Flat Number"
                                 fullWidth
-                                value={formik.values.floor}
+                                value={formik.values.flatname}
                                 onChange={formik.handleChange}
                                 error={
-                                    formik.touched.floor &&
-                                    Boolean(formik.errors.floor)
+                                    formik.touched.flatname &&
+                                    Boolean(formik.errors.flatname)
                                 }
                                 helperText={
-                                    formik.touched.floor &&
-                                    formik.errors.floor
+                                    formik.touched.flatname &&
+                                    formik.errors.flatname
                                 }
                             />
+                        </Grid>   
+                        )}
+                        {id == undefined && ( 
+                        <Grid item xs={12}>
+                            <CustomFormLabel htmlFor={`flat_name`} sx={{ mt: 0 }}>
+                                Flats Number <span style={{color:"red"}}>*</span>
+                            </CustomFormLabel>
+                            <Grid container spacing={1} alignItems="center">        
+                                {/* This one for inserting new one */}
+                                {formik.values.flat_name.map((flatName, index) => (
+                                    <Grid item xs={8} key={index} mt={1}>
+                                        <Grid container spacing={1} alignItems="center">
+                                            <Grid item xs={8}>
+                                                <CustomTextField
+                                                    id={`flat_name_${index}`}
+                                                    name={`flat_name[${index}]`}
+                                                    placeholder="Flat Name"
+                                                    fullWidth
+                                                    value={flatName}
+                                                    onChange={formik.handleChange}
+                                                    error={
+                                                        formik.touched.flat_name &&
+                                                        formik.touched.flat_name[index] &&
+                                                        Boolean(formik.errors.flat_name) &&
+                                                        Boolean(formik.errors.flat_name[index])
+                                                    }
+                                                    helperText={
+                                                        formik.touched.flat_name &&
+                                                        formik.touched.flat_name[index] &&
+                                                        formik.errors.flat_name &&
+                                                        formik.errors.flat_name[index]
+                                                    }
+                                                />
+                                            </Grid>
+                                            <Grid item xs={2} mt={(index === 0) ? 0 : 1}>
+                                                {(index === 0) ? 
+                                                    id ? 
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="error"
+                                                        onClick={() => removeMoreFields(index)}
+                                                        title="Remove"
+                                                    >
+                                                        <RemoveIcon />
+                                                    </Button> : ''
+                                                :
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="error"
+                                                        onClick={() => removeMoreFields(index)}
+                                                        title="Remove"
+                                                    >
+                                                        <RemoveIcon />
+                                                    </Button>
+                                                }
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                            <Grid item xs={12} mt={2}>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    onClick={addMoreFields}
+                                    title="Add"
+                                    style={{float:'right'}}
+                                >
+                                    <AddIcon />
+                                    Add More
+                                </Button>  
+                            </Grid>                      
                         </Grid>        
-                       
+                        )}
                         
                         {/* Submit Button */}
                         <Grid item xs={12} mt={5} display={'flex'} alignItems={'center'} justifyContent={'center'}>
-                            <Link to="/admin/floor-list">
+                            <Link to="/admin/flat-list">
                                 <Button
                                     color="warning"
                                     variant="contained"
@@ -378,4 +570,4 @@ const AddFloor = () => {
     );
 };
 
-export default AddFloor;
+export default AddFlat;
