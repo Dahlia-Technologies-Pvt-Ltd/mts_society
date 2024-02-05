@@ -14,8 +14,9 @@ class MasterServiceProvider extends Model
     use SoftDeletes;
     protected $fillable = ['societies_id', 'name', 'is_daily_helper',
     'status', 'created_by', 'updated_by'];
+    protected $appends = ['daily_helper_value'];
     // getVehicleTypeValueAttribute
-    public function getIsDailyHelperValueAttribute($data)
+    public function getDailyHelperValueAttribute($data)
     {
         if (!isset($this->attributes['is_daily_helper'])) {
             return '';

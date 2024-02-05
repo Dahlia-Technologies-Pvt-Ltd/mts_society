@@ -80,11 +80,13 @@ public function index(Request $request)
             );
         }
         if (request()->is('api/*')) {
+            $data_query = $this->list_show_query();
+            $data_query->where('id', $qry->id);
+            $queryResult = $data_query->get();
             if ($qry) {
                 $response['status'] = 200;
                 $response['message'] = $message;
-                $response['data'] = ['id' => $qry->id, 'societies_id' => $qry->societies_id, 
-                'name' => $qry->name, 'is_daily_helper' => $qry->is_daily_helper];
+                $response['data'] = $queryResult;
                 return $this->sendResponse($response);
             } else {
                 $response['status'] = 400;

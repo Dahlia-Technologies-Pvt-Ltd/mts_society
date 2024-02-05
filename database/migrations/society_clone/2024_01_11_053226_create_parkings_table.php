@@ -19,9 +19,7 @@ return new class extends Migration
             $table->foreignId('tower_id')->constrained();
             $table->foreignId('wing_id')->constrained()->nullable()->default(0);
             $table->foreignId('floor_id')->constrained()->nullable()->default(0);
-            $table->foreignId('flat_id')->constrained()->nullable()->default(0);
-            $table->string('parking_area_number')->nullable();
-            //$table->string('parking_name');
+            $table->string('parking_area_number',50)->nullable();
             $table->tinyInteger('status')->default(0)->comment('0-Active,1-Inactive');//)0-Active, 1-Means Inactive                  
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

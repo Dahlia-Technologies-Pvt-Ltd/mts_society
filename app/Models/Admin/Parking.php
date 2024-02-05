@@ -16,7 +16,7 @@ class Parking extends Model
         'societies_id', 'parking_type', 'vehicle_type', 'tower_id', 'wing_id', 'floor_id', 'flat_id', 'parking_area_number',
         'status', 'created_by', 'updated_by'
     ];
-
+    protected $appends = ['vehicle_type_value', 'parking_type_value'];
     public function getVehicleTypeValueAttribute($data)
     {
         if (!isset($this->attributes['vehicle_type'])) {
