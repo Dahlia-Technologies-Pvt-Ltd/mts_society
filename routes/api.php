@@ -19,6 +19,7 @@ use App\Http\Controllers\API\Admin\MasterServiceProviderController;
 use App\Http\Controllers\API\Admin\FlatController;
 use App\Http\Controllers\API\Admin\WingsController;
 use App\Http\Controllers\API\Admin\ParkingController;
+use App\Http\Controllers\API\Admin\ResidentialUserDetailController;
 use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -115,6 +116,11 @@ Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
       Route::post('/list-service-provider', [MasterServiceProviderController::class, 'index']);
       Route::get('/show-service-provider/{id}', [MasterServiceProviderController::class, 'show']);
       Route::post('/delete-service-provider', [MasterServiceProviderController::class, 'destroy']);
+      //Residential user apis
+      Route::post('/add-residential-user', [ResidentialUserDetailController::class, 'store']);
+      Route::post('/list-residential-user', [ResidentialUserDetailController::class, 'index']);
+      Route::get('/show-residential-user/{id}', [ResidentialUserDetailController::class, 'show']);
+      Route::post('/delete-residential-user', [ResidentialUserDetailController::class, 'destroy']);
      
 });
 //Only For User
