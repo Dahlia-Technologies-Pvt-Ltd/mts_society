@@ -152,6 +152,13 @@ Menuitems = [
       href: '/admin/floor-list',
       activeUrls: ['/admin/floor-list', '/admin/add-floor', '/admin/edit-floor/*'],
     },
+    {
+      id: uniqueId(),
+      title: 'Flat',
+      icon: IconBox,
+      href: '/admin/flat-list',
+      activeUrls: ['/admin/flat-list', '/admin/add-flat', '/admin/edit-flat/*'],
+    },
   ];
 }else if(userType === '0'){
   Menuitems = [

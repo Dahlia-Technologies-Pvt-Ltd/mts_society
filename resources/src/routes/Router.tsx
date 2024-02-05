@@ -13,6 +13,8 @@ const TowerList = Loadable(lazy(() => import('../admin/tower/TowerList')));
 const AddTower = Loadable(lazy(() => import('../admin/tower/AddTower')));
 const FloorList = Loadable(lazy(() => import('../admin/floor/FloorList')));
 const AddFloor = Loadable(lazy(() => import('../admin/floor/AddFloor')));
+const FlatList = Loadable(lazy(() => import('../admin/flat/FlatList')));
+const AddFlat = Loadable(lazy(() => import('../admin/flat/AddFlat')));
 
 /* ****Super Admin Pages***** */
 const SuperAdminDashboard = Loadable(lazy(() => import('../superadmin/dashboard/SuperAdminDashboard')));
@@ -62,6 +64,9 @@ const Router = [
       { path: '/admin/floor-list', exact: true, element: <FloorList /> },
       { path: '/admin/add-floor', exact: true, element: <AddFloor /> },
       { path: '/admin/edit-floor/:id', exact: true, element: <AddFloor /> },
+      { path: '/admin/flat-list', exact: true, element: <FlatList /> },
+      { path: '/admin/add-flat', exact: true, element: <AddFlat /> },
+      { path: '/admin/edit-flat/:id', exact: true, element: <AddFlat /> },
 
 
 
