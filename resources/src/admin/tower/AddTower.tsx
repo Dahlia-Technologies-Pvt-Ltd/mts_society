@@ -33,10 +33,6 @@ import { useApiMessages } from '@src/common/Utils'; // Import the utility
 const AddTower = () => {
     const { showSuccessMessage, showErrorMessage, renderSuccessMessage, renderErrorMessage } = useApiMessages();
     const [isLoading, setIsLoading] = useState(false);
-    // const [isErrorVisible, setIsErrorVisible] = useState(false);
-    // const [isSuccessVisible, setIsSuccessVisible] = useState(false);
-    // const [errorMessage, setErrorMessage] = useState("");
-    // const [successMessage, setSuccessMessage] = useState("");
     const [wingsData, setWingsdata] = useState([]);
     const { id } = useParams(); // Access the 'id' parameter from the URL if it exists
     const navigate = useNavigate();

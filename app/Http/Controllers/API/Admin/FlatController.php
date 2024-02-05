@@ -20,9 +20,11 @@ class FlatController extends ResponseController
             ->join('towers', 'towers.id', '=', 'floors.tower_id');
         $data_query->select([
             'flats.id AS id',
-            'towers.tower_name AS tower_name',
-            'wings.wings_name',
             'flats.flat_name AS flat_name',
+            'towers.id AS tower_id',
+            'towers.tower_name AS tower_name',
+            'wings.id as wing_id',
+            'wings.wings_name',
             'floors.id AS floor_id',
             'floors.floor_name AS floor_name'
         ]);
