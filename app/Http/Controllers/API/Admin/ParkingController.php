@@ -134,7 +134,6 @@ class ParkingController extends ResponseController
             } else {
                 $validator = Validator::make($request->all(), [
                     'floor_id' => 'required|integer|min:1',
-                    'flat_id' => 'required|integer|min:1',
                     'wing_id' => 'required|integer|min:1',
                     'tower_id' => 'required|integer|min:1',
                     'vehicle_type' => 'required|integer|in:0,2,4',// 2-Wheeler,4-Wheeler,0-other vehichle
@@ -149,7 +148,6 @@ class ParkingController extends ResponseController
                 if ($parking) {
                     $existingFlat = Parking::where('parking_area_number', $request->parking_number)
                         ->where('floor_id', $request->floor_id)
-                        ->where('flat_id', $request->flat_id)
                         ->where('tower_id', $request->tower_id)
                         ->where('wing_id', $request->wing_id)
                         ->where('id', '<>', $request->id)
@@ -167,7 +165,6 @@ class ParkingController extends ResponseController
                         'wing_id'                         => $request->wing_id,
                         'vehicle_type'    =>isset($request->vehicle_type)?$request->vehicle_type:0,
                         'parking_type'    =>in_array($request->parking_type, [0, 2, 4]) ? $request->parking_type : 2,
-                        'flat_id'                         => $request->flat_id,
                         'updated_by'                   => auth()->id(),
                     ]);
                 } else {
@@ -175,11 +172,10 @@ class ParkingController extends ResponseController
                     $response['message'] = 'Record not found for the provided ID.';
                     return $this->sendError($response);
                 }}
-               
-                if (request()->is('api/*')) {
-                    $data_query = $this->list_show_query();
-                    $data_query->where('flats.id', $request->flat_id);
+                $data_query = $this->list_show_query();
+                    $data_query->where('towers.id', $request->tower_id);
                     $queryResult = $data_query->get();
+                if (request()->is('api/*')) {
                     if ($queryResult) {
                         $response['status'] = 200;
                         $response['message'] = $message;
