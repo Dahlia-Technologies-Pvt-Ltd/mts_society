@@ -11,7 +11,7 @@ import {
     Paper,
     Alert,
     IconButton,
-    AlertTitle,CircularProgress,Checkbox, Autocomplete, MenuItem
+    AlertTitle,CircularProgress,Checkbox, Autocomplete, MenuItem,FormHelperText
 } from "@mui/material";
 import { IconMinus, IconPlus, IconTrash } from '@tabler/icons';
 import { useParams, Link, useNavigate } from "react-router-dom";
@@ -28,6 +28,7 @@ import ReactQuill from "react-quill";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CustomSelect from '@src/components/forms/theme-elements/CustomSelect';
 import { useApiMessages } from '@src/common/Utils'; // Import the utility
 
 const AddParking = () => {
@@ -40,6 +41,10 @@ const AddParking = () => {
     const [selectedWing, setSelectedWing] = useState(null);
     const [selectedFloor, setSelectedFloor] = useState(null);
     const [flatsData, setFlatsdata] = useState([]);
+    const [parkingOption, setParkingData] = useState([]);
+    const [vehichleOption, setVehichleData] = useState([]);
+    const [selectedParking, setSelectedParking] = useState(null);
+    const [selectedVehichle, setSelectedVehichle] = useState(null);
     const { id } = useParams(); // Access the 'id' parameter from the URL if it exists
     const navigate = useNavigate();
     const [quillText, setQuillText] = useState("");
@@ -61,6 +66,8 @@ const AddParking = () => {
         return yup.object().shape({
           floor_id: yup.string().required("Floor Number is required"),
           tower_id: yup.string().required("Tower is required"),
+          parking_id: yup.string().required("Parking Type is required"),
+          vehichle_id: yup.string().required("Vehichle Type is required"),
           flatname: id ? yup.string().required("Flat is required") : yup.string(),
         });
       };
@@ -72,6 +79,8 @@ const AddParking = () => {
             floor_id: "",
             flat_name: [""],
             flatname: "",
+            parking_id: "",
+            vehichle_id: "",
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -83,15 +92,17 @@ const AddParking = () => {
                 formData.append("floor_id", values.floor_id);
                 formData.append("tower_id", values.tower_id);
                 formData.append("wing_id", values.wing_id);
+                formData.append("vehicle_type", values.vehichle_id);
+                formData.append("parking_type", values.parking_id);
                 if (id) {
-                    formData.append("flat_number", values.flatname);
+                    formData.append("parking_number", values.flatname);
                 } else {
-                    formData.append("flat_number_arr", JSON.stringify(values.flat_name));
+                    formData.append("parking_number_arr", JSON.stringify(values.flat_name));
                 }
 
                 // Determine the API URL based on whether it's an edit or add operation
                 const appUrl = import.meta.env.VITE_API_URL;
-                let API_URL = appUrl + "/api/add-flat";
+                let API_URL = appUrl + "/api/add-parking";
                 (id) ? formData.append("id", id) : '';
                 // Make the API POST request
                 const response = await axios.post(API_URL, formData, {
@@ -102,7 +113,7 @@ const AddParking = () => {
                     },
                 });
                 sessionStorage.setItem("successMessage", response.data.message);
-                navigate("/admin/flat-list");
+                navigate("/admin/parking-list");
             } catch (error) {
                 // Handle errors here
                 showErrorMessage(error);
@@ -119,12 +130,13 @@ const AddParking = () => {
             fetchData();
         }
         fetchTower();
+        fetchParkingType();
     }, [id]);
 
     const fetchData = async () => {
         try {
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = `${appUrl}/api/show-flat/${id}`;
+            const API_URL = `${appUrl}/api/show-parking/${id}`;
             const response = await axios.get(API_URL, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -139,7 +151,9 @@ const AddParking = () => {
                 wing_id: data.wing_id,
                 floor_id: data.floor_id,
                 flat_name: [],
-                flatname: data.flat_name
+                flatname: data.parking_area_number,
+                parking_id: data.parking_type,
+                vehichle_id: data.vehicle_type
             }); 
             fetchFloor(data.tower_id, data.wing_id);
         } catch (error) {
@@ -190,6 +204,36 @@ const AddParking = () => {
             console.error("Error fetching data:", error); // Log any errors
         }
     };
+
+    // Function to fetch data from the API
+    const fetchParkingType = async () => {
+        try {
+            const appUrl = import.meta.env.VITE_API_URL;
+            const API_URL = `${appUrl}/api/get-parking-type`;
+            const response = await axios.get(API_URL, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                    "society_id": `${society_token}`,
+                },
+            });
+            if (response && response.data && response.data.data) {
+                const transformedParkingData = response.data.data.parking_type.map((value, index) => ({
+                    id: index,
+                    value_name: value
+                }));
+                setParkingData(transformedParkingData);
+                const transformedVehichleData = Object.entries(response.data.data.vehichle_type).map(([id, value_name]) => ({
+                    id: parseInt(id), // Parse id to integer
+                    value_name: value_name
+                }));
+                setVehichleData(transformedVehichleData);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error); // Log any errors
+        }
+    };
+
 
     // Function to fetch data from the API
     const fetchFloor = async (tower_id = '', wing_id = '') => {
@@ -255,6 +299,18 @@ const AddParking = () => {
 
     useEffect(() => {
         if(id){
+            // Find the parking from the fetched list based on parking_id
+            const selectedParkingData = parkingOption.find(
+            (parking) => parking.id === parseInt(formik.values.parking_id)
+            );
+            if (selectedParkingData) {
+            setSelectedParking(selectedParkingData);
+            }
+        }
+    }, [parkingOption, formik.values.parking_id]);
+
+    useEffect(() => {
+        if(id){
             // Find the Tower from the fetched list based on tower_id
             const selectedTowerData = towerOption.find(
             (tower) => tower.id === parseInt(formik.values.tower_id)
@@ -313,6 +369,18 @@ const AddParking = () => {
         }
     }, [selectedTower, selectedWing, formik.values.floor_id]);
 
+    useEffect(() => {
+        if(id){
+            // Find the vehichle from the fetched list based on vehichle_id
+            const selectedVehichleData = vehichleOption.find(
+            (vehichle) => vehichle.id === parseInt(formik.values.vehichle_id)
+            );
+            if (selectedVehichleData) {
+            setSelectedVehichle(selectedVehichleData);
+            }
+        }
+    }, [vehichleOption, formik.values.vehichle_id]);
+
      // Helper function to add a new name field
      const addMoreFields = () => {
         formik.setFieldValue('flat_name', [
@@ -326,6 +394,24 @@ const AddParking = () => {
         updatedNames.splice(index, 1);
         formik.setFieldValue('flat_name', updatedNames);
     };
+    const handleParkingChange = (event, newValue) => {
+        setSelectedParking(newValue);
+        if(newValue){
+            formik.setFieldValue('parking_id', newValue.id);
+        }else{
+            formik.setFieldValue('parking_id', "");
+        }
+    };
+
+    const handleVehichleChange = (event, newValue) => {
+        setSelectedVehichle(newValue);
+        if(newValue){
+            formik.setFieldValue('vehichle_id', newValue.id);
+        }else{
+            formik.setFieldValue('vehichle_id', "");
+        }
+    };
+      
     return (
         <>
             <PageContainer
@@ -344,6 +430,71 @@ const AddParking = () => {
             >
                 <form onSubmit={formik.handleSubmit} autoComplete="new-password">
                     <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <CustomFormLabel htmlFor="parking_id">Parking Type <span style={{color:"red"}}>*</span></CustomFormLabel>
+                            <Autocomplete
+                            id="parking_id"
+                            fullWidth
+                            options={parkingOption}
+                            getOptionLabel={(option) => option.value_name}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            value={selectedParking}
+                            onChange={handleParkingChange}
+                            renderOption={(props, option) => (
+                                <MenuItem component="li" {...props}>
+                                {option.value_name}
+                                </MenuItem>
+                            )}
+                            renderInput={(params) => (
+                                <CustomTextField
+                                {...params}
+                                placeholder="Select"
+                                aria-label="Parking"
+                                autoComplete="off"
+                                inputProps={{
+                                    ...params.inputProps,
+                                    autoComplete: 'new-password', // disable autocomplete and autofill
+                                }}
+                                // Add error and helperText props based on Formik validation
+                                error={formik.touched.parking_id && Boolean(formik.errors.parking_id)}
+                                helperText={formik.touched.parking_id && formik.errors.parking_id}
+                                />
+                            )}
+                            />
+                        </Grid>
+
+                        <Grid item xs={6}>
+                            <CustomFormLabel htmlFor="vehichle_id">Vehicle Type <span style={{color:"red"}}>*</span></CustomFormLabel>
+                            <Autocomplete
+                            id="vehichle_id"
+                            fullWidth
+                            options={vehichleOption}
+                            getOptionLabel={(option) => option.value_name}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            value={selectedVehichle}
+                            onChange={handleVehichleChange}
+                            renderOption={(props, option) => (
+                                <MenuItem component="li" {...props}>
+                                {option.value_name}
+                                </MenuItem>
+                            )}
+                            renderInput={(params) => (
+                                <CustomTextField
+                                {...params}
+                                placeholder="Select"
+                                aria-label="Vehichle"
+                                autoComplete="off"
+                                inputProps={{
+                                    ...params.inputProps,
+                                    autoComplete: 'new-password', // disable autocomplete and autofill
+                                }}
+                                // Add error and helperText props based on Formik validation
+                                error={formik.touched.vehichle_id && Boolean(formik.errors.vehichle_id)}
+                                helperText={formik.touched.vehichle_id && formik.errors.vehichle_id}
+                                />
+                            )}
+                            />
+                        </Grid>
                         <Grid item xs={6}>
                             <CustomFormLabel htmlFor="tower_id">Tower <span style={{color:"red"}}>*</span></CustomFormLabel>
                             <Autocomplete
@@ -448,12 +599,12 @@ const AddParking = () => {
                                 htmlFor="flatname"
                                 sx={{ mt: 4 }}
                             >
-                                Flat Number <span style={{color:'red'}}>*</span>
+                                Parking Area No. <span style={{color:'red'}}>*</span>
                             </CustomFormLabel>
                             <CustomTextField
                                 id="flatname"
                                 name="flatname"
-                                placeholder="Flat Number"
+                                placeholder="Parking Area No."
                                 fullWidth
                                 value={formik.values.flatname}
                                 onChange={formik.handleChange}
@@ -471,7 +622,7 @@ const AddParking = () => {
                         {id == undefined && ( 
                         <Grid item xs={12}>
                             <CustomFormLabel htmlFor={`flat_name`} sx={{ mt: 0 }}>
-                                Flats Number <span style={{color:"red"}}>*</span>
+                                Parking Area No. <span style={{color:"red"}}>*</span>
                             </CustomFormLabel>
                             <Grid container spacing={1} alignItems="center">        
                                 {/* This one for inserting new one */}
@@ -482,7 +633,7 @@ const AddParking = () => {
                                                 <CustomTextField
                                                     id={`flat_name_${index}`}
                                                     name={`flat_name[${index}]`}
-                                                    placeholder="Flat Name"
+                                                    placeholder="Parking Area No."
                                                     fullWidth
                                                     value={flatName}
                                                     onChange={formik.handleChange}
