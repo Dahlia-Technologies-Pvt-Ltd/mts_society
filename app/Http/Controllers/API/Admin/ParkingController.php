@@ -187,15 +187,10 @@ class ParkingController extends ResponseController
                         return $this->sendError($response);
                     }
                 } else {
-                    if ($queryResult) {
-                        $response['message'] = $message;
-                        $response['status'] = 200;
-                        return $this->sendResponse($response);
-                    }
                     $response['message'] = 'Unable to save parking.';
                     $response['status'] = 400;
                     return $this->sendError($response);
-    }
+                }
 }
 
     /**
