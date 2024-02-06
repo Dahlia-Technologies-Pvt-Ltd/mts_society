@@ -30,7 +30,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useApiMessages } from '@src/common/Utils'; // Import the utility
 
-const AddFlat = () => {
+const AddParking = () => {
     const { showSuccessMessage, showErrorMessage, renderSuccessMessage, renderErrorMessage } = useApiMessages();
     const [isLoading, setIsLoading] = useState(false);
     const [wingOption, setWingData] = useState([]);
@@ -49,11 +49,11 @@ const AddFlat = () => {
 
     const BCrumb = [
         {
-            to: "/admin/flat-list",
-            title: "Flat List",
+            to: "/admin/parking-list",
+            title: "Parking List",
         },
         {
-            title: id ? "Edit Flat" : "Add Flat",
+            title: id ? "Edit Parking" : "Add Parking",
         },
     ];
 
@@ -329,8 +329,8 @@ const AddFlat = () => {
     return (
         <>
             <PageContainer
-                title="Flat"
-                description="This is Flat"
+                title="Parking"
+                description="This is Parking"
             >
             <Breadcrumb title="" items={BCrumb} />
             {renderSuccessMessage()}
@@ -338,8 +338,8 @@ const AddFlat = () => {
             <ParentCard
                 title={
                     id
-                        ? "Edit Flat"
-                        : "Add Flat"
+                        ? "Edit Parking"
+                        : "Add Parking"
                 }
             >
                 <form onSubmit={formik.handleSubmit} autoComplete="new-password">
@@ -543,7 +543,7 @@ const AddFlat = () => {
                         
                         {/* Submit Button */}
                         <Grid item xs={12} mt={5} display={'flex'} alignItems={'center'} justifyContent={'center'}>
-                            <Link to="/admin/flat-list">
+                            <Link to="/admin/parking-list">
                                 <Button
                                     color="warning"
                                     variant="contained"
@@ -570,4 +570,4 @@ const AddFlat = () => {
     );
 };
 
-export default AddFlat;
+export default AddParking;

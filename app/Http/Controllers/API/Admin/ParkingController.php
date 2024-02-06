@@ -246,4 +246,24 @@ class ParkingController extends ResponseController
         $response['status'] = 200;
         return $this->sendResponse($response);
     }
+    /**
+     * Display the specified resource.
+     */
+    public function parkingVehicleType()
+    {
+        $data_query = $this->list_show_query();
+        $data_query->where([['parkings.id', $id]]);
+        if ($data_query->exists()) {
+            $result = $data_query->first()->toArray();
+            $message = "Parking types found";
+            $response['message'] = $message;
+            $response['data'] = $result;
+            $response['status'] = 200;
+            return $this->sendResponse($response); //Assigning a Value
+        } else {
+            $response['message'] = 'Unable to find config.';
+            $response['status'] = 400;
+            return $this->sendError($response);
+        }
+    }
 }

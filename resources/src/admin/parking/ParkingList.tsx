@@ -37,6 +37,20 @@ const ParkingList = () => {
             enableSorting:true,
         },
         {
+            id: "parking_type",
+            numeric: false,
+            disablePadding: false,
+            label: "Parking Type",
+            enableSorting: true,
+        },
+        {
+            id: "vehicle_type",
+            numeric: false,
+            disablePadding: false,
+            label: "Vehicle Type",
+            enableSorting: true,
+        },
+        {
             id: "tower_name",
             numeric: false,
             disablePadding: false,
@@ -51,17 +65,10 @@ const ParkingList = () => {
             enableSorting: true,
         },
         {
-            id: "floor_name",
+            id: "parking_area_number",
             numeric: false,
             disablePadding: false,
-            label: "Floor",
-            enableSorting: true,
-        },
-        {
-            id: "flat_name",
-            numeric: false,
-            disablePadding: false,
-            label: "Flat No",
+            label: "Parking Area",
             enableSorting: true,
         },
         {
@@ -75,10 +82,11 @@ const ParkingList = () => {
 
     const dataColumns = [
         'srno',
+        "parking_type_value",
+        "vehicle_type_value",
         "tower_name",
         "wings_name",
-        "floor_name",
-        "flat_name",
+        "parking_area_number",
     ];
 
     const rowSettings = {

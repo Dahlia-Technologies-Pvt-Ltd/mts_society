@@ -159,6 +159,13 @@ Menuitems = [
       href: '/admin/flat-list',
       activeUrls: ['/admin/flat-list', '/admin/add-flat', '/admin/edit-flat/*'],
     },
+    {
+      id: uniqueId(),
+      title: 'Parking',
+      icon: IconChartDots,
+      href: '/admin/parking-list',
+      activeUrls: ['/admin/parking-list', '/admin/add-parking', '/admin/edit-parking/*'],
+    },
   ];
 }else if(userType === '0'){
   Menuitems = [
