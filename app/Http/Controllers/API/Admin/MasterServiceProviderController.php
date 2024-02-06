@@ -55,7 +55,7 @@ public function index(Request $request)
         }
         $id = empty($request->id) ? 'NULL' : $request->id;
         $validator = Validator::make($request->all(), [
-            'name' => 'required'
+            'name' =>  'required|unique:master_service_providers,name,' . $id . ',id,deleted_at,NULL|max:255'
             
         ]);
 
