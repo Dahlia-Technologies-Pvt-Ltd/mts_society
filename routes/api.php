@@ -143,6 +143,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/change-password', [ChangePasswordController::class, 'changepassword']);
 
     Route::get('/get-profile', [ProfileUpdateController::class, 'show']);
+    Route::get('/get-parking-type', [ParkingController::class, 'parkingVehicleType']);
     
     
     
