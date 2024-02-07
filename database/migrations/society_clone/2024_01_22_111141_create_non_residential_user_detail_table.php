@@ -33,11 +33,13 @@ return new class extends Migration
 
             //Service Provider specifi fields //
             $table->string('master_service_provider_ids')->nullable();// array - can be multiple ex [2,3,4]
+           
 
             //Facility Manager Specific Fields
             $table->string('management_company_name')->nullable()->default(null);
             $table->string('management_company_country_code')->nullable()->default(null);
             $table->string('management_company_phone_number', 15)->nullable()->default(null);
+            $table->string('assigned_tower_ids')->nullable();// array - can be multiple ex [2,3,4]
 
             $table->tinyInteger('team_type')->default(0)->comment('0-Facility Manager,1-Service Provider,2-Security Guard');
             

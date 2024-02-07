@@ -40,6 +40,7 @@ class ApprovalController extends ResponseController
         $data_query->select([
             'id',
             'name',
+            'master_society_ids',
             'username',
             'user_code', 'email', 'phone_number',
             'country_id', 'state_id', 'city', 'zipcode', 'usertype', 'blocked_at',
@@ -161,9 +162,24 @@ class ApprovalController extends ResponseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request)
     {
-        //
+        $societies_id = getsocietyid($request->header('society_id'));
+        $data_query = $this->list_show_query($societies_id);
+        $id=$request->id;
+        $data_query->where([['id', $id]]);
+        if ($data_query->exists()) {
+            $result = $data_query->first()->toArray();
+            $message = "Particular non approved resident user found";
+            $response['message'] = $message;
+            $response['data'] = $result;
+            $response['status'] = 200;
+            return $this->sendResponse($response); //Assigning a Value
+        } else {
+            $response['message'] = 'Unable to find non approved resident user.';
+            $response['status'] = 400;
+            return $this->sendError($response);
+        }
     }
 
     /**

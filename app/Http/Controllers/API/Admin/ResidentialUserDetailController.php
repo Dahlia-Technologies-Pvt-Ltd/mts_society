@@ -84,14 +84,14 @@ class ResidentialUserDetailController extends ResponseController
         }
     }
     if ($request->flat_id > 0) {
-        $existingRecord = Flat::find($request->flat_id);
-        if (!$existingRecord) {
+        $existingRecordFlat = Flat::find($request->flat_id);
+        if (!$existingRecordFlat) {
             $response['status'] = 400;
             $response['message'] = 'Record not found for the provided ID.';
             return $this->sendError($response);
         }
     }
-    $id_req=null;
+    $id_req = null;
     if ($request->id > 0) {
         $existingRecord = User::find($request->id);
         if (!$existingRecord) {
@@ -108,6 +108,7 @@ class ResidentialUserDetailController extends ResponseController
         'email'                        => 'required|email|unique:users,email,' . $id . ',id,deleted_at,NULL|max:255',
         'phone_number'                  => 'required|digits:10|unique:users,phone_number,' . $id . ',id,deleted_at,NULL|max:255',
         'username'                        => 'required|unique:users,username,' . $id . ',id,deleted_at,NULL|max:255',
+        // 'vehicle_types' => 'integer|in:0,2,4',
         
     ]);
 
