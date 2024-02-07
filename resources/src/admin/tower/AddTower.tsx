@@ -14,8 +14,6 @@ import {
     AlertTitle,CircularProgress,Checkbox
 } from "@mui/material";
 import { IconMinus, IconPlus, IconTrash } from '@tabler/icons';
-import { Portal } from '@mui/base';
-import Snackbar from "@mui/material/Snackbar";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import PageContainer from "@src/components/container/PageContainer";
 import Breadcrumb from "@src/layouts/full/shared/breadcrumb/Breadcrumb";
@@ -29,16 +27,19 @@ import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useApiMessages } from '@src/common/Utils'; // Import the utility
 
 const AddTower = () => {
+    const { showSuccessMessage, showErrorMessage, renderSuccessMessage, renderErrorMessage } = useApiMessages();
     const [isLoading, setIsLoading] = useState(false);
-    const [isErrorVisible, setIsErrorVisible] = useState(false);
-    const [isSuccessVisible, setIsSuccessVisible] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
+    const [wingsData, setWingsdata] = useState([]);
     const { id } = useParams(); // Access the 'id' parameter from the URL if it exists
     const navigate = useNavigate();
     const [quillText, setQuillText] = useState("");
+    //Site Tokens
+    const token = localStorage.getItem("authToken");
+    const society_token = localStorage.getItem("societyToken");
 
     const BCrumb = [
         {
@@ -64,44 +65,27 @@ const AddTower = () => {
             try {
                 setIsLoading(true);
                 // Create a FormData object
-                console.log('wing data', values.wing_name);
-                return;
                 const formData = new FormData();
                 // Append form fields to the FormData object
                 formData.append("tower_name", values.tower_name);
+                formData.append("wings", JSON.stringify(values.wing_name));
                 // Determine the API URL based on whether it's an edit or add operation
                 const appUrl = import.meta.env.VITE_API_URL;
                 let API_URL = appUrl + "/api/add-tower";
                 (id) ? formData.append("id", id) : '';
                 // Make the API POST request
-                const token = localStorage.getItem("authToken");
                 const response = await axios.post(API_URL, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data",
+                        "society_id": `${society_token}`,
                     },
                 });
-                setIsSuccessVisible(true);
-                setSuccessMessage(response.data.message);
                 sessionStorage.setItem("successMessage", response.data.message);
                 navigate("/admin/tower-list");
             } catch (error) {
                 // Handle errors here
-                setIsErrorVisible(true);
-                const validationErrors = error.response.data.validation_error;
-                const errorMessages = [];
-                // Iterate through each field in the validation_errors object
-                for (const field in validationErrors) {
-                    if (validationErrors.hasOwnProperty(field)) {
-                        const errorMessage = validationErrors[field][0];
-                        errorMessages.push(errorMessage);
-                    }
-                }
-                const concatenatedErrorMessage = errorMessages.join("\n");
-                setErrorMessage(concatenatedErrorMessage);
-                setTimeout(() => {
-                    setIsErrorVisible(false);
-                }, 5000);
+                showErrorMessage(error);
                 console.error("Edit spare part error:", error);
             }finally{
                 setIsLoading(false);
@@ -134,26 +118,77 @@ const AddTower = () => {
         try {
             const appUrl = import.meta.env.VITE_API_URL;
             const API_URL = `${appUrl}/api/show-tower/${id}`;
-            const token = localStorage.getItem("authToken");
-
             const response = await axios.get(API_URL, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",
+                    "society_id": `${society_token}`,
                 },
             });
 
             const data = response.data.data;
             formik.setValues({
                 tower_name: data.tower_name,
-                wing_name: data.wing_name,
+                wing_name: [],
             });
-            setQuillText(data.features);
+            setWingsdata(data.wing);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
+    //Update wings
+    const updateWingName = async (wingId, wingName) => {
+        try {
+            // Create a FormData object
+            const formData = new FormData();
+            // Append form fields to the FormData object
+            formData.append("wings_name", wingName);
+            // Determine the API URL based on whether it's an edit or add operation
+            const appUrl = import.meta.env.VITE_API_URL;
+            let API_URL = appUrl + "/api/edit-wing";
+            formData.append("id", wingId);
+            // Make the API POST request
+            const response = await axios.post(API_URL, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                    "society_id": `${society_token}`,
+                },
+            });
+            showSuccessMessage(response.data.message);
+        } catch (error) {
+            // Handle errors here
+            showErrorMessage(error);
+            console.error("Edit spare part error:", error);
+        }
+    };
+    //Delete Wings
+    const deleteWingName = async (wingId) => {
+        try {
+            const formData = new FormData();
+            formData.append("id", id);
+            const appUrl = import.meta.env.VITE_API_URL;
+            const API_URL = appUrl + "/api/delete-wing";
+            const response = await axios.post(API_URL, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "society_id": `${society_token}`,
+                },
+            });
+            showSuccessMessage(response.data.message);
+            fetchData();
+            //console.log("Success deleting data:", response.data);
+        } catch (error) {
+            showErrorMessage(error);
+        }
+    };
 
+    const handleWingsNameChange = (e, index) => {
+        const updatedWingsData = wingsData.map((wing, i) =>
+            i === index ? { ...wing, wings_name: e.target.value } : wing
+        );
+        setWingsdata(updatedWingsData);
+    };
     return (
         <>
             <PageContainer
@@ -161,34 +196,8 @@ const AddTower = () => {
                 description="This is Tower"
             >
             <Breadcrumb title="" items={BCrumb} />
-            <Portal>
-                <Snackbar
-                    anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                    open={isErrorVisible}
-                    autoHideDuration={3000}
-                    onClose={() => setIsErrorVisible(false)}
-                >
-                    <Alert severity="error">
-                        <div style={{ fontSize: "14px", padding: "2px" }}>
-                            {errorMessage && <div>{errorMessage}</div>}
-                        </div>
-                    </Alert>
-                </Snackbar>
-            </Portal>
-            <Portal>
-                <Snackbar
-                    anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                    open={isSuccessVisible}
-                    autoHideDuration={3000}
-                    onClose={() => setIsSuccessVisible(false)}
-                >
-                <Alert severity="success">
-                    <div style={{ fontSize: "14px", padding: "2px" }}>
-                        {successMessage && <div>{successMessage}</div>}
-                    </div>
-                </Alert>
-                </Snackbar>
-            </Portal>
+            {renderSuccessMessage()}
+            {renderErrorMessage()}
             <ParentCard
                 title={
                     id
@@ -224,57 +233,116 @@ const AddTower = () => {
                             />
                         </Grid>        
                        
-                        <Grid item xs={6}>
+                        <Grid item xs={12}>
                             <CustomFormLabel htmlFor={`wing_name`} sx={{ mt: 0 }}>
-                                Wing Name
+                                Wings
                             </CustomFormLabel>
-                            {formik.values.wing_name.map((wingName, index) => (
-                                <Grid container spacing={1} alignItems="center" key={index}>
-                                    <Grid item xs={8} mt={(index === 0) ? 0 : 1}>
-                                        <CustomTextField
-                                            id={`wing_name_${index}`}
-                                            name={`wing_name[${index}]`}
-                                            placeholder="Wing Name"
-                                            fullWidth
-                                            value={wingName}
-                                            onChange={formik.handleChange}
-                                            error={
-                                            formik.touched.wing_name &&
-                                            formik.touched.wing_name[index] &&
-                                            Boolean(formik.errors.wing_name) &&
-                                            Boolean(formik.errors.wing_name[index])
-                                            }
-                                            helperText={
-                                            formik.touched.wing_name &&
-                                            formik.touched.wing_name[index] &&
-                                            formik.errors.wing_name &&
-                                            formik.errors.wing_name[index]
-                                            }
-                                        />
+
+                            {/* This is for updating the existing one */}
+                            <Grid container spacing={1} alignItems="center">
+                                {wingsData.map((wings, index) => (
+                                    <Grid item xs={4} key={index}>
+                                        <Grid container spacing={1} alignItems="center">
+                                            <Grid item xs={6} mt={(index === 0) ? 0 : 1}>
+                                                <CustomTextField
+                                                    id={`wingname_${index}`}
+                                                    name={`wingname[${index}]`}
+                                                    placeholder="Wing Name"
+                                                    fullWidth
+                                                    value={wings.wings_name}  // Use wings.wings_name directly
+                                                    onChange={(e) => handleWingsNameChange(e, index)}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6} mt={(index === 0) ? 0 : 1}>
+                                                <Button
+                                                    variant="outlined"
+                                                    color="success"
+                                                    onClick={() => updateWingName(wings.id, wings.wings_name)}
+                                                    title="Update"
+                                                >
+                                                    Update
+                                                </Button>
+
+                                                <Button
+                                                    variant="outlined"
+                                                    color="error"
+                                                    onClick={() => deleteWingName(wings.id)}
+                                                    title="Delete"
+                                                    style={{ marginLeft: '4px' }}
+                                                >
+                                                    <DeleteIcon />
+                                                </Button>
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={2} mt={(index === 0) ? 0 : 1}>
-                                    {(index === 0) ? 
-                                        <Button
-                                            variant="outlined"
-                                            color="success"
-                                            onClick={addWingName}
-                                            title="Add"
-                                        >
-                                            <AddIcon />
-                                        </Button>
-                                    :
-                                        <Button
-                                            variant="outlined"
-                                            color="error"
-                                            onClick={() => removeWingName(index)}
-                                            title="Remove"
-                                        >
-                                            <RemoveIcon />
-                                        </Button>
-                                    }
+                                ))}
+                            </Grid>
+
+                            <Grid container spacing={1} alignItems="center">        
+                                {/* This one for inserting new one */}
+                                {formik.values.wing_name.map((wingName, index) => (
+                                    <Grid item xs={8} key={index} mt={1}>
+                                        <Grid container spacing={1} alignItems="center">
+                                            <Grid item xs={8}>
+                                                <CustomTextField
+                                                    id={`wing_name_${index}`}
+                                                    name={`wing_name[${index}]`}
+                                                    placeholder="Wing Name"
+                                                    fullWidth
+                                                    value={wingName}
+                                                    onChange={formik.handleChange}
+                                                    error={
+                                                        formik.touched.wing_name &&
+                                                        formik.touched.wing_name[index] &&
+                                                        Boolean(formik.errors.wing_name) &&
+                                                        Boolean(formik.errors.wing_name[index])
+                                                    }
+                                                    helperText={
+                                                        formik.touched.wing_name &&
+                                                        formik.touched.wing_name[index] &&
+                                                        formik.errors.wing_name &&
+                                                        formik.errors.wing_name[index]
+                                                    }
+                                                />
+                                            </Grid>
+                                            <Grid item xs={2} mt={(index === 0) ? 0 : 1}>
+                                                {(index === 0) ? 
+                                                    id ? 
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="error"
+                                                        onClick={() => removeWingName(index)}
+                                                        title="Remove"
+                                                    >
+                                                        <RemoveIcon />
+                                                    </Button> : ''
+                                                :
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="error"
+                                                        onClick={() => removeWingName(index)}
+                                                        title="Remove"
+                                                    >
+                                                        <RemoveIcon />
+                                                    </Button>
+                                                }
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            ))}
+                                ))}
+                            </Grid>
+                            <Grid item xs={12} mt={2}>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    onClick={addWingName}
+                                    title="Add"
+                                    style={{float:'right'}}
+                                >
+                                    <AddIcon />
+                                    Add More
+                                </Button>  
+                            </Grid>                      
                         </Grid>
                         
                         {/* Submit Button */}

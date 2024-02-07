@@ -47,6 +47,8 @@ const Profile = () => {
          localStorage.removeItem('userRole');
          localStorage.removeItem('userType');
          localStorage.removeItem('prevPage');
+         localStorage.removeItem('societyToken');
+         localStorage.removeItem('societyArray');
         window.location.reload();
         //navigate('/login');
      } catch (error) {

@@ -13,10 +13,35 @@ class Parking extends Model
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
-        'societies_id', 'parking_type', 'vehicle_type', 'tower_id', 'wing_id', 'floor_id', 'flat_id', 'parking_area_number',
+        'societies_id', 'parking_type', 'vehicle_type', 'tower_id', 'wing_id', 'floor_id', 'parking_area_number',
         'status', 'created_by', 'updated_by'
     ];
+    protected $appends = ['vehicle_type_value', 'parking_type_value'];
+    public function getVehicleTypeValueAttribute($data)
+    {
+        if (!isset($this->attributes['vehicle_type'])) {
+            return '';
+        }else if($this->attributes['vehicle_type']==2){
+            return config('util.vehichle_type')['2'];
 
+        }else if($this->attributes['vehicle_type']==4){
+            return config('util.vehichle_type')['4'];
+        } else{
+            return config('util.vehichle_type')['0'];
+        }
+    }
+    public function getParkingTypeValueAttribute($data)
+    {
+        if (!isset($this->attributes['parking_type'])) {
+            return '';
+        }else if($this->attributes['parking_type']==0){
+            return 'Resident parking';
+
+        } 
+        else{
+            return 'Visitor parking';
+        }
+    }
     function floor()
     {
         return $this->belongsTo(Floor::class);

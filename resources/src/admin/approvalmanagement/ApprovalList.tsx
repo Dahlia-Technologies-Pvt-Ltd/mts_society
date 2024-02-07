@@ -8,15 +8,15 @@ import { useApiMessages } from '@src/common/Utils'; // Import the utility
 
 const BCrumb = [
     {
-        to: "/super-admin/dashboard",
-        title: "Society Management",
+        to: "/admin/dashboard",
+        title: "",
     },
     {
-        title: "Tower List",
+        title: "",
     },
 ];
 
-const TowerList = () => {
+const ApprovalList = () => {
     const { showSuccessMessage, showErrorMessage, renderSuccessMessage, renderErrorMessage } = useApiMessages();
     const [page, setPage] = useState("");
     const [totalCount, setTotalCount] = useState("");
@@ -37,10 +37,24 @@ const TowerList = () => {
             enableSorting:true,
         },
         {
-            id: "tower_name",
+            id: "name",
             numeric: false,
             disablePadding: false,
-            label: "Tower Name",
+            label: "Resident Name",
+            enableSorting: true,
+        },
+        {
+            id: "phone_number",
+            numeric: false,
+            disablePadding: false,
+            label: "Mobile No",
+            enableSorting: true,
+        },
+        {
+            id: "email",
+            numeric: false,
+            disablePadding: false,
+            label: "Email",
             enableSorting: true,
         },
         {
@@ -54,7 +68,9 @@ const TowerList = () => {
 
     const dataColumns = [
         'srno',
-        "tower_name",
+        "name",
+        "phone_number",
+        "email",
     ];
 
     const rowSettings = {
@@ -63,11 +79,12 @@ const TowerList = () => {
     //show = 1 for show the button show = 0 then button not show
     const actionSettings = {
         actions: {
-            edit: { url: "/admin/edit-tower/", show: "1" },
-            delete: { url: "", show: "1" },
+            edit: { url: "", show: "1" },
+            delete: { url: "", show: "0" },
+            preview: { url: "/admin/approval-details/", show: "1" },
         },
     };
-    const addUrl = "/admin/add-tower";
+    const addUrl = "";
     const [datas, setData] = useState([]); // State to store the fetched data
     const [totalPages, settotalPages] = useState([]); // State to store the fetched data
     useEffect(() => {
@@ -108,7 +125,7 @@ const TowerList = () => {
                 searchKeyword !== null ? searchKeyword : ""
             );
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/list-tower";
+            const API_URL = appUrl + "/api/list-user-for-approval";
             const response = await axios.post(API_URL, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -137,31 +154,14 @@ const TowerList = () => {
 
     //Handle the delete function
     const handleDelete = async (id) => {
-        try {
-            const formData = new FormData();
-            formData.append("id", id);
-            const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/delete-tower";
-            const response = await axios.post(API_URL, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "society_id": `${society_token}`,
-                },
-            });
-            showSuccessMessage(response.data.message);
-            fetchData();
-            //console.log("Success deleting data:", response.data);
-        } catch (error) {
-            showErrorMessage(error);
-        }
     };
     //For Download Excel variable
-    const excelName = "tower_list";
+    const excelName = "approval_list";
     const excelApiUrl = "";
     return (
         <PageContainer
-            title="Tower List"
-            description="this is Tower List page"
+            title="Approval Management"
+            description="this is Approval List page"
         >
             <Breadcrumb title="" />
             {renderSuccessMessage()}
@@ -171,7 +171,7 @@ const TowerList = () => {
                 {/* Left part */}
                 {/* ------------------------------------------- */}
                 <CommonTableList
-                    pageTitle={"Tower List"}
+                    pageTitle={"Approval Management"}
                     headCells={headCells}
                     dataRow={datas}
                     totalPage={totalPages}
@@ -193,4 +193,4 @@ const TowerList = () => {
     );
 };
 
-export default TowerList;
+export default ApprovalList;

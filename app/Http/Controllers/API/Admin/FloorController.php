@@ -14,7 +14,7 @@ class FloorController extends ResponseController
     /**
      * Display a listing of the resource.
      */
-    function list_show_query()
+    function list_show_query($params = [])
     {
         $data_query = Floor::join('towers', 'towers.id', '=', 'floors.tower_id')
             ->Leftjoin('wings', 'wings.id', '=', 'floors.wing_id');
@@ -22,14 +22,19 @@ class FloorController extends ResponseController
             'floors.id AS id',
             'floors.floor_name AS floor_name',
             'towers.tower_name AS tower_name',
+            'floors.tower_id AS tower_id',
             'wings.wings_name',
+            'floors.wing_id AS wing_id',
 
         ]);
+        if(!empty($params['tower_id'])){ $data_query->where('floors.tower_id', $params['tower_id']); }
+        if(!empty($params['wing_id'])){ $data_query->where('floors.wing_id', $params['wing_id']); }
         return $data_query;
     }
     public function index(Request $request)
     {
-        $data_query = $this->list_show_query();
+        $params=['tower_id'=>$request->tower_id, 'wing_id'=>$request->wing_id];
+        $data_query = $this->list_show_query($params);
         if (!empty($request->keyword)) {
             $keyword = $request->keyword;
             $data_query->where(function ($query) use ($keyword) {
@@ -79,7 +84,7 @@ class FloorController extends ResponseController
         if ($validator->fails()) {
             return $this->validatorError($validator);
         } else {
-            $message = empty($request->id) ? "Tower created successfully." : "Tower updated successfully.";
+            $message = empty($request->id) ? "Floor created successfully." : "Floor updated successfully.";
 
             $ins_arr = [
                 'societies_id'                        => $net_id,
@@ -117,7 +122,7 @@ class FloorController extends ResponseController
                 $response['status'] = 200;
                 return $this->sendResponse($response);
             }
-            $response['message'] = 'Unable to save tower.';
+            $response['message'] = 'Unable to save floor.';
             $response['status'] = 400;
             return $this->sendError($response);
         }

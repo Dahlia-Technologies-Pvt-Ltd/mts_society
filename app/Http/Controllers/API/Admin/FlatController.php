@@ -20,9 +20,11 @@ class FlatController extends ResponseController
             ->join('towers', 'towers.id', '=', 'floors.tower_id');
         $data_query->select([
             'flats.id AS id',
-            'towers.tower_name AS tower_name',
-            'wings.wings_name',
             'flats.flat_name AS flat_name',
+            'towers.id AS tower_id',
+            'towers.tower_name AS tower_name',
+            'wings.id as wing_id',
+            'wings.wings_name',
             'floors.id AS floor_id',
             'floors.floor_name AS floor_name'
         ]);
@@ -70,16 +72,6 @@ class FlatController extends ResponseController
             }
         }
         $id = empty($request->id) ? 'NULL' : $request->id;
-        // $validator = Validator::make($request->all(), [
-        //     // 'flat_name'                                    => 'required|unique:flats,flat_name,' . $id . ',id,deleted_at,NULL|max:255',
-        //     'floor_id'      => 'required|integer|min:1'
-
-
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return $this->validatorError($validator);
-        // } else {
             $message = empty($request->id) ? "Flat created successfully." : "Flat updated successfully.";
             if (empty($request->id)) {
                 $validator = Validator::make($request->all(), [
@@ -91,6 +83,25 @@ class FlatController extends ResponseController
                     return $this->validatorError($validator);
                 }
                 $flatNumbersArray = json_decode($request->flat_number_arr, true);
+                foreach ($flatNumbersArray as $key => $flatValue) {
+                    $towerId = Floor::find($request->floor_id)->tower_id;
+                    $existingFlat = Flat::join('floors', 'floors.id', '=', 'flats.floor_id')
+                        ->where('flat_name', $flatValue)
+                        ->whereHas('floor', function ($query) use ($towerId) {
+                            $query->where('tower_id', $towerId);
+                        })
+                        ->exists();
+                
+                    if ($existingFlat) {
+                        // Handle the case where the flat number already exists for the selected tower
+                        $response['status'] = 400;
+                        $response['message'] = 'Flat number ' . $flatValue . ' already exists for the selected tower.';
+                        return $this->sendError($response);
+                    }
+                
+                    // Continue processing if the flat number is unique for the selected tower
+                    // Your other logic here...
+                }
                 $flatNumbersArray = array_map(function ($value) {
                     return str_replace(' ', '', $value);
                 }, $flatNumbersArray);

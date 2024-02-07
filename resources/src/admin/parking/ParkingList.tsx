@@ -12,11 +12,11 @@ const BCrumb = [
         title: "Society Management",
     },
     {
-        title: "Tower List",
+        title: "Parking List",
     },
 ];
 
-const TowerList = () => {
+const ParkingList = () => {
     const { showSuccessMessage, showErrorMessage, renderSuccessMessage, renderErrorMessage } = useApiMessages();
     const [page, setPage] = useState("");
     const [totalCount, setTotalCount] = useState("");
@@ -37,10 +37,38 @@ const TowerList = () => {
             enableSorting:true,
         },
         {
+            id: "parking_type",
+            numeric: false,
+            disablePadding: false,
+            label: "Parking Type",
+            enableSorting: true,
+        },
+        {
+            id: "vehicle_type",
+            numeric: false,
+            disablePadding: false,
+            label: "Vehicle Type",
+            enableSorting: true,
+        },
+        {
             id: "tower_name",
             numeric: false,
             disablePadding: false,
-            label: "Tower Name",
+            label: "Tower",
+            enableSorting: true,
+        },
+        {
+            id: "wings_name",
+            numeric: false,
+            disablePadding: false,
+            label: "Wing",
+            enableSorting: true,
+        },
+        {
+            id: "parking_area_number",
+            numeric: false,
+            disablePadding: false,
+            label: "Parking Area",
             enableSorting: true,
         },
         {
@@ -54,7 +82,11 @@ const TowerList = () => {
 
     const dataColumns = [
         'srno',
+        "parking_type_value",
+        "vehicle_type_value",
         "tower_name",
+        "wings_name",
+        "parking_area_number",
     ];
 
     const rowSettings = {
@@ -63,11 +95,11 @@ const TowerList = () => {
     //show = 1 for show the button show = 0 then button not show
     const actionSettings = {
         actions: {
-            edit: { url: "/admin/edit-tower/", show: "1" },
+            edit: { url: "/admin/edit-parking/", show: "1" },
             delete: { url: "", show: "1" },
         },
     };
-    const addUrl = "/admin/add-tower";
+    const addUrl = "/admin/add-parking";
     const [datas, setData] = useState([]); // State to store the fetched data
     const [totalPages, settotalPages] = useState([]); // State to store the fetched data
     useEffect(() => {
@@ -108,7 +140,7 @@ const TowerList = () => {
                 searchKeyword !== null ? searchKeyword : ""
             );
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/list-tower";
+            const API_URL = appUrl + "/api/list-parking";
             const response = await axios.post(API_URL, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -141,7 +173,7 @@ const TowerList = () => {
             const formData = new FormData();
             formData.append("id", id);
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/delete-tower";
+            const API_URL = appUrl + "/api/delete-parking";
             const response = await axios.post(API_URL, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -156,12 +188,12 @@ const TowerList = () => {
         }
     };
     //For Download Excel variable
-    const excelName = "tower_list";
+    const excelName = "parking_list";
     const excelApiUrl = "";
     return (
         <PageContainer
-            title="Tower List"
-            description="this is Tower List page"
+            title="Parking List"
+            description="this is Parking List page"
         >
             <Breadcrumb title="" />
             {renderSuccessMessage()}
@@ -171,7 +203,7 @@ const TowerList = () => {
                 {/* Left part */}
                 {/* ------------------------------------------- */}
                 <CommonTableList
-                    pageTitle={"Tower List"}
+                    pageTitle={"Parking List"}
                     headCells={headCells}
                     dataRow={datas}
                     totalPage={totalPages}
@@ -193,4 +225,4 @@ const TowerList = () => {
     );
 };
 
-export default TowerList;
+export default ParkingList;
