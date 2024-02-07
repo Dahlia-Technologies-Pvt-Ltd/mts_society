@@ -91,6 +91,7 @@ class ResidentialUserDetailController extends ResponseController
             return $this->sendError($response);
         }
     }
+    $id_req=null;
     if ($request->id > 0) {
         $existingRecord = User::find($request->id);
         if (!$existingRecord) {
@@ -137,7 +138,7 @@ class ResidentialUserDetailController extends ResponseController
             $ins_arr['updated_by'] = auth()->id();
         }
         $qry = MasterUser::updateOrCreate(
-            ['id' => $existingRecord->master_user_id],
+            ['id' => $id_req],
             $ins_arr
         );
         if($qry){ 

@@ -135,6 +135,13 @@ Menuitems = [
       chipColor: 'secondary',
     },
     {
+      id: uniqueId(),
+      title: 'Approval Management',
+      icon: IconUserPlus,
+      href: '/admin/approval-list',
+      activeUrls: ['/admin/approval-list', '/admin/approval-details/*'],
+    },
+    {
       navlabel: true,
       subheader: 'Society Management',
     },
