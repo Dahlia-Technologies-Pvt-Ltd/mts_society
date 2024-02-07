@@ -49,16 +49,18 @@ const ApprovalDetails = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
-      const apiUrl = `${appUrl}/api/show-master-user/${id}`;
+      const apiUrl = `${appUrl}/api/show-user-for-approval`;
       try {
         const token = localStorage.getItem('authToken');
-        const response = await axios.get(apiUrl, {
+        const formData = new FormData();
+        formData.append("id", id);
+        const response = await axios.post(apiUrl, formData, {
           headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-            "society_id": `${society_token}`,
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+              "society_id": `${society_token}`,
           },
-        });
+      });
 
         if (response && response.data && response.data.data) {
           setFetchedData(response.data.data);
@@ -152,7 +154,7 @@ const ApprovalDetails = () => {
                     <Typography fontWeight={100} variant="subtitle2" color="grey.400">User Type</Typography>
                   </Grid>
                   <Grid item xs={6} sm={6} lg={6}>
-                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.usertype == '1' ? 'Admin' : '-'}</Typography>
+                    <Typography fontWeight={100} variant="subtitle2">{fetchedData && fetchedData.usertype == '0' ? 'User' : '-'}</Typography>
                   </Grid>
                 </Grid>
               </Grid>
