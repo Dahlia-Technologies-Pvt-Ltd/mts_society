@@ -8,15 +8,15 @@ import { useApiMessages } from '@src/common/Utils'; // Import the utility
 
 const BCrumb = [
     {
-        to: "/super-admin/dashboard",
-        title: "Society Management",
+        to: "/admin/dashboard",
+        title: "",
     },
     {
-        title: "Parking List",
+        title: "",
     },
 ];
 
-const ParkingList = () => {
+const ApprovalList = () => {
     const { showSuccessMessage, showErrorMessage, renderSuccessMessage, renderErrorMessage } = useApiMessages();
     const [page, setPage] = useState("");
     const [totalCount, setTotalCount] = useState("");
@@ -37,38 +37,24 @@ const ParkingList = () => {
             enableSorting:true,
         },
         {
-            id: "parking_type",
+            id: "name",
             numeric: false,
             disablePadding: false,
-            label: "Parking Type",
+            label: "Resident Name",
             enableSorting: true,
         },
         {
-            id: "vehicle_type",
+            id: "phone_number",
             numeric: false,
             disablePadding: false,
-            label: "Vehicle Type",
+            label: "Mobile No",
             enableSorting: true,
         },
         {
-            id: "tower_name",
+            id: "email",
             numeric: false,
             disablePadding: false,
-            label: "Tower",
-            enableSorting: true,
-        },
-        {
-            id: "wings_name",
-            numeric: false,
-            disablePadding: false,
-            label: "Wing",
-            enableSorting: true,
-        },
-        {
-            id: "parking_area_number",
-            numeric: false,
-            disablePadding: false,
-            label: "Parking Area",
+            label: "Email",
             enableSorting: true,
         },
         {
@@ -82,11 +68,9 @@ const ParkingList = () => {
 
     const dataColumns = [
         'srno',
-        "parking_type_value",
-        "vehicle_type_value",
-        "tower_name",
-        "wings_name",
-        "parking_area_number",
+        "name",
+        "phone_number",
+        "email",
     ];
 
     const rowSettings = {
@@ -95,11 +79,12 @@ const ParkingList = () => {
     //show = 1 for show the button show = 0 then button not show
     const actionSettings = {
         actions: {
-            edit: { url: "/admin/edit-parking/", show: "1" },
-            delete: { url: "", show: "1" },
+            edit: { url: "", show: "1" },
+            delete: { url: "", show: "0" },
+            preview: { url: "/admin/approval-details/", show: "1" },
         },
     };
-    const addUrl = "/admin/add-parking";
+    const addUrl = "";
     const [datas, setData] = useState([]); // State to store the fetched data
     const [totalPages, settotalPages] = useState([]); // State to store the fetched data
     useEffect(() => {
@@ -140,7 +125,7 @@ const ParkingList = () => {
                 searchKeyword !== null ? searchKeyword : ""
             );
             const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/list-parking";
+            const API_URL = appUrl + "/api/list-user-for-approval";
             const response = await axios.post(API_URL, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -169,31 +154,14 @@ const ParkingList = () => {
 
     //Handle the delete function
     const handleDelete = async (id) => {
-        try {
-            const formData = new FormData();
-            formData.append("id", id);
-            const appUrl = import.meta.env.VITE_API_URL;
-            const API_URL = appUrl + "/api/delete-parking";
-            const response = await axios.post(API_URL, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "society_id": `${society_token}`,
-                },
-            });
-            showSuccessMessage(response.data.message);
-            fetchData();
-            //console.log("Success deleting data:", response.data);
-        } catch (error) {
-            showErrorMessage(error);
-        }
     };
     //For Download Excel variable
-    const excelName = "parking_list";
+    const excelName = "approval_list";
     const excelApiUrl = "";
     return (
         <PageContainer
-            title="Parking List"
-            description="this is Parking List page"
+            title="Approval Management"
+            description="this is Approval List page"
         >
             <Breadcrumb title="" />
             {renderSuccessMessage()}
@@ -203,7 +171,7 @@ const ParkingList = () => {
                 {/* Left part */}
                 {/* ------------------------------------------- */}
                 <CommonTableList
-                    pageTitle={"Parking List"}
+                    pageTitle={"Approval Management"}
                     headCells={headCells}
                     dataRow={datas}
                     totalPage={totalPages}
@@ -225,4 +193,4 @@ const ParkingList = () => {
     );
 };
 
-export default ParkingList;
+export default ApprovalList;

@@ -135,6 +135,13 @@ Menuitems = [
       chipColor: 'secondary',
     },
     {
+      id: uniqueId(),
+      title: 'Approval Management',
+      icon: IconUserPlus,
+      href: '/admin/approval-list',
+      activeUrls: ['/admin/approval-list', '/admin/approval-details/*'],
+    },
+    {
       navlabel: true,
       subheader: 'Society Management',
     },
@@ -158,6 +165,13 @@ Menuitems = [
       icon: IconBox,
       href: '/admin/flat-list',
       activeUrls: ['/admin/flat-list', '/admin/add-flat', '/admin/edit-flat/*'],
+    },
+    {
+      id: uniqueId(),
+      title: 'Parking',
+      icon: IconChartDots,
+      href: '/admin/parking-list',
+      activeUrls: ['/admin/parking-list', '/admin/add-parking', '/admin/edit-parking/*'],
     },
   ];
 }else if(userType === '0'){

@@ -22,10 +22,10 @@ class ParkingController extends ResponseController
             'parking_area_number',
             'parking_type',
             'vehicle_type',
-            // 'flats.id AS flat_id',
+            'towers.id AS tower_id',
             'towers.tower_name AS tower_name',
+            'wings.id AS wing_id',
             'wings.wings_name',
-            // 'flats.flat_name AS flat_name',
             'floors.id AS floor_id',
             'floors.floor_name AS floor_name'
         ]);
@@ -239,6 +239,19 @@ class ParkingController extends ResponseController
             $message = "Record Not Found !";
         }
         $response['message'] = $message;
+        $response['status'] = 200;
+        return $this->sendResponse($response);
+    }
+    /**
+     * Display the specified resource.
+     */
+    public function parkingVehicleType()
+    {
+        $result['parking_type'] = config('util.parking_type');
+        $result['vehichle_type'] = config('util.vehichle_type');
+        $message = "Parking types found";
+        $response['message'] = $message;
+        $response['data'] = $result;
         $response['status'] = 200;
         return $this->sendResponse($response);
     }

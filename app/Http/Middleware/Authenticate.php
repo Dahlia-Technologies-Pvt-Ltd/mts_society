@@ -12,6 +12,18 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
+        if($request->is('api/*')) {
+            $ErrorResponse = [
+                'success' => false,
+                'message' =>'Invalid Token',
+            ];
+            abort(response()->json($ErrorResponse, 403));
+        }
+    
+        if (! $request->expectsJson()) {
+            return route('login');
+        } 
+        
         return $request->expectsJson() ? null : route('login');
     }
 }
