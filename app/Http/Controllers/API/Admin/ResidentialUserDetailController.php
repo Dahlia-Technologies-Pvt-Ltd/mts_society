@@ -67,8 +67,8 @@ class ResidentialUserDetailController extends ResponseController
     {
         $societies_id = getsocietyid($request->header('society_id'));
         $master_societies_id=Society::find($societies_id)->master_society_id;
-        $master_society_country_id=MasterSociety::find($master_societies_id)->country_id;
-        $master_society_state_id=MasterSociety::find($master_societies_id)->state_id;
+        $master_society_country_id=MasterSociety::find($master_societies_id )->country_id;
+        $master_society_state_id=MasterSociety::find($master_societies_id )->state_id;
     if(isset($request->parking_ids)){
         $parking_ids = json_decode($request->parking_ids, true);
         foreach ($parking_ids as $key => $parkingidValue) {
@@ -84,14 +84,14 @@ class ResidentialUserDetailController extends ResponseController
         }
     }
     if ($request->flat_id > 0) {
-        $existingRecordFlat = Flat::find($request->flat_id);
-        if (!$existingRecordFlat) {
+        $existingRecord = Flat::find($request->flat_id);
+        if (!$existingRecord) {
             $response['status'] = 400;
             $response['message'] = 'Record not found for the provided ID.';
             return $this->sendError($response);
         }
     }
-    $id_req = null;
+    $id_req=null;
     if ($request->id > 0) {
         $existingRecord = User::find($request->id);
         if (!$existingRecord) {
@@ -108,7 +108,6 @@ class ResidentialUserDetailController extends ResponseController
         'email'                        => 'required|email|unique:users,email,' . $id . ',id,deleted_at,NULL|max:255',
         'phone_number'                  => 'required|digits:10|unique:users,phone_number,' . $id . ',id,deleted_at,NULL|max:255',
         'username'                        => 'required|unique:users,username,' . $id . ',id,deleted_at,NULL|max:255',
-        // 'vehicle_types' => 'integer|in:0,2,4',
         
     ]);
 
@@ -125,7 +124,7 @@ class ResidentialUserDetailController extends ResponseController
                 'master_society_ids'          =>jsonEncodeIntArr([$societies_id]),
                 'country_id'                  => $master_society_country_id,
                 'state_id'                    => $master_society_state_id,
-                'zipcode'                     => MasterSociety::find($master_societies_id)->zipcode,
+                'zipcode'                     => MasterSociety::find($master_societies_id )->zipcode,
                 'usertype'                    => 0,//resident user 
                 'updated_by'                           => auth()->id(),
             ];

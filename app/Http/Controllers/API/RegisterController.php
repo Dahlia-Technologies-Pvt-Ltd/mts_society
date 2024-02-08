@@ -174,6 +174,7 @@ class RegisterController extends ResponseController
             [
                 'name' => 'required|string|max:255',
                 'email' => 'required|unique:master_users',
+                'username' => 'required|unique:master_users',
                 'phone_number' => 'required|unique:master_users',
                 'country_id' => 'required|integer|min:1',
                 'state_id' => 'required|integer|min:1',
@@ -209,7 +210,7 @@ class RegisterController extends ResponseController
             $user = MasterUser::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'user_name' => isset($request->user_name) ? $request->user_name : 'User',
+                'username' => isset($request->username) ? $request->username : 'User',
                 'phone_number' => $request->phone_number,
                 'password' => Hash::make('password'),
                 'master_society_ids'  => jsonEncodeIntArr([$request->master_society_id]),
