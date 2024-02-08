@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\Master\MasterSociety;
+use App\Models\Admin\Society;
 
 function jsonEncodeIntArr($arr = []){
  
@@ -26,7 +26,7 @@ function getsocietyid($header) {
             return 'No header value passed';
         }
         $decryptedId = Crypt::decryptString($header);
-        $match = MasterSociety::where('id', $decryptedId)->first();
+        $match = Society::where('master_society_id', $decryptedId)->first();
         return !empty($match) ? $match->id : 'No matching record found/No header passed';
     } catch (DecryptException $e) {
         // Handle decryption errors

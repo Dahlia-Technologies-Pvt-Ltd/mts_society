@@ -98,6 +98,7 @@ class NonResidentialUserDetailController extends ResponseController
     {
         
         $societies_id = getsocietyid($request->header('society_id'));
+        // print_r( $societies_id);die();
         $master_societies_id=Society::find($societies_id)->master_society_id;
         $master_society_country_id=MasterSociety::find($master_societies_id)->country_id;
         $master_society_state_id=MasterSociety::find($master_societies_id)->state_id;

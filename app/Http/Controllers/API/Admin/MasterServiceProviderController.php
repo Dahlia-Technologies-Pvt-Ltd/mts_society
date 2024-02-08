@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\ResponseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use App\Models\Admin\{MasterServiceProvider};
+use App\Models\Admin\{MasterServiceProvider,Society};
 
 class MasterServiceProviderController extends ResponseController
 {
@@ -45,6 +45,8 @@ public function index(Request $request)
     public function store(Request $request)
     {
         $societies_id = getsocietyid($request->header('society_id'));
+        // $childsociety_id=Society::where('master_society_id',$societies_id)->get();
+        // print_r($childsociety_id->id);die();
         if ($request->id > 0) {
             $existingRecord = MasterServiceProvider::find($request->id);
             if (!$existingRecord) {

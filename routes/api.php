@@ -21,6 +21,8 @@ use App\Http\Controllers\API\Admin\WingsController;
 use App\Http\Controllers\API\Admin\ParkingController;
 use App\Http\Controllers\API\Admin\ResidentialUserDetailController;
 use App\Http\Controllers\API\Admin\NonResidentialUserDetailController;
+use App\Http\Controllers\API\Admin\HdMasterCategoriesController;
+use App\Http\Controllers\API\Admin\HdMasterSubCategoriesController;
 use App\Http\Controllers\API\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +50,7 @@ Route::post('/verify-resident', [RegisterController::class, 'registrationotpveri
 Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotpassword']);
 //login send otp api
 Route::post('/login-send-otp', [AuthController::class, 'loginsendotp']);
- 
+
 //reset password api
 Route::post('/reset-password', [ForgotPasswordController::class, 'ResetPassword']);
 //Masters
@@ -57,7 +59,7 @@ Route::post('/list-state', [CountryStateController::class, 'state']);
 Route::post('/list-master-subscription', [MasterSubscriptionController::class, 'index']);
 
 //Only For Super Admin
-Route::middleware('auth:sanctum','superadmin')->group(function () {
+Route::middleware('auth:sanctum', 'superadmin')->group(function () {
     //master society apis
     Route::post('/add-society', [SocietyController::class, 'store']);
     Route::post('/list-society', [SocietyController::class, 'index']);
@@ -82,13 +84,14 @@ Route::middleware('auth:sanctum','superadmin')->group(function () {
     Route::get('/show-emailtemplate/{id}', [EmailController::class, 'show']);
     //User apis
     // MasterUserController
-   
+
 });
 //Only For Admin
-Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
-    
+Route::middleware('auth:sanctum', 'admin', 'connect.society')->group(function () {
+
     Route::post('/list-user-for-approval', [ApprovalController::class, 'index']);
     Route::post('/user-for-approval', [ApprovalController::class, 'approval']);
+    Route::post('/show-user-for-approval', [ApprovalController::class, 'show']);
     //tower apis
     Route::post('/add-tower', [TowerController::class, 'store']);
     Route::post('/list-tower', [TowerController::class, 'index']);
@@ -99,39 +102,47 @@ Route::middleware('auth:sanctum','admin','connect.society')->group(function () {
     Route::post('/list-floor', [FloorController::class, 'index']);
     Route::get('/show-floor/{id}', [FloorController::class, 'show']);
     Route::post('/delete-floor', [FloorController::class, 'destroy']);
-     //flat apis
-     Route::post('/add-flat', [FlatController::class, 'store']);
-     Route::post('/list-flat', [FlatController::class, 'index']);
-     Route::get('/show-flat/{id}', [FlatController::class, 'show']);
-     Route::post('/delete-flat', [FlatController::class, 'destroy']);
-     //wings apis
-     Route::post('/edit-wing', [WingsController::class, 'edit']);
-     Route::post('/delete-wing', [WingsController::class, 'destroy']);
-     //parking api
-     Route::post('/add-parking', [ParkingController::class, 'store']);
-     Route::post('/list-parking', [ParkingController::class, 'index']);
-     Route::get('/show-parking/{id}', [ParkingController::class, 'show']);
-     Route::post('/delete-parking', [ParkingController::class, 'destroy']);
-      //service provider api
-      Route::post('/add-service-provider', [MasterServiceProviderController::class, 'store']);
-      Route::post('/list-service-provider', [MasterServiceProviderController::class, 'index']);
-      Route::get('/show-service-provider/{id}', [MasterServiceProviderController::class, 'show']);
-      Route::post('/delete-service-provider', [MasterServiceProviderController::class, 'destroy']);
-      //Residential user apis
-      Route::post('/add-residential-user', [ResidentialUserDetailController::class, 'store']);
-      Route::post('/list-residential-user', [ResidentialUserDetailController::class, 'index']);
-      Route::get('/show-residential-user/{id}', [ResidentialUserDetailController::class, 'show']);
-      Route::post('/delete-residential-user', [ResidentialUserDetailController::class, 'destroy']);
-      //Non Residential user apis
-      Route::post('/add-non-residential-user', [NonResidentialUserDetailController::class, 'store']);
-      Route::post('/list-non-residential-user', [NonResidentialUserDetailController::class, 'index']);
-      Route::get('/show-non-residential-user/{id}', [NonResidentialUserDetailController::class, 'show']);
-      Route::post('/delete-non-residential-user', [NonResidentialUserDetailController::class, 'destroy']);
-     
+    //flat apis
+    Route::post('/add-flat', [FlatController::class, 'store']);
+    Route::post('/list-flat', [FlatController::class, 'index']);
+    Route::get('/show-flat/{id}', [FlatController::class, 'show']);
+    Route::post('/delete-flat', [FlatController::class, 'destroy']);
+    //wings apis
+    Route::post('/edit-wing', [WingsController::class, 'edit']);
+    Route::post('/delete-wing', [WingsController::class, 'destroy']);
+    //parking api
+    Route::post('/add-parking', [ParkingController::class, 'store']);
+    Route::post('/list-parking', [ParkingController::class, 'index']);
+    Route::get('/show-parking/{id}', [ParkingController::class, 'show']);
+    Route::post('/delete-parking', [ParkingController::class, 'destroy']);
+    //service provider api
+    Route::post('/add-service-provider', [MasterServiceProviderController::class, 'store']);
+    Route::post('/list-service-provider', [MasterServiceProviderController::class, 'index']);
+    Route::get('/show-service-provider/{id}', [MasterServiceProviderController::class, 'show']);
+    Route::post('/delete-service-provider', [MasterServiceProviderController::class, 'destroy']);
+    //Residential user apis
+    Route::post('/add-residential-user', [ResidentialUserDetailController::class, 'store']);
+    Route::post('/list-residential-user', [ResidentialUserDetailController::class, 'index']);
+    Route::get('/show-residential-user/{id}', [ResidentialUserDetailController::class, 'show']);
+    Route::post('/delete-residential-user', [ResidentialUserDetailController::class, 'destroy']);
+    //Non Residential user apis
+    Route::post('/add-non-residential-user', [NonResidentialUserDetailController::class, 'store']);
+    Route::post('/list-non-residential-user', [NonResidentialUserDetailController::class, 'index']);
+    Route::get('/show-non-residential-user/{id}', [NonResidentialUserDetailController::class, 'show']);
+    Route::post('/delete-non-residential-user', [NonResidentialUserDetailController::class, 'destroy']);
+    //help desk category apis
+    Route::post('/add-hd-category', [HdMasterCategoriesController::class, 'store']);
+    Route::post('/list-hd-category', [HdMasterCategoriesController::class, 'index']);
+    Route::get('/show-hd-category/{id}', [HdMasterCategoriesController::class, 'show']);
+    Route::post('/delete-hd-category', [HdMasterCategoriesController::class, 'destroy']);
+    //help desk subcategory apis
+    Route::post('/add-hd-subcategory', [HdMasterSubCategoriesController::class, 'store']);
+    Route::post('/list-hd-subcategory', [HdMasterSubCategoriesController::class, 'index']);
+    Route::get('/show-hd-subcategory/{id}', [HdMasterSubCategoriesController::class, 'show']);
+    Route::post('/delete-hd-subcategory', [HdMasterSubCategoriesController::class, 'destroy']);
 });
 //Only For User
-Route::middleware('auth:sanctum','user')->group(function () {
-
+Route::middleware('auth:sanctum', 'user')->group(function () {
 });
 //For ALL
 Route::middleware('auth:sanctum')->group(function () {
