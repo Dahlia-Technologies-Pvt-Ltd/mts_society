@@ -6,6 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\ResponseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
+use App\Helpers\MailHelper;
+use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Contracts\Encryption\DecryptException;
 use App\Models\Admin\{NonResidentialUserDetail,Parking,User,Flat,Society,MasterServiceProvider,Tower};
 use App\Models\Master\{MasterSociety,MasterUser};
 
@@ -75,7 +82,6 @@ class NonResidentialUserDetailController extends ResponseController
      {
         $a=$request->team_type;
          $data_query = $this->list_show_query($a);
-        //  print_r( $data_query->get()->toArray());die();
          if (!empty($request->keyword)) {
              $keyword = $request->keyword;
              $data_query->where(function ($query) use ($keyword) {
@@ -98,7 +104,6 @@ class NonResidentialUserDetailController extends ResponseController
     {
         
         $societies_id = getsocietyid($request->header('society_id'));
-        // print_r( $societies_id);die();
         $master_societies_id=Society::find($societies_id)->master_society_id;
         $master_society_country_id=MasterSociety::find($master_societies_id)->country_id;
         $master_society_state_id=MasterSociety::find($master_societies_id)->state_id;
@@ -188,6 +193,9 @@ class NonResidentialUserDetailController extends ResponseController
                 'usertype'                    => 0,//other user 
                 'updated_by'                           => auth()->id(),
             ];
+            if($request->team_type == 0){
+                $ins_arr2['status'] = 1;//inactive 
+            }
             if (empty($request->id)) {
                 $obj = new MasterUser();
                 $ins_arr['user_code'] = $obj->generateUserCode();
@@ -216,10 +224,13 @@ class NonResidentialUserDetailController extends ResponseController
                     'usertype'                    => 0,//resident user 
                     'updated_by'                           => auth()->id(),
                 ];
+                if($request->team_type == 0){
+                    $ins_arr2['status'] = 1;//inactive 
+                }
             if (!$request->id) {
-                $ins_arr['created_by'] = auth()->id();
+                $ins_arr2['created_by'] = auth()->id();
             } else {
-                $ins_arr['updated_by'] = auth()->id();
+                $ins_arr2['updated_by'] = auth()->id();
             }
             $qry2 = User::updateOrCreate(
                 ['master_user_id' => $qry->id],
@@ -233,7 +244,6 @@ class NonResidentialUserDetailController extends ResponseController
                      'email'=> $request->email,
                      'country_code'=> $request->country_code,
                     'phone_number'=> $request->phone_number,
-                    // 'street_address'=> $request->street_address,
                     'country'=> $request->country_id,
                     'state'=> $request->state_id,
                      'city'=> $request->city,
@@ -276,12 +286,10 @@ class NonResidentialUserDetailController extends ResponseController
                      'aadhaar_no'=> $request->aadhaar_no,
                      'pan_no'=> $request->pan_no,
                      'assigned_tower_ids'=> isset($request->assigned_tower_ids)?jsonEncodeIntArr(json_decode($request->assigned_tower_ids)):jsonEncodeIntArr([]),
-                    // 'master_service_provider_ids'=> $request->master_service_provider_ids,
                     'management_company_name'=> $request->management_company_name,
-                    // 'management_company_country_code'=> $request->management_company_country_code,
                     'management_company_phone_number'=> $request->management_company_phone_number,
                     'team_type'=> 0,//'0-Facility Manager,1-Service Provider,2-Security Guard'
-                    ];
+                    ];   
                 }
            
                
@@ -341,6 +349,97 @@ class NonResidentialUserDetailController extends ResponseController
         return $this->sendError($response);
     }
     }
+    public function sendinvitefacilitymanager(Request $request)
+    {
+        $societies_id = getsocietyid($request->header('society_id')); 
+        if ($request->user_id > 0) {
+            $existingRecordfm = NonResidentialUserDetail::join('users', 'users.id', '=', 'non_residential_user_details.user_id')->where('team_type','=',0)->where('users.id','=',$request->user_id) ->where('users.status', '=', 1)->first();
+            if (!$existingRecordfm) {
+                $response['status'] = 400;
+                $response['message'] = 'Record not found for the provided ID.';
+                return $this->sendError($response);
+            }
+        }  
+        $id = empty($request->id) ? 'NULL' : $request->id;
+    
+        $validator = Validator::make($request->all(), [
+            'user_id'  => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->validatorError($validator);
+        } else {
+            // $message = empty($request->id) ? "Non Residential user created successfully." : "Non Residential user updated successfully.";
+           return  $this->sendInvite($request->user_id);
+    }
+}
+
+public function acceptinvitefacilitymanager(Request $request): JsonResponse
+	{
+		$validator = \Validator::make(
+			$request->all(),
+			[
+				'token' => 'required',
+				'new_password' => 'required|regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%&*_-])[a-zA-Z0-9!@#$%&*_-].{7,}+$/',
+				'con_password' => 'required|same:new_password',
+			],
+			[
+				'token.required' => 'Please provide token',
+				'new_password.required' => 'Please provide Password',
+				'new_password.regex' => 'Password must contain  at least one lower case letter, one upper case letter, one digit, one special character and minimum 8 characters',
+				'con_password.required' => 'Please provide Confirm Password',
+				'con_password.same' => 'Password and Confirm Password does not match',
+			]
+		);
+
+		if ($validator->fails()) {
+			return $this->validatorError($validator);
+		} else {
+                $masteruser = MasterUser::getTokenSingle($request->token);
+                if (empty($masteruser)) {
+                    $response['status'] = 401;
+                    $response['message'] = 'Token expired or does not exists.';
+                    return $this->sendError($response);
+                }
+                else {
+                    //Change Password
+                    $user = User::where('master_user_id',$masteruser->id)->first();
+                    if(($user->status == 0)){
+                        $response['status'] = 401;
+                        $response['message'] = 'You account is already been activated.';
+                        return response()->json($response, 401);
+                    }
+     
+                    $masteruser->password = Hash::make($request->new_password);
+                    $masteruser->status = 0;
+                    $user->status = 0;
+                    $user->save();
+                    $masteruser->forgot_password_token = null;
+                    $masteruser->forgot_password_token_time = null;
+                    $masteruser->save();
+				$userEmail = $user->email;
+				$userName = $user->name;
+					$send_mail_type = 'THANKYOU_FACILITY_MANAGER_SEND_INVITE';
+				try {
+					$AppURL = env('APP_URL');
+					$TemplateData = array(
+						'EMAIL' => $userEmail,
+						'USER_NAME' => $userName,
+					);
+					MailHelper::sendMail($send_mail_type, $TemplateData);
+					$response['status'] = 200;
+					$response['message'] = 'You account has been activated!';
+					return $this->sendResponse($response);
+				} catch (Exception $exp) {
+					$response['status'] = 503;
+					$response['message'] = 'Oops ! We are unable to send mail , please try again after sometime.';
+					return $this->sendError($response);
+				}
+                }
+				
+              
+			}
+		}
+	
     public function destroy(Request $request)
     {
         $subs = NonResidentialUserDetail::find($request->id);
@@ -390,4 +489,40 @@ class NonResidentialUserDetailController extends ResponseController
         }
         
     }
+   
+    public function sendInvite($a)
+	{
+		$id = $a;
+			$user_query = User::where('id', $id);
+			if (!$user_query->exists()) {
+				$response['message'] = 'Unable to find user.';
+				$response['status'] = 400;
+				return $this->sendError($response);
+			} else {
+				$user = $user_query->first();
+                $masterusers = MasterUser::find($user->master_user_id);
+                $masterusers->forgot_password_token = Str::random(30);
+				$masterusers->forgot_password_token_time = Carbon::now()->addMinutes(30);
+				$masterusers->save();
+					$send_mail_type = 'FACILITY_MANAGER_SEND_INVITE';
+				$userEmail = $user->email;
+				$userName = $user->name;
+				try {
+					$AppURL = env('APP_URL');
+					$TemplateData = array(
+						'EMAIL' => $userEmail,
+						'USER_NAME' => $userName,
+						'INVITE_LINK' => "<a href='".$AppURL."/accept-invite?t=".$masterusers->forgot_password_token."'><button type='button' class='btn btn-primary'>Accept Invitation</button></a>",
+					);
+					MailHelper::sendMail($send_mail_type, $TemplateData);
+					$response['status'] = 200;
+					$response['message'] = 'Invitation sent successfully!';
+					return $this->sendResponse($response);
+				} catch (Exception $exp) {
+					$response['status'] = 503;
+					$response['message'] = 'Oops ! We are unable to send mail , please try again after sometime.';
+					return $this->sendError($response);
+				}
+		}
+	}
 }

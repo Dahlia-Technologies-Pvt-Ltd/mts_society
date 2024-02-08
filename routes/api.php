@@ -130,6 +130,10 @@ Route::middleware('auth:sanctum', 'admin', 'connect.society')->group(function ()
     Route::post('/list-non-residential-user', [NonResidentialUserDetailController::class, 'index']);
     Route::get('/show-non-residential-user/{id}', [NonResidentialUserDetailController::class, 'show']);
     Route::post('/delete-non-residential-user', [NonResidentialUserDetailController::class, 'destroy']);
+    //send invite facilty manager
+    Route::post('/send-invite-facility-manager', [NonResidentialUserDetailController::class, 'sendinvitefacilitymanager']);
+    Route::post('/accept-invite-facility-manager', [NonResidentialUserDetailController::class, 'acceptinvitefacilitymanager']);
+    
     //help desk category apis
     Route::post('/add-hd-category', [HdMasterCategoriesController::class, 'store']);
     Route::post('/list-hd-category', [HdMasterCategoriesController::class, 'index']);
